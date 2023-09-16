@@ -1,4 +1,4 @@
-package org.mwt.market.config;
+package org.mwt.market.config.database;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -21,7 +21,7 @@ import javax.sql.DataSource;
 @EnableJpaRepositories(
         basePackages = "org.mwt.market.domain",
         entityManagerFactoryRef = "primaryEntityManagerFactory",
-        transactionManagerRef = "primaryTransactionManager"
+        transactionManagerRef = "primaryTxManager"
 )
 public class PrimaryDatasourceConfig {
     @Primary
@@ -51,7 +51,7 @@ public class PrimaryDatasourceConfig {
     }
 
     @Primary
-    @Bean(name = "primaryTransactionManager")
+    @Bean(name = "primaryTxManager")
     public PlatformTransactionManager primaryTransactionManager(final @Qualifier("primaryEntityManagerFactory") LocalContainerEntityManagerFactoryBean localContainerEntityManagerFactoryBean) {
         return new JpaTransactionManager(localContainerEntityManagerFactoryBean.getObject());
     }

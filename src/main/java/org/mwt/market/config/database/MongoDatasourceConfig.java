@@ -1,4 +1,4 @@
-package org.mwt.market.config;
+package org.mwt.market.config.database;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;

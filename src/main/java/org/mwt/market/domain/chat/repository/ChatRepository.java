@@ -1,11 +1,9 @@
-package org.mwt.market.domain;
+package org.mwt.market.domain.chat.repository;
 
-import org.mwt.market.domain.chat.Chat;
+import org.mwt.market.domain.chat.entity.Chat;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 @Repository
-@Transactional(transactionManager = "mongoTxManager")
 public interface ChatRepository extends MongoRepository<Chat, String> {
 }

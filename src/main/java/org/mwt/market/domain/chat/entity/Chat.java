@@ -1,4 +1,4 @@
-package org.mwt.market.domain.chat;
+package org.mwt.market.domain.chat.entity;
 
 import lombok.Builder;
 import org.bson.types.ObjectId;
