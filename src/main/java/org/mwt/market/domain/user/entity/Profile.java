@@ -4,34 +4,18 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class User {
+public class Profile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userId;
+    private Long profileId;
 
-    private String email;
-
-    private String password;
-
-    private String tel;
-
-    private String nickname;
+    private String url;
 
     @CreatedDate
     private LocalDateTime createdAt;
-
-    @Builder
-    public User(String name) {
-    }
 }

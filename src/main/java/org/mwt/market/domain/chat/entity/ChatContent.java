@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
 @Document
-public class Chat {
+public class ChatContent {
     @MongoId
     private ObjectId id;
 
@@ -14,6 +14,6 @@ public class Chat {
     private String content;
 
     @Builder
-    public Chat(String name, String content) {
+    public ChatContent(String name, String content) {
     }
 }
