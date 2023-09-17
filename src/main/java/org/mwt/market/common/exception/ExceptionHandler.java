@@ -1,4 +1,4 @@
-package org.mwt.market.domain.exception;
+package org.mwt.market.common.exception;
 
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
