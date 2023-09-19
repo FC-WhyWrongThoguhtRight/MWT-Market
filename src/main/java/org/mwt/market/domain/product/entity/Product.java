@@ -1,6 +1,9 @@
 package org.mwt.market.domain.product.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.mwt.market.common.util.BooleanToNumConverter;
 import org.mwt.market.domain.user.entity.User;
 import org.springframework.data.annotation.CreatedDate;
@@ -8,6 +11,8 @@ import org.springframework.data.annotation.CreatedDate;
 import java.time.LocalDateTime;
 
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,7 +24,9 @@ public class Product {
     @ManyToOne(fetch = FetchType.LAZY)
     private ProductCategory productCategory;
 
+    @Column(name = "product_title")
     private String title;
+
     private Integer price;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -34,6 +41,4 @@ public class Product {
     private boolean isDeleted;
 
     private LocalDateTime deletedAt;
-
-
 }

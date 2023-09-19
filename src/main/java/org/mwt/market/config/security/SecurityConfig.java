@@ -16,11 +16,10 @@ public class SecurityConfig {
 
         http
                 .cors((cors) ->
-                        cors.disable()
-                )
+                        cors.disable())
                 .csrf((csrf) ->
-                        csrf.disable()
-                );
+                        csrf.disable())
+        ;
 
         http
                 .authorizeHttpRequests((authorizeHttpRequests) ->
