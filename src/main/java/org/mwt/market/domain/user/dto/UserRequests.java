@@ -3,7 +3,7 @@ package org.mwt.market.domain.user.dto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-public class UserRequestDto {
+public class UserRequests {
     @Getter
     @NoArgsConstructor
     public static class SignupRequestDto {

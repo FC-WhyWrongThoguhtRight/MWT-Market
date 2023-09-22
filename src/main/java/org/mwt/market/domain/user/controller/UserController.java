@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import static org.mwt.market.domain.user.dto.UserRequestDto.SignupRequestDto;
-import static org.mwt.market.domain.user.dto.UserResponseDto.SignupResponseDto;
+import static org.mwt.market.domain.user.dto.UserRequests.SignupRequestDto;
+import static org.mwt.market.domain.user.dto.UserResponses.SignupResponseDto;
 
 
 @RestController
