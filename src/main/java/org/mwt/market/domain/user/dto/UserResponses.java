@@ -16,4 +16,48 @@ public class UserResponses {
             this.user = user;
         }
     }
+
+    @Getter
+    public static class LoginResponseDto extends BaseResponseBody {
+        private final User user;
+
+        @Builder
+        public LoginResponseDto(Integer statusCode, String message, User user) {
+            super(statusCode, message);
+            this.user = user;
+        }
+    }
+
+    @Getter
+    public static class ProfileUpdateResponseDto extends BaseResponseBody {
+        private final User user;
+
+        @Builder
+        public ProfileUpdateResponseDto(Integer statusCode, String message, User user) {
+            super(statusCode, message);
+            this.user = user;
+        }
+    }
+
+    @Getter
+    public static class MyInterestResponseDto extends BaseResponseBody {
+        private final User user;
+
+        @Builder
+        public MyInterestResponseDto(Integer statusCode, String message, User user) {
+            super(statusCode, message);
+            this.user = user;
+        }
+    }
+
+    @Getter
+    public static class MyChatRoomResponseDto extends BaseResponseBody {
+        private final User user;
+
+        @Builder
+        public MyChatRoomResponseDto(Integer statusCode, String message, User user) {
+            super(statusCode, message);
+            this.user = user;
+        }
+    }
 }
