@@ -75,8 +75,7 @@ public class UserController {
                     content = {@Content(schema = @Schema(implementation = MyInterestResponseDto.class))}),
             @ApiResponse(responseCode = "400")
     })
-    public ResponseEntity<? extends BaseResponseBody> getMyInterest(
-            @RequestBody MyInterestRequestDto myInterestRequestDto) {
+    public ResponseEntity<? extends BaseResponseBody> getMyInterest() {
         return ResponseEntity
                 .status(200)
                 .body(MyInterestResponseDto.builder()
@@ -92,8 +91,7 @@ public class UserController {
                     content = {@Content(schema = @Schema(implementation = MyChatRoomResponseDto.class))}),
             @ApiResponse(responseCode = "400")
     })
-    public ResponseEntity<? extends BaseResponseBody> getMyInterest(
-            @RequestBody MyChatRoomRequestDto myChatRoomRequestDto) {
+    public ResponseEntity<? extends BaseResponseBody> getMyChatRoom() {
         return ResponseEntity
                 .status(200)
                 .body(MyChatRoomResponseDto.builder()
