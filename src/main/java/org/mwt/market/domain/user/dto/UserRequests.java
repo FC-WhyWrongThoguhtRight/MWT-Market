@@ -2,8 +2,11 @@ package org.mwt.market.domain.user.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 public class UserRequests {
     @Getter
@@ -35,12 +38,15 @@ public class UserRequests {
     }
 
     @Getter
+    @Setter
     @NoArgsConstructor
+    @AllArgsConstructor
     public static class ProfileUpdateRequestDto {
         @NotBlank
         @Schema(description = "사용자 닉네임", example = "donghar")
         private String nickname;
-        @Schema(description = "사용자 프로필", example = "ab3wnwer34aefr")
-        private String profile_image;
+        @NotBlank
+        @Schema(description = "이미지 바이너리 데이터")
+        private MultipartFile profileImg;
     }
 }

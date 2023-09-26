@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.mwt.market.common.response.BaseResponseBody;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -51,7 +52,7 @@ public class UserController {
                 );
     }
 
-    @PutMapping("/myPage/profile")
+    @PutMapping(value = "/myPage/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "내 프로필 변경")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
@@ -59,7 +60,7 @@ public class UserController {
             @ApiResponse(responseCode = "400")
     })
     public ResponseEntity<? extends BaseResponseBody> updateProfile(
-            @RequestBody ProfileUpdateRequestDto profileUpdateRequestDto) {
+            @ModelAttribute ProfileUpdateRequestDto profileUpdateRequestDto) {
         return ResponseEntity
                 .status(200)
                 .body(ProfileUpdateResponseDto.builder()
