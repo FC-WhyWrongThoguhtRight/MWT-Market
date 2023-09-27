@@ -4,24 +4,31 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.mwt.market.common.response.BaseResponseBody;
-import org.mwt.market.domain.product.vo.ProductCategoryType;
 
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Slf4j
 @Getter
 public class ProductCategoryResponseDto extends BaseResponseBody {
 
-    private final List<String> categories;
+    private final List<Category> categories;
 
     @Builder
-    public ProductCategoryResponseDto(Integer statusCode, String message) {
+    public ProductCategoryResponseDto(Integer statusCode, String message, List<Category> categories) {
         super(statusCode, message);
-        this.categories = Stream.of(ProductCategoryType.values())
-                .map(ProductCategoryType::getValue)
-                .collect(Collectors.toList());
+        this.categories = categories;
+    }
+
+    @Getter
+    public static class Category {
+        private final Long id;
+        private final String name;
+
+        @Builder
+        public Category(Long id, String name) {
+            this.id = id;
+            this.name = name;
+        }
     }
 }
 
