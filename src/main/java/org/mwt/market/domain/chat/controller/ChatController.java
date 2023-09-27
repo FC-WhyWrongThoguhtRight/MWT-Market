@@ -40,7 +40,7 @@ public class ChatController {
             content = {@Content(schema = @Schema(implementation = ChatRoomResponseDto.class))}),
         @ApiResponse(responseCode = "400")})
     public ResponseEntity<ChatRoomResponseDto> joinChat(
-        @RequestBody ChatRoomRequestDto chatRoomRequestDto){
+        @RequestBody ChatRoomRequestDto chatRoomRequestDto) {
         return ResponseEntity
             .status(200)
             .body(ChatRoomResponseDto.builder()

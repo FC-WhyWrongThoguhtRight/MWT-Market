@@ -2,8 +2,6 @@ package org.mwt.market.domain.chat.dto;
 
 import lombok.Builder;
 import lombok.Getter;
-import org.mwt.market.domain.chat.entity.ChatContent;
-import org.mwt.market.domain.chat.entity.ChatRoom;
 
 @Getter
 public class ChatRoomDto {

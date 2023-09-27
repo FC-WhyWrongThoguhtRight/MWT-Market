@@ -8,7 +8,7 @@ import org.mwt.market.domain.chat.entity.ChatRoom;
 @Getter
 public class ChatRoomResponseDto extends BaseResponseBody {
 
-    private ChatRoom chatRoom;
+    private final ChatRoom chatRoom;
 
     @Builder
     public ChatRoomResponseDto(Integer statusCode, String message, ChatRoom chatRoom) {
