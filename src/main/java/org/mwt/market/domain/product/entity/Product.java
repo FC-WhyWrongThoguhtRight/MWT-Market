@@ -24,7 +24,7 @@ public class Product {
     private String content;
     private Integer price;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "product")
     private List<ProductImage> productAlbum;
 
     @ManyToOne(fetch = FetchType.LAZY)
