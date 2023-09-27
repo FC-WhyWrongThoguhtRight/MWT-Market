@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ChatContentRepository extends MongoRepository<ChatContent, String> {
+
 }
