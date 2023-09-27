@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class ChatRoom {
+public class ChatRoom  {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long chatRoomId;
@@ -26,4 +26,7 @@ public class ChatRoom {
 
     @CreatedDate
     private LocalDateTime createdAt;
+
+
+
 }
