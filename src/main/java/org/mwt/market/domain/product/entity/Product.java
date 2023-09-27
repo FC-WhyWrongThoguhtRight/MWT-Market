@@ -9,6 +9,7 @@ import org.mwt.market.domain.user.entity.User;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -16,7 +17,15 @@ import java.time.LocalDateTime;
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long productId;
+    @Column(name = "product_id")
+    private Long id;
+    private String sellPlace;
+    private String title;
+    private String content;
+    private Integer price;
+
+    @OneToMany(mappedBy = "product")
+    private List<ProductImage> productAlbum;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private User seller;
@@ -24,15 +33,8 @@ public class Product {
     @ManyToOne(fetch = FetchType.LAZY)
     private ProductCategory productCategory;
 
-    @Column(name = "product_title")
-    private String title;
-
-    private Integer price;
-
     @ManyToOne(fetch = FetchType.LAZY)
     private ProductStatus status;
-
-    private String sellPlace;
 
     @CreatedDate
     private LocalDateTime createdAt;
