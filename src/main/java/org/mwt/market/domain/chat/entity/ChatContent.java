@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
 @Document
-public class ChatMessage {
+public class ChatContent {
 
     @MongoId
     private ObjectId id;
