@@ -28,10 +28,12 @@ jobs:
         distribution: 'temurin'
     - name: application.yml
       run: |
-        mkdir -p src/resources
+        mkdir -p src/main/resources
         touch ./src/main/resources/application.yml
         echo "${{ secrets.APPLICATION }}" > ./src/main/resources/application.yml
         cat ./src/main/resources/application.yml
+    - name: Run chmod to make gradlew executable
+      run: chmod +x ./gradlew
     - name: Build with Gradle
       uses: gradle/gradle-build-action@bd5760595778326ba7f1441bcf7e88b49de61a25 # v2.6.0
       with:
@@ -41,3 +43,26 @@ jobs:
       with:
         name: build-file
         path: build/libs/*.jar
+        
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: build-file
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.5.4
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Add remote server to known hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
+      - name: SCP transfer
+        run: scp *.jar ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:~/cicd
+      - name: Execute remote commands
+        run: |
+          ssh -v ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} "sudo fuser -k 8080/tcp || true"
+          ssh -v ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} "sudo nohup /usr/bin/java -jar ~/cicd/*.jar  > ~/cicd/nohup.log 2>&1 &"
