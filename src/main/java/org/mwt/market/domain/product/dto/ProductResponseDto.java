@@ -1,11 +1,13 @@
 package org.mwt.market.domain.product.dto;
+
+import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import org.mwt.market.common.response.BaseResponseBody;
-import java.util.List;
 
 @Getter
 public class ProductResponseDto extends BaseResponseBody {
+
     private final Long id;
     private final String title;
     private final Integer price;
@@ -17,7 +19,9 @@ public class ProductResponseDto extends BaseResponseBody {
     private final Seller seller;
 
     @Builder
-    public ProductResponseDto(Integer statusCode, String message, Long id, String title, Integer price, Integer category, String content, List<String> images, String status, Integer likes, Seller seller) {
+    public ProductResponseDto(Integer statusCode, String message, Long id, String title,
+        Integer price, Integer category, String content, List<String> images, String status,
+        Integer likes, Seller seller) {
         super(statusCode, message);
         this.id = id;
         this.title = title;
@@ -32,6 +36,7 @@ public class ProductResponseDto extends BaseResponseBody {
 
     @Getter
     public static class Seller {
+
         private final Long sellerId;
         private final String profileImage;
         private final String nickname;

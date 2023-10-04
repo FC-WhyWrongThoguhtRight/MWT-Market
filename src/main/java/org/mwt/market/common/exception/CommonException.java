@@ -1,6 +1,7 @@
 package org.mwt.market.common.exception;
 
-public class CommonException extends BaseException{
+public class CommonException extends BaseException {
+
     public CommonException(ErrorCode errorCode) {
         super(errorCode);
     }
@@ -17,7 +18,13 @@ public class CommonException extends BaseException{
         super(cause, errorCode);
     }
 
-    public CommonException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace, ErrorCode errorCode) {
+    public CommonException(
+        String message,
+        Throwable cause,
+        boolean enableSuppression,
+        boolean writableStackTrace,
+        ErrorCode errorCode
+    ) {
         super(message, cause, enableSuppression, writableStackTrace, errorCode);
     }
 }

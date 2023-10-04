@@ -6,6 +6,7 @@ import org.mwt.market.common.response.BaseResponseBody;
 
 @Getter
 public class ProductListResponseDto extends BaseResponseBody {
+
     private final Long id;
     private final String title;
     private final Integer price;
@@ -15,7 +16,8 @@ public class ProductListResponseDto extends BaseResponseBody {
     private final boolean like;
 
     @Builder
-    public ProductListResponseDto(Integer statusCode, String message, Long id, String title, Integer price, String thumbnail, String status, Integer likes, boolean like) {
+    public ProductListResponseDto(Integer statusCode, String message, Long id, String title,
+        Integer price, String thumbnail, String status, Integer likes, boolean like) {
         super(statusCode, message);
         this.id = id;
         this.title = title;

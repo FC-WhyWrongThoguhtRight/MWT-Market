@@ -13,7 +13,8 @@ public class ProductChatsResponseDto extends BaseResponseBody {
     // 채팅방 관련 DTO를 받을 예정
 
     @Builder
-    public ProductChatsResponseDto(Integer statusCode, String message, Long id, String thumbnail, String status) {
+    public ProductChatsResponseDto(Integer statusCode, String message, Long id, String thumbnail,
+        String status) {
         super(statusCode, message);
         this.id = id;
         this.thumbnail = thumbnail;

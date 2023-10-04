@@ -18,27 +18,27 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    @Value("${remote-server.front.url}")
-    private String frontUrl;
 
     private static final String[] AUTH_WHITELIST = {
-            "/swagger-ui/**", "/api-docs", "/swagger-ui-custom.html",
-            "/v3/api-docs/**", "/api-docs/**", "/swagger-ui.html", "/h2-console/**"
+        "/swagger-ui/**", "/api-docs", "/swagger-ui-custom.html",
+        "/v3/api-docs/**", "/api-docs/**", "/swagger-ui.html", "/h2-console/**"
     };
+    @Value("${remote-server.front.url}")
+    private String frontUrl;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .securityMatcher(request -> true);
+            .securityMatcher(request -> true);
 
         http
-                .httpBasic(HttpBasicConfigurer::disable)
-                .formLogin(FormLoginConfigurer::disable)
-                .cors(httpSecurityCorsConfigurer ->
-                        httpSecurityCorsConfigurer
-                                .configurationSource(corsConfigurationSource())
-                )
-                .csrf(CsrfConfigurer::disable)
+            .httpBasic(HttpBasicConfigurer::disable)
+            .formLogin(FormLoginConfigurer::disable)
+            .cors(httpSecurityCorsConfigurer ->
+                httpSecurityCorsConfigurer
+                    .configurationSource(corsConfigurationSource())
+            )
+            .csrf(CsrfConfigurer::disable)
         ;
 
         http
@@ -50,7 +50,7 @@ public class SecurityConfig {
                             .toArray(AntPathRequestMatcher[]::new)
                     ).permitAll()
                     .anyRequest().permitAll()
-            );
+        );
 
         return http.build();
     }

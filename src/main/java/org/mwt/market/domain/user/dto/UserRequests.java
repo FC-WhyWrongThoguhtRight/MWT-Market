@@ -9,9 +9,11 @@ import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
 public class UserRequests {
+
     @Getter
     @NoArgsConstructor
     public static class SignupRequestDto {
+
         @NotBlank
         @Schema(description = "사용자 이메일", example = "donghar@naver.com")
         private String email;
@@ -29,6 +31,7 @@ public class UserRequests {
     @Getter
     @NoArgsConstructor
     public static class LoginRequestDto {
+
         @NotBlank
         @Schema(description = "사용자 이메일", example = "donghar@naver.com")
         private String email;
@@ -42,6 +45,7 @@ public class UserRequests {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ProfileUpdateRequestDto {
+
         @NotBlank
         @Schema(description = "사용자 닉네임", example = "donghar")
         private String nickname;
