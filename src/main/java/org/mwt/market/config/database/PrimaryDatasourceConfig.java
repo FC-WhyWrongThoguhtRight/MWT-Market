@@ -1,6 +1,7 @@
 package org.mwt.market.config.database;
 
 import com.zaxxer.hikari.HikariDataSource;
+import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -14,16 +15,15 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import javax.sql.DataSource;
-
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories(
-        basePackages = "org.mwt.market.domain",
-        entityManagerFactoryRef = "primaryEntityManagerFactory",
-        transactionManagerRef = "primaryTxManager"
+    basePackages = "org.mwt.market.domain",
+    entityManagerFactoryRef = "primaryEntityManagerFactory",
+    transactionManagerRef = "primaryTxManager"
 )
 public class PrimaryDatasourceConfig {
+
     @Primary
     @Bean
     @ConfigurationProperties("spring.datasource-mysql")
@@ -35,24 +35,28 @@ public class PrimaryDatasourceConfig {
     @Bean
     public DataSource primaryDatasource() {
         return primaryDatasourceProperties()
-                .initializeDataSourceBuilder()
-                .type(HikariDataSource.class)
-                .build();
+            .initializeDataSourceBuilder()
+            .type(HikariDataSource.class)
+            .build();
     }
 
     @Primary
     @Bean(name = "primaryEntityManagerFactory")
-    public LocalContainerEntityManagerFactoryBean primaryEntityManagerFactory(EntityManagerFactoryBuilder builder) {
+    public LocalContainerEntityManagerFactoryBean primaryEntityManagerFactory(
+        EntityManagerFactoryBuilder builder) {
         return builder
-                .dataSource(primaryDatasource())
-                .packages("org.mwt.market.domain")
-                .persistenceUnit("primaryEntityManager")
-                .build();
+            .dataSource(primaryDatasource())
+            .packages("org.mwt.market.domain")
+            .persistenceUnit("primaryEntityManager")
+            .build();
     }
 
     @Primary
     @Bean(name = "primaryTxManager")
-    public PlatformTransactionManager primaryTransactionManager(final @Qualifier("primaryEntityManagerFactory") LocalContainerEntityManagerFactoryBean localContainerEntityManagerFactoryBean) {
+    public PlatformTransactionManager primaryTransactionManager(
+        final @Qualifier("primaryEntityManagerFactory")
+        LocalContainerEntityManagerFactoryBean localContainerEntityManagerFactoryBean
+    ) {
         return new JpaTransactionManager(localContainerEntityManagerFactoryBean.getObject());
     }
 }

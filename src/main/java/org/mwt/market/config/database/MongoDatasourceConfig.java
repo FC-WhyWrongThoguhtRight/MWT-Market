@@ -19,22 +19,24 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @EnableTransactionManagement
 @EnableMongoRepositories(
-        basePackages = "org.mwt.market.domain",
-        mongoTemplateRef = "mongoTemplate"
+    basePackages = "org.mwt.market.domain",
+    mongoTemplateRef = "mongoTemplate"
 )
 @EnableConfigurationProperties
 public class MongoDatasourceConfig {
+
     @Bean
     public MongoClient mongoClient(MongoProperties mongoProperties) {
         ConnectionString connectionString = new ConnectionString(mongoProperties.getUri());
         MongoClientSettings mongoClientSettings = MongoClientSettings.builder()
-                .applyConnectionString(connectionString)
-                .build();
+            .applyConnectionString(connectionString)
+            .build();
         return MongoClients.create(mongoClientSettings);
     }
 
     @Bean
-    public MongoDatabaseFactory mongoDatabaseFactory(MongoProperties mongoProperties, MongoClient mongoClient) {
+    public MongoDatabaseFactory mongoDatabaseFactory(MongoProperties mongoProperties,
+        MongoClient mongoClient) {
         return new SimpleMongoClientDatabaseFactory(mongoClient, mongoProperties.getDatabase());
     }
 
@@ -44,7 +46,8 @@ public class MongoDatasourceConfig {
     }
 
     @Bean(name = "mongoTxManager")
-    public PlatformTransactionManager mongoTransactionManager(MongoDatabaseFactory mongoDatabaseFactory) {
+    public PlatformTransactionManager mongoTransactionManager(
+        MongoDatabaseFactory mongoDatabaseFactory) {
         return new MongoTransactionManager(mongoDatabaseFactory);
     }
 }

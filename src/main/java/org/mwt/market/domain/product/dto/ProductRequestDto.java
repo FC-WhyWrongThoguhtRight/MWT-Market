@@ -2,15 +2,15 @@ package org.mwt.market.domain.product.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-
-@Getter @Setter
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductRequestDto {
@@ -29,7 +29,7 @@ public class ProductRequestDto {
 
     @Schema(description = "상품 가격")
     private Integer price;
-    
+
     @Schema(description = "상품 관련 이미지")
     private List<MultipartFile> images;
 }

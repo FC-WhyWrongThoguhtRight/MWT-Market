@@ -36,9 +36,10 @@ out/
 ### VS Code ###
 .vscode/
 
-
 ### Properties ###
 src/main/resources/*.yml
 src/main/resources/*.properties
 src/test/resources/*.yml
 src/test/resources/*.properties
+!src/main/resources/application.yml
+!src/test/resources/application.yml

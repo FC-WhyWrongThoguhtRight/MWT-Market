@@ -4,6 +4,7 @@ import lombok.Getter;
 
 @Getter
 public abstract class BaseResponseBody {
+
     private final Integer statusCode;
     private final String message;
 

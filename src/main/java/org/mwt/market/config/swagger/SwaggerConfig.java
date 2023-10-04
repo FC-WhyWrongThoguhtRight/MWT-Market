@@ -13,30 +13,31 @@ import org.springframework.context.annotation.Profile;
 
 @Profile({"local", "dev"})
 @OpenAPIDefinition(
-        info = @Info(
-                title = "MWT Market API",
-                description = "MWT Market Service를 위한 API",
-                version = "v1",
-                contact = @Contact(name = "고동훤", email = "donghar@naver.com", url = "https://github.com/Dr-KoKo")
-        )
+    info = @Info(
+        title = "MWT Market API",
+        description = "MWT Market Service를 위한 API",
+        version = "v1",
+        contact = @Contact(name = "고동훤", email = "donghar@naver.com", url = "https://github.com/Dr-KoKo")
+    )
 )
 @Configuration
 public class SwaggerConfig {
+
     private static final String BEARER_TOKEN_PREFIX = "Bearer";
 
     @Bean
-    public OpenAPI openAPI() {
+    public OpenAPI openApi() {
         String jwtSchemeName = "JwtTokenProvider.AUTHORIZATION_HEADER";
         SecurityRequirement securityRequirement = new SecurityRequirement().addList(jwtSchemeName);
         Components components = new Components()
-                .addSecuritySchemes(jwtSchemeName, new SecurityScheme()
-                        .name(jwtSchemeName)
-                        .type(SecurityScheme.Type.HTTP)
-                        .scheme(BEARER_TOKEN_PREFIX)
-                        .bearerFormat("JwtTokenProvider.TYPE"));
+            .addSecuritySchemes(jwtSchemeName, new SecurityScheme()
+                .name(jwtSchemeName)
+                .type(SecurityScheme.Type.HTTP)
+                .scheme(BEARER_TOKEN_PREFIX)
+                .bearerFormat("JwtTokenProvider.TYPE"));
 
         return new OpenAPI()
-                .addSecurityItem(securityRequirement)
-                .components(components);
+            .addSecurityItem(securityRequirement)
+            .components(components);
     }
 }
