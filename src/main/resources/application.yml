@@ -1,0 +1,29 @@
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: false
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+  data:
+    mongodb:
+      uri: mongodb://localhost:27019/admin
+      host: localhost
+      port: 27019
+      database: MWT_MARKET
+      username: username
+      password: password
+
+server:
+  servlet:
+    context-path: /api/v1
+
+remote-server:
+  front:
+    url:
