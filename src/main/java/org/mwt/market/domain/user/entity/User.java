@@ -19,6 +19,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
+    @Column(unique = true)
     private String email;
 
     private String password;
@@ -26,6 +27,10 @@ public class User {
     private String tel;
 
     private String nickname;
+
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "profile_img")
+    private ProfileImage profileImage;
 
     @CreatedDate
     private LocalDateTime createdAt;
