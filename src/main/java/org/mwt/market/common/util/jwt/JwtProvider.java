@@ -12,6 +12,7 @@ import org.mwt.market.config.security.token.UserPrincipal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
@@ -42,13 +43,13 @@ public class JwtProvider {
         this.verifier = JWT.require(algorithm).withIssuer(issuer).build();
     }
 
-    public String generateAccessToken(AjaxAuthenticationToken authenticationToken) {
+    public String generateAccessToken(Authentication authToken) {
         LocalDateTime now = LocalDateTime.now();
         return JWT.create()
-                .withSubject(authenticationToken.getName())
-                .withClaim("authn", objectMapper.convertValue(authenticationToken.getPrincipal(), new TypeReference<Map<String, Object>>() {
+                .withSubject(authToken.getName())
+                .withClaim("authn", objectMapper.convertValue(authToken.getPrincipal(), new TypeReference<Map<String, Object>>() {
                 }))
-                .withArrayClaim("authgr", authenticationToken.getAuthorities().stream().map(GrantedAuthority::getAuthority).toArray(String[]::new))
+                .withArrayClaim("authgr", authToken.getAuthorities().stream().map(GrantedAuthority::getAuthority).toArray(String[]::new))
                 .withIssuer(issuer)
                 .withIssuedAt(now.atZone(ZoneId.systemDefault()).toInstant())
                 .withExpiresAt(now.plus(accessTokenValidityInMs, ChronoUnit.MILLIS).atZone(ZoneId.systemDefault()).toInstant())

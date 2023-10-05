@@ -8,6 +8,7 @@ import org.mwt.market.config.security.handler.AjaxAuthenticationFailureHandler;
 import org.mwt.market.config.security.handler.AjaxAuthenticationSuccessHandler;
 import org.mwt.market.config.security.provider.AjaxAuthenticationProvider;
 import org.mwt.market.config.security.service.AjaxUserDetailService;
+import org.mwt.market.config.security.token.AuthenticationDetails;
 import org.mwt.market.domain.refreshtoken.repository.RefreshTokenRepository;
 import org.mwt.market.domain.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,11 +83,10 @@ public class SecurityConfig {
 
         http
                 .apply(new AjaxAuthenticationFilterConfigurer(new AjaxAuthenticationFilter(loginProcUrl), loginProcUrl))
-                .authenticationDetailsSource(authenticationDetailsSource())
+                .setAuthenticationManager(authenticationManager())
                 .successHandlerAjax(new AjaxAuthenticationSuccessHandler(jwtProvider, refreshTokenRepository))
                 .failureHandlerAjax(new AjaxAuthenticationFailureHandler())
-                .setAuthenticationManager(authenticationManager())
-                .securityContextRepository(securityContextRepository())
+                .setAuthenticationDetailsSource(authenticationDetailsSource())
                 .loginProcessingUrl(loginProcUrl);
 
         return http.build();
@@ -119,7 +119,7 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationDetailsSource<HttpServletRequest, WebAuthenticationDetails> authenticationDetailsSource() {
-        return context -> new WebAuthenticationDetails(context);
+        return context -> new AuthenticationDetails(context);
     }
 
     @Bean
