@@ -27,13 +27,11 @@ public class UserResponses {
     @Getter
     public static class LoginResponseDto extends BaseResponseBody {
         private final String jwtToken;
-        private final UserInfo userInfo;
 
         @Builder
-        public LoginResponseDto(Integer statusCode, String message, String jwtToken, UserInfo userInfo) {
+        public LoginResponseDto(Integer statusCode, String message, String jwtToken) {
             super(statusCode, message);
             this.jwtToken = jwtToken;
-            this.userInfo = userInfo;
         }
     }
 
@@ -73,24 +71,6 @@ public class UserResponses {
         public MyChatRoomResponseDto(Integer statusCode, String message, List<ChatRoomDto> chatRoomDtoList) {
             super(statusCode, message);
             this.chatRoomDtoList = chatRoomDtoList;
-        }
-    }
-
-    @Getter
-    public static class UserInfo {
-        private final String id;
-        private final String email;
-        private final String name;
-        private final String phone;
-        private final String nickname;
-
-        @Builder
-        public UserInfo(String id, String email, String name, String phone, String nickname) {
-            this.id = id;
-            this.email = email;
-            this.name = name;
-            this.phone = phone;
-            this.nickname = nickname;
         }
     }
 
