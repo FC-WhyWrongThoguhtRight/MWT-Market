@@ -15,6 +15,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.mwt.market.common.util.BooleanToNumConverter;
+import org.mwt.market.common.util.ProductStatusToNumConverter;
+import org.mwt.market.domain.product.vo.ProductStatus;
 import org.mwt.market.domain.user.entity.User;
 import org.springframework.data.annotation.CreatedDate;
 
@@ -41,7 +43,7 @@ public class Product {
     @ManyToOne(fetch = FetchType.LAZY)
     private ProductCategory productCategory;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @Convert(converter = ProductStatusToNumConverter.class)
     private ProductStatus status;
 
     @CreatedDate
