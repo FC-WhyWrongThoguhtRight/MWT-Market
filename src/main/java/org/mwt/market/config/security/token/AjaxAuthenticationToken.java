@@ -7,6 +7,7 @@ import org.springframework.util.Assert;
 import java.util.Collection;
 
 public class AjaxAuthenticationToken extends AbstractAuthenticationToken {
+
     private final Object principal;
     private Object credentials;
 
@@ -18,7 +19,7 @@ public class AjaxAuthenticationToken extends AbstractAuthenticationToken {
     }
 
     public AjaxAuthenticationToken(Object principal, Object credentials,
-                                   Collection<? extends GrantedAuthority> authorities) {
+        Collection<? extends GrantedAuthority> authorities) {
         super(authorities);
         this.principal = principal;
         this.credentials = credentials;
@@ -30,7 +31,7 @@ public class AjaxAuthenticationToken extends AbstractAuthenticationToken {
     }
 
     public static AjaxAuthenticationToken authenticated(Object principal, Object credentials,
-                                                        Collection<? extends GrantedAuthority> authorities) {
+        Collection<? extends GrantedAuthority> authorities) {
         return new AjaxAuthenticationToken(principal, credentials, authorities);
     }
 
@@ -47,7 +48,7 @@ public class AjaxAuthenticationToken extends AbstractAuthenticationToken {
     @Override
     public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
         Assert.isTrue(!isAuthenticated,
-                "Cannot set this token to trusted - use constructor which takes a GrantedAuthority list instead");
+            "Cannot set this token to trusted - use constructor which takes a GrantedAuthority list instead");
         super.setAuthenticated(false);
     }
 

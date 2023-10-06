@@ -40,6 +40,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
     //TODO: https로 요청받고 싶은데 swagger에서 http로 요청을 보내서 cors 우회처리가 되지 않는 문제
     @Value("${remote-server.front.url}")
     private String frontUrl;
@@ -65,17 +66,17 @@ public class SecurityConfig {
             .securityMatcher(request -> true);
 
         http
-                .httpBasic(HttpBasicConfigurer::disable)
-                .formLogin(FormLoginConfigurer::disable)
-                .cors(httpSecurityCorsConfigurer ->
-                        httpSecurityCorsConfigurer
-                                .configurationSource(corsConfigurationSource())
-                )
-                .csrf(CsrfConfigurer::disable)
-                .sessionManagement(sessionManagementConfigurer ->
-                        sessionManagementConfigurer
-                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                );
+            .httpBasic(HttpBasicConfigurer::disable)
+            .formLogin(FormLoginConfigurer::disable)
+            .cors(httpSecurityCorsConfigurer ->
+                httpSecurityCorsConfigurer
+                    .configurationSource(corsConfigurationSource())
+            )
+            .csrf(CsrfConfigurer::disable)
+            .sessionManagement(sessionManagementConfigurer ->
+                sessionManagementConfigurer
+                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            );
 
         http
             .authorizeHttpRequests((authorizeHttpRequests) ->
@@ -86,15 +87,18 @@ public class SecurityConfig {
                             .toArray(AntPathRequestMatcher[]::new)
                     ).permitAll()
                     .anyRequest().permitAll()
-        );
+            );
 
         http
-                .apply(new AjaxAuthenticationFilterConfigurer(new AjaxAuthenticationFilter(loginProcUrl), loginProcUrl))
-                .setAuthenticationManager(authenticationManager())
-                .successHandlerAjax(new AjaxAuthenticationSuccessHandler(jwtProvider, refreshTokenRepository))
-                .failureHandlerAjax(new AjaxAuthenticationFailureHandler())
-                .setAuthenticationDetailsSource(authenticationDetailsSource())
-                .loginProcessingUrl(loginProcUrl);
+            .apply(
+                new AjaxAuthenticationFilterConfigurer(new AjaxAuthenticationFilter(loginProcUrl),
+                    loginProcUrl))
+            .setAuthenticationManager(authenticationManager())
+            .successHandlerAjax(
+                new AjaxAuthenticationSuccessHandler(jwtProvider, refreshTokenRepository))
+            .failureHandlerAjax(new AjaxAuthenticationFailureHandler())
+            .setAuthenticationDetailsSource(authenticationDetailsSource())
+            .loginProcessingUrl(loginProcUrl);
 
         return http.build();
     }
@@ -131,7 +135,8 @@ public class SecurityConfig {
 
     @Bean
     public AjaxAuthenticationProvider authenticationProvider(AuthenticationManagerBuilder auth) {
-        AjaxAuthenticationProvider ajaxAuthenticationProvider = new AjaxAuthenticationProvider(ajaxUserDetailService(), passwordEncoder());
+        AjaxAuthenticationProvider ajaxAuthenticationProvider = new AjaxAuthenticationProvider(
+            ajaxUserDetailService(), passwordEncoder());
         auth.authenticationProvider(ajaxAuthenticationProvider);
         return ajaxAuthenticationProvider;
     }

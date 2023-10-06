@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AjaxUserDetailService implements UserDetailsService {
+
     private final UserRepository userRepository;
 
     public AjaxUserDetailService(UserRepository userRepository) {
@@ -20,14 +21,15 @@ public class AjaxUserDetailService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("no such user"));
+        User user = userRepository.findByEmail(username)
+            .orElseThrow(() -> new UsernameNotFoundException("no such user"));
         List<GrantedAuthority> roles = new ArrayList<>();
         roles.add(new SimpleGrantedAuthority("USER"));
         return new UserDetailsWithId(
-                user.getUserId(),
-                user.getEmail(),
-                user.getPassword(),
-                roles
+            user.getUserId(),
+            user.getEmail(),
+            user.getPassword(),
+            roles
         );
     }
 }

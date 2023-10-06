@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 public class DataResponseBody<T> extends BaseResponseBody {
+
     private final T data;
 
     public DataResponseBody(Integer statusCode, String message, T data) {

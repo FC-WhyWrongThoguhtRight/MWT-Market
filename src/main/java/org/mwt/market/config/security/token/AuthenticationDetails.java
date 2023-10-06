@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 
 public class AuthenticationDetails extends WebAuthenticationDetails {
+
     private final String userAgent;
 
     public AuthenticationDetails(HttpServletRequest request) {

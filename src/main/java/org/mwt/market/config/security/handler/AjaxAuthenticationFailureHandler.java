@@ -13,10 +13,12 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import java.io.IOException;
 
 public class AjaxAuthenticationFailureHandler implements AuthenticationFailureHandler {
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
+    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
+        AuthenticationException exception) throws IOException, ServletException {
         String errorMessage = "Authentication Failed";
         if (exception instanceof BadCredentialsException) {
             errorMessage = "Invalid Username Or Password";
@@ -25,8 +27,8 @@ public class AjaxAuthenticationFailureHandler implements AuthenticationFailureHa
         }
 
         objectMapper.writeValue(response.getWriter(), UserResponses.LoginResponseDto.builder()
-                .statusCode(400)
-                .message("로그인 실패")
+            .statusCode(400)
+            .message("로그인 실패")
         );
 
     }

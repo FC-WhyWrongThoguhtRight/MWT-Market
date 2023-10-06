@@ -23,9 +23,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import static org.mwt.market.domain.user.dto.UserRequests.*;
-import static org.mwt.market.domain.user.dto.UserResponses.*;
-
 
 @RestController
 @Tag(name = "User", description = "사용자 관련 API")

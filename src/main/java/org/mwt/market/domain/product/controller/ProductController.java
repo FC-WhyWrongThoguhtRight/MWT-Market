@@ -37,7 +37,7 @@ public class ProductController {
     @GetMapping("/list")
     @Operation(summary = "전체 상품 조회")
     @ApiResponses(value = {@ApiResponse(responseCode = "200",
-            content = {@Content(schema = @Schema(implementation = ProductListResponseDto.class))})}
+        content = {@Content(schema = @Schema(implementation = ProductListResponseDto.class))})}
     )
     public ResponseEntity<? extends BaseResponseBody> showAllProducts(String searchWord) {
         return ResponseEntity
@@ -50,7 +50,7 @@ public class ProductController {
     @PostMapping
     @Operation(summary = "상품 등록")
     @ApiResponses(value = {@ApiResponse(responseCode = "200",
-            content = {@Content(schema = @Schema(implementation = ProductResponseDto.class))})}
+        content = {@Content(schema = @Schema(implementation = ProductResponseDto.class))})}
     )
     public ResponseEntity<? extends BaseResponseBody> registerProduct(
         @RequestHeader("Authorization") String authorization,
@@ -70,7 +70,7 @@ public class ProductController {
     @GetMapping("/{productId}")
     @Operation(summary = "단건 상품 상세 조회")
     @ApiResponses(value = {@ApiResponse(responseCode = "200",
-            content = {@Content(schema = @Schema(implementation = ProductResponseDto.class))})}
+        content = {@Content(schema = @Schema(implementation = ProductResponseDto.class))})}
     )
     public ResponseEntity<? extends BaseResponseBody> showProductDetails(
         @PathVariable Long productId
@@ -95,7 +95,7 @@ public class ProductController {
     @PutMapping("/{productId}/status")
     @Operation(summary = "상품 상태 변경")
     @ApiResponses(value = {@ApiResponse(responseCode = "200",
-            content = {@Content(schema = @Schema(implementation = ProductResponseDto.class))})}
+        content = {@Content(schema = @Schema(implementation = ProductResponseDto.class))})}
     )
     public ResponseEntity<? extends BaseResponseBody> updateProductStatus(
         @RequestHeader("Authorization") String authorization,

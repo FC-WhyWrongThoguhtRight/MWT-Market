@@ -12,13 +12,16 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
-public class AjaxAuthenticationFilterConfigurer extends AbstractAuthenticationFilterConfigurer<HttpSecurity, AjaxAuthenticationFilterConfigurer, AjaxAuthenticationFilter> {
+public class AjaxAuthenticationFilterConfigurer extends
+    AbstractAuthenticationFilterConfigurer<HttpSecurity, AjaxAuthenticationFilterConfigurer, AjaxAuthenticationFilter> {
+
     private AuthenticationManager authenticationManager;
     private AuthenticationSuccessHandler successHandler;
     private AuthenticationFailureHandler failureHandler;
     private AuthenticationDetailsSource<HttpServletRequest, ?> authenticationDetailsSource;
 
-    public AjaxAuthenticationFilterConfigurer(AjaxAuthenticationFilter authenticationFilter, String defaultLoginProcessingUrl) {
+    public AjaxAuthenticationFilterConfigurer(AjaxAuthenticationFilter authenticationFilter,
+        String defaultLoginProcessingUrl) {
         super(authenticationFilter, defaultLoginProcessingUrl);
     }
 
@@ -37,7 +40,8 @@ public class AjaxAuthenticationFilterConfigurer extends AbstractAuthenticationFi
         filter.setAuthenticationSuccessHandler(successHandler);
         filter.setAuthenticationFailureHandler(failureHandler);
         filter.setAuthenticationDetailsSource(authenticationDetailsSource);
-        SessionAuthenticationStrategy sessionAuthenticationStrategy = http.getSharedObject(SessionAuthenticationStrategy.class);
+        SessionAuthenticationStrategy sessionAuthenticationStrategy = http.getSharedObject(
+            SessionAuthenticationStrategy.class);
         if (sessionAuthenticationStrategy != null) {
             filter.setSessionAuthenticationStrategy(sessionAuthenticationStrategy);
         }
@@ -45,22 +49,26 @@ public class AjaxAuthenticationFilterConfigurer extends AbstractAuthenticationFi
         http.addFilterBefore(getAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 
-    public AjaxAuthenticationFilterConfigurer successHandlerAjax(AuthenticationSuccessHandler successHandler) {
+    public AjaxAuthenticationFilterConfigurer successHandlerAjax(
+        AuthenticationSuccessHandler successHandler) {
         this.successHandler = successHandler;
         return this;
     }
 
-    public AjaxAuthenticationFilterConfigurer failureHandlerAjax(AuthenticationFailureHandler authenticationFailureHandler) {
+    public AjaxAuthenticationFilterConfigurer failureHandlerAjax(
+        AuthenticationFailureHandler authenticationFailureHandler) {
         this.failureHandler = authenticationFailureHandler;
         return this;
     }
 
-    public AjaxAuthenticationFilterConfigurer setAuthenticationManager(AuthenticationManager authenticationManager) {
+    public AjaxAuthenticationFilterConfigurer setAuthenticationManager(
+        AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
         return this;
     }
 
-    public AjaxAuthenticationFilterConfigurer setAuthenticationDetailsSource(AuthenticationDetailsSource<HttpServletRequest, ?> authenticationDetailsSource) {
+    public AjaxAuthenticationFilterConfigurer setAuthenticationDetailsSource(
+        AuthenticationDetailsSource<HttpServletRequest, ?> authenticationDetailsSource) {
         this.authenticationDetailsSource = authenticationDetailsSource;
         return this;
     }
