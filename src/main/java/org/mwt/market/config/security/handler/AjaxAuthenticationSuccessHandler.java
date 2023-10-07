@@ -5,15 +5,12 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Optional;
-import java.util.UUID;
 import org.mwt.market.common.response.BaseResponseBody;
 import org.mwt.market.common.util.cookie.CookieUtil;
-import org.mwt.market.common.util.jwt.JwtProvider;
+import org.mwt.market.config.security.provider.JwtProvider;
+import org.mwt.market.config.security.service.RefreshTokenService;
 import org.mwt.market.config.security.token.AuthenticationDetails;
 import org.mwt.market.config.security.token.UserPrincipal;
-import org.mwt.market.domain.refreshtoken.entity.RefreshToken;
-import org.mwt.market.domain.refreshtoken.repository.RefreshTokenRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
@@ -23,12 +20,12 @@ public class AjaxAuthenticationSuccessHandler implements AuthenticationSuccessHa
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final JwtProvider jwtProvider;
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final RefreshTokenService refreshTokenService;
 
     public AjaxAuthenticationSuccessHandler(JwtProvider jwtProvider,
-        RefreshTokenRepository refreshTokenRepository) {
+        RefreshTokenService refreshTokenService) {
         this.jwtProvider = jwtProvider;
-        this.refreshTokenRepository = refreshTokenRepository;
+        this.refreshTokenService = refreshTokenService;
     }
 
     @Override
@@ -40,24 +37,13 @@ public class AjaxAuthenticationSuccessHandler implements AuthenticationSuccessHa
         CookieUtil.addCookie(response, "access-token", accessToken, 60 * 24);
 
         // refresh-token
-        Long userId = ((UserPrincipal) authentication.getPrincipal()).getId();
-        String refreshTokenValue = UUID.randomUUID().toString();
-
+        UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
         AuthenticationDetails details = (AuthenticationDetails) authentication.getDetails();
-        String clientIp = details.getClientIp();
-        String userAgent = details.getUserAgent();
-        Optional<RefreshToken> refreshToken = refreshTokenRepository.findByClientIpAndUserAgent(
-            clientIp, userAgent);
-        if (refreshToken.isPresent()) {
-            refreshToken.get().update(userId, refreshTokenValue);
-            refreshTokenRepository.saveAndFlush(refreshToken.get());
-        } else {
-            refreshTokenRepository.saveAndFlush(
-                RefreshToken.create(userId, refreshTokenValue, clientIp, userAgent));
-        }
+        String refreshTokenValue = refreshTokenService.updateRefreshToken(principal, details);
 
         CookieUtil.addCookie(response, "refresh-token", refreshTokenValue, 60 * 60 * 24);
 
+        // response
         response.setStatus(HttpStatus.OK.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");

@@ -9,4 +9,6 @@ import org.springframework.stereotype.Repository;
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long> {
 
     Optional<RefreshToken> findByClientIpAndUserAgent(String clientIp, String userAgent);
+
+    Optional<RefreshToken> findByTokenValue(String tokenValue);
 }

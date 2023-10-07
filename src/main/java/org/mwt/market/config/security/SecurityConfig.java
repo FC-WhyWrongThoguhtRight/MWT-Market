@@ -1,18 +1,18 @@
 package org.mwt.market.config.security;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.mwt.market.common.util.jwt.JwtProvider;
+import java.util.Arrays;
 import org.mwt.market.config.security.filter.AjaxAuthenticationFilter;
 import org.mwt.market.config.security.filter.AjaxAuthenticationFilterConfigurer;
 import org.mwt.market.config.security.handler.AjaxAuthenticationFailureHandler;
 import org.mwt.market.config.security.handler.AjaxAuthenticationSuccessHandler;
 import org.mwt.market.config.security.provider.AjaxAuthenticationProvider;
+import org.mwt.market.config.security.provider.JwtProvider;
 import org.mwt.market.config.security.service.AjaxUserDetailService;
+import org.mwt.market.config.security.service.RefreshTokenService;
 import org.mwt.market.config.security.token.AuthenticationDetails;
-import org.mwt.market.domain.refreshtoken.repository.RefreshTokenRepository;
 import org.mwt.market.domain.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import java.util.Arrays;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -53,7 +53,7 @@ public class SecurityConfig {
     @Autowired
     private JwtProvider jwtProvider;
     @Autowired
-    private RefreshTokenRepository refreshTokenRepository;
+    private RefreshTokenService refreshTokenService;
     @Autowired
     private UserRepository userRepository;
 
@@ -97,7 +97,7 @@ public class SecurityConfig {
                     loginProcUrl))
             .setAuthenticationManager(authenticationManager())
             .successHandlerAjax(
-                new AjaxAuthenticationSuccessHandler(jwtProvider, refreshTokenRepository))
+                new AjaxAuthenticationSuccessHandler(jwtProvider, refreshTokenService))
             .failureHandlerAjax(new AjaxAuthenticationFailureHandler())
             .setAuthenticationDetailsSource(authenticationDetailsSource())
             .loginProcessingUrl(loginProcUrl);
@@ -137,10 +137,11 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AjaxAuthenticationProvider authenticationProvider(AuthenticationManagerBuilder auth) {
+    public AjaxAuthenticationProvider authenticationProvider(AuthenticationManagerBuilder auth,
+        JwtProvider jwtProvider) {
         AjaxAuthenticationProvider ajaxAuthenticationProvider = new AjaxAuthenticationProvider(
             ajaxUserDetailService(), passwordEncoder());
-        auth.authenticationProvider(ajaxAuthenticationProvider);
+        auth.authenticationProvider(ajaxAuthenticationProvider).authenticationProvider(jwtProvider);
         return ajaxAuthenticationProvider;
     }
 
