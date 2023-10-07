@@ -3,7 +3,7 @@ package org.mwt.market.config.security.token;
 import org.springframework.security.core.AuthenticatedPrincipal;
 
 /**
- * AuthenticationPrincipalArgumentResolver가 바인딩한 결과로 뱉어주는 객체
+ * AuthenticationPrincipalArgumentResolver가 바인딩한 결과로 뱉어주는 객체.
  */
 public class UserPrincipal implements AuthenticatedPrincipal {
 

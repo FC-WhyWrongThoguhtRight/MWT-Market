@@ -13,7 +13,9 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 public class AjaxAuthenticationFilterConfigurer extends
-    AbstractAuthenticationFilterConfigurer<HttpSecurity, AjaxAuthenticationFilterConfigurer, AjaxAuthenticationFilter> {
+    AbstractAuthenticationFilterConfigurer<HttpSecurity,
+        AjaxAuthenticationFilterConfigurer,
+        AjaxAuthenticationFilter> {
 
     private AuthenticationManager authenticationManager;
     private AuthenticationSuccessHandler successHandler;

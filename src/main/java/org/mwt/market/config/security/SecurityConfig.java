@@ -91,7 +91,7 @@ public class SecurityConfig {
                             .toArray(AntPathRequestMatcher[]::new)
                     ).permitAll()
                     .anyRequest().permitAll()
-            );
+        );
 
         http
             .apply(
@@ -139,7 +139,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationDetailsSource<HttpServletRequest, WebAuthenticationDetails> authenticationDetailsSource() {
+    public AuthenticationDetailsSource<HttpServletRequest,
+        WebAuthenticationDetails> authenticationDetailsSource() {
         return context -> new AuthenticationDetails(context);
     }
 

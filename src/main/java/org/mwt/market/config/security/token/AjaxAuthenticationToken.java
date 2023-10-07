@@ -1,10 +1,9 @@
 package org.mwt.market.config.security.token;
 
+import java.util.Collection;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.util.Assert;
-
-import java.util.Collection;
 
 public class AjaxAuthenticationToken extends AbstractAuthenticationToken {
 
@@ -48,7 +47,8 @@ public class AjaxAuthenticationToken extends AbstractAuthenticationToken {
     @Override
     public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
         Assert.isTrue(!isAuthenticated,
-            "Cannot set this token to trusted - use constructor which takes a GrantedAuthority list instead");
+            "Cannot set this token to trusted"
+                + " - use constructor which takes a GrantedAuthority list instead");
         super.setAuthenticated(false);
     }
 

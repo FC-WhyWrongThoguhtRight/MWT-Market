@@ -74,8 +74,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             } catch (AuthenticationException ex) {
                 this.logger.debug(LogMessage
                         .format(
-                            "SecurityContextHolder not populated with remember-me token, as AuthenticationManager "
-                                + "rejected Authentication returned by RememberMeServices: '%s'; "
+                            "SecurityContextHolder not populated with remember-me token, "
+                                + "as AuthenticationManager rejected Authentication returned "
+                                + "by RememberMeServices: '%s'; "
                                 + "invalidating remember-me token", jwtAuth),
                     ex);
                 onUnsuccessfulAuthentication(request, response, ex);
