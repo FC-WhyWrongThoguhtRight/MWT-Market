@@ -1,5 +1,7 @@
 package org.mwt.market.config.security.service;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.mwt.market.domain.user.entity.User;
 import org.mwt.market.domain.user.repository.UserRepository;
 import org.springframework.security.core.GrantedAuthority;
@@ -7,9 +9,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class AjaxUserDetailService implements UserDetailsService {
 

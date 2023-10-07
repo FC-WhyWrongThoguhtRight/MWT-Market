@@ -39,7 +39,7 @@ public class JwtProvider implements AuthenticationProvider {
     private final long refreshTokenValidityInMs;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    private final Logger LOGGER = LoggerFactory.getLogger(JwtProvider.class);
+    private final Logger logger = LoggerFactory.getLogger(JwtProvider.class);
 
     public JwtProvider(@Value("${jwt.secret-key}") String secretKey,
         @Value("${jwt.issuer}") String issuer,
@@ -79,15 +79,15 @@ public class JwtProvider implements AuthenticationProvider {
         String refreshTokenValue = (String) authentication.getCredentials();
         JwtAuthenticationToken authResult = null;
         try {
-            DecodedJWT decodedJWT = verifier.verify(accessTokenValue);
-            UserPrincipal userPrincipal = decodedJWT.getClaim("authn").as(UserPrincipal.class);
-            List<GrantedAuthority> authorities = decodedJWT.getClaim("authgr")
+            DecodedJWT decodedJwt = verifier.verify(accessTokenValue);
+            UserPrincipal userPrincipal = decodedJwt.getClaim("authn").as(UserPrincipal.class);
+            List<GrantedAuthority> authorities = decodedJwt.getClaim("authgr")
                 .asList(GrantedAuthority.class);
             authResult = JwtAuthenticationToken.authenticated(userPrincipal, null, authorities);
         } catch (TokenExpiredException ex) {
-            DecodedJWT decodedJWT = JWT.decode(accessTokenValue);
-            UserPrincipal userPrincipal = decodedJWT.getClaim("authn").as(UserPrincipal.class);
-            List<GrantedAuthority> authorities = decodedJWT.getClaim("authgr")
+            DecodedJWT decodedJwt = JWT.decode(accessTokenValue);
+            UserPrincipal userPrincipal = decodedJwt.getClaim("authn").as(UserPrincipal.class);
+            List<GrantedAuthority> authorities = decodedJwt.getClaim("authgr")
                 .asList(GrantedAuthority.class);
             AuthenticationDetails details = (AuthenticationDetails) authentication.getDetails();
             boolean isValidRefreshToken = refreshTokenService.isValidRefreshToken(refreshTokenValue,

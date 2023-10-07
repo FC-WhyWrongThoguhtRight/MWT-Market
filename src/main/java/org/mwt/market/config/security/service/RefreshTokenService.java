@@ -19,12 +19,12 @@ public class RefreshTokenService {
     }
 
     public boolean isValidRefreshToken(String tokenValue, UserPrincipal principal,
-        AuthenticationDetails details) throws RefreshTokenException {
+                                       AuthenticationDetails details) throws RefreshTokenException {
         RefreshToken findRefreshToken = refreshTokenRepository.findByTokenValue(tokenValue)
-            .orElseThrow(() -> new RefreshTokenException("No Such RefreshToken"));
+                .orElseThrow(() -> new RefreshTokenException("No Such RefreshToken"));
         return findRefreshToken.getUserId().equals(principal.getId())
-            && findRefreshToken.getClientIp().equals(details.getClientIp())
-            && findRefreshToken.getUserAgent().equals(details.getUserAgent());
+                && findRefreshToken.getClientIp().equals(details.getClientIp())
+                && findRefreshToken.getUserAgent().equals(details.getUserAgent());
     }
 
     public String updateRefreshToken(UserPrincipal principal, AuthenticationDetails details) {
@@ -33,14 +33,14 @@ public class RefreshTokenService {
         String userAgent = details.getUserAgent();
 
         Optional<RefreshToken> refreshToken = refreshTokenRepository.findByClientIpAndUserAgent(
-            clientIp, userAgent);
+                clientIp, userAgent);
         String refreshTokenValue = UUID.randomUUID().toString();
         if (refreshToken.isPresent()) {
             refreshToken.get().update(userId, refreshTokenValue);
             refreshTokenRepository.saveAndFlush(refreshToken.get());
         } else {
             refreshTokenRepository.saveAndFlush(
-                RefreshToken.create(userId, refreshTokenValue, clientIp, userAgent));
+                    RefreshToken.create(userId, refreshTokenValue, clientIp, userAgent));
         }
 
         return refreshTokenValue;

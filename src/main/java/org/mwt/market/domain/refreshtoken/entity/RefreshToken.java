@@ -1,6 +1,12 @@
 package org.mwt.market.domain.refreshtoken.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,6 +16,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class RefreshToken {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -35,7 +42,8 @@ public class RefreshToken {
         this.tokenValue = tokenValue;
     }
 
-    public static RefreshToken create(Long userId, String tokenValue, String ipAdd, String userAgent) {
+    public static RefreshToken create(Long userId, String tokenValue, String ipAdd,
+        String userAgent) {
         return new RefreshToken(userId, tokenValue, ipAdd, userAgent);
     }
 }

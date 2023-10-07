@@ -3,7 +3,6 @@ package org.mwt.market.common.util.cookie;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import java.util.Optional;
 
 public class CookieUtil {
@@ -22,7 +21,7 @@ public class CookieUtil {
     }
 
     public static void addCookie(HttpServletResponse response, String name, String value,
-        int maxAge) {
+                                 int maxAge) {
         Cookie cookie = new Cookie(name, value);
         cookie.setPath("/");
         cookie.setHttpOnly(true);
@@ -32,7 +31,7 @@ public class CookieUtil {
     }
 
     public static void deleteCookie(HttpServletRequest request, HttpServletResponse response,
-        String name) {
+                                    String name) {
         Cookie[] cookies = request.getCookies();
         if (cookies == null) {
             return;
