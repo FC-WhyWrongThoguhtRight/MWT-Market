@@ -44,6 +44,8 @@ public class SecurityConfig {
     //TODO: https로 요청받고 싶은데 swagger에서 http로 요청을 보내서 cors 우회처리가 되지 않는 문제
     @Value("${remote-server.front.url}")
     private String frontUrl;
+    @Value("${remote-server.gateway.url}")
+    private String gatewayUrl;
     private static final String loginProcUrl = "/login";
 
     @Autowired
@@ -108,6 +110,7 @@ public class SecurityConfig {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
 
         corsConfiguration.addAllowedOrigin(frontUrl);
+        corsConfiguration.addAllowedOrigin(gatewayUrl);
         corsConfiguration.addAllowedHeader("*");
         corsConfiguration.addAllowedMethod("*");
         corsConfiguration.setAllowCredentials(true);

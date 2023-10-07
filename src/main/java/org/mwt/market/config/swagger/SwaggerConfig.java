@@ -7,6 +7,8 @@ import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.security.SecurityScheme.In;
+import io.swagger.v3.oas.models.security.SecurityScheme.Type;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -23,18 +25,23 @@ import org.springframework.context.annotation.Profile;
 @Configuration
 public class SwaggerConfig {
 
-    private static final String BEARER_TOKEN_PREFIX = "Bearer";
-
     @Bean
     public OpenAPI openApi() {
-        String jwtSchemeName = "JwtTokenProvider.AUTHORIZATION_HEADER";
-        SecurityRequirement securityRequirement = new SecurityRequirement().addList(jwtSchemeName);
+        String jwtSchemeName = "access-token";
+        String refreshSchemeName = "refresh-token";
+        SecurityRequirement securityRequirement = new SecurityRequirement().addList(jwtSchemeName)
+            .addList(refreshSchemeName);
+        SecurityScheme jwtScheme = new SecurityScheme()
+            .name(jwtSchemeName)
+            .type(Type.APIKEY)
+            .in(In.COOKIE);
+        SecurityScheme refreshScheme = new SecurityScheme()
+            .name(jwtSchemeName)
+            .type(Type.APIKEY)
+            .in(In.COOKIE);
         Components components = new Components()
-            .addSecuritySchemes(jwtSchemeName, new SecurityScheme()
-                .name(jwtSchemeName)
-                .type(SecurityScheme.Type.HTTP)
-                .scheme(BEARER_TOKEN_PREFIX)
-                .bearerFormat("JwtTokenProvider.TYPE"));
+            .addSecuritySchemes(jwtSchemeName, jwtScheme)
+            .addSecuritySchemes(refreshSchemeName, refreshScheme);
 
         return new OpenAPI()
             .addSecurityItem(securityRequirement)
