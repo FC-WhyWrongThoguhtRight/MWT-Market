@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import org.mwt.market.config.security.filter.AjaxAuthenticationFilter;
 import org.mwt.market.config.security.filter.AjaxAuthenticationFilterConfigurer;
+import org.mwt.market.config.security.filter.JwtAuthenticationFilter;
 import org.mwt.market.config.security.handler.AjaxAuthenticationFailureHandler;
 import org.mwt.market.config.security.handler.AjaxAuthenticationSuccessHandler;
 import org.mwt.market.config.security.provider.AjaxAuthenticationProvider;
@@ -29,6 +30,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.security.web.context.NullSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
@@ -101,6 +103,11 @@ public class SecurityConfig {
             .failureHandlerAjax(new AjaxAuthenticationFailureHandler())
             .setAuthenticationDetailsSource(authenticationDetailsSource())
             .loginProcessingUrl(loginProcUrl);
+
+        http
+            .addFilterBefore(
+                new JwtAuthenticationFilter(authenticationManager(), authenticationDetailsSource()),
+                AnonymousAuthenticationFilter.class);
 
         return http.build();
     }
