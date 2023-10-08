@@ -36,7 +36,7 @@ public class SwaggerConfig {
             .type(Type.APIKEY)
             .in(In.COOKIE);
         SecurityScheme refreshScheme = new SecurityScheme()
-            .name(jwtSchemeName)
+            .name(refreshSchemeName)
             .type(Type.APIKEY)
             .in(In.COOKIE);
         Components components = new Components()
