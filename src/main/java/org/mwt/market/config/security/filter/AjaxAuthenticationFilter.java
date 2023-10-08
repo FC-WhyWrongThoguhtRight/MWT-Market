@@ -26,10 +26,10 @@ public class AjaxAuthenticationFilter extends AbstractAuthenticationProcessingFi
     public Authentication attemptAuthentication(HttpServletRequest request,
         HttpServletResponse response)
         throws AuthenticationException, IOException, ServletException {
-//        boolean isAjax = "XMLHttpRequest".equals(request.getHeader("X-Requested-With"));
-//        if (!isAjax) {
-//            throw new IllegalStateException("Authentication is not supported");
-//        }
+        //boolean isAjax = "XMLHttpRequest".equals(request.getHeader("X-Requested-With"));
+        //if (!isAjax) {
+        //    throw new IllegalStateException("Authentication is not supported");
+        //}
         LoginRequestDto loginRequestDto = objectMapper.readValue(request.getReader(),
             LoginRequestDto.class);
         if (!StringUtils.hasText(loginRequestDto.getEmail()) || !StringUtils.hasText(
