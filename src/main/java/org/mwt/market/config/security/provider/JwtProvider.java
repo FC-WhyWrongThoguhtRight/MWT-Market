@@ -25,6 +25,7 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -81,14 +82,14 @@ public class JwtProvider implements AuthenticationProvider {
         try {
             DecodedJWT decodedJwt = verifier.verify(accessTokenValue);
             UserPrincipal userPrincipal = decodedJwt.getClaim("authn").as(UserPrincipal.class);
-            List<GrantedAuthority> authorities = decodedJwt.getClaim("authgr")
-                .asList(GrantedAuthority.class);
+            List<SimpleGrantedAuthority> authorities = decodedJwt.getClaim("authgr")
+                .asList(SimpleGrantedAuthority.class);
             authResult = JwtAuthenticationToken.authenticated(userPrincipal, null, authorities);
         } catch (TokenExpiredException ex) {
             DecodedJWT decodedJwt = JWT.decode(accessTokenValue);
             UserPrincipal userPrincipal = decodedJwt.getClaim("authn").as(UserPrincipal.class);
-            List<GrantedAuthority> authorities = decodedJwt.getClaim("authgr")
-                .asList(GrantedAuthority.class);
+            List<SimpleGrantedAuthority> authorities = decodedJwt.getClaim("authgr")
+                .asList(SimpleGrantedAuthority.class);
             AuthenticationDetails details = (AuthenticationDetails) authentication.getDetails();
             boolean isValidRefreshToken = refreshTokenService.isValidRefreshToken(refreshTokenValue,
                 userPrincipal, details);
