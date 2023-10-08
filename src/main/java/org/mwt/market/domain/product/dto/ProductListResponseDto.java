@@ -1,8 +1,7 @@
 package org.mwt.market.domain.product.dto;
 
-import lombok.Getter;
-
 import java.util.List;
+import lombok.Getter;
 
 @Getter
 public class ProductListResponseDto {

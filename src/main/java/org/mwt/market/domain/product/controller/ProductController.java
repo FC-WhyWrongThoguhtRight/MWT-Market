@@ -7,17 +7,32 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import org.mwt.market.common.response.BaseResponseBody;
-import org.mwt.market.common.response.DataResponseBody;
-import org.mwt.market.domain.product.dto.*;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
-
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.mwt.market.common.response.BaseResponseBody;
+import org.mwt.market.common.response.DataResponseBody;
+import org.mwt.market.domain.product.dto.ProductInfoDto;
+import org.mwt.market.domain.product.dto.ProductListResponseDto;
+import org.mwt.market.domain.product.dto.ProductResponseDto;
+import org.mwt.market.domain.product.dto.ProductRequestDto;
+import org.mwt.market.domain.product.dto.ProductStatusUpdateRequestDto;
+import org.mwt.market.domain.product.dto.ProductUpdateRequestDto;
+import org.mwt.market.domain.product.dto.ProductCategoryResponseDto;
+import org.mwt.market.domain.product.dto.ProductChatsResponseDto;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @Tag(name = "Products", description = "상품 관련 API")
@@ -30,7 +45,9 @@ public class ProductController {
     @ApiResponses(value = {@ApiResponse(responseCode = "200",
             content = {@Content(schema = @Schema(implementation = ProductListResponseDto.class))})}
     )
-    public ResponseEntity<? extends BaseResponseBody> showAllProducts(@RequestParam(required = false) String searchWord) {
+    public ResponseEntity<? extends BaseResponseBody> showAllProducts(
+            @RequestParam(required = false) String searchWord
+    ) {
         List<ProductInfoDto> productInfos = new ArrayList<>();
 
         return ResponseEntity
@@ -105,9 +122,9 @@ public class ProductController {
     @PutMapping("/{productId}")
     @Operation(summary = "상품 수정")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200",
-                    content = {@Content(schema = @Schema(implementation = ProductResponseDto.class))}),
-            @ApiResponse(responseCode = "400")})
+        @ApiResponse(responseCode = "200",
+            content = {@Content(schema = @Schema(implementation = ProductResponseDto.class))}),
+        @ApiResponse(responseCode = "400")})
     public ResponseEntity<? extends BaseResponseBody> updateProduct(
             @AuthenticationPrincipal Principal principal,
             @PathVariable Long productId,
@@ -129,8 +146,8 @@ public class ProductController {
     @GetMapping("/categories")
     @Operation(summary = "상품 카테고리 목록 조회")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", content = {
-                    @Content(schema = @Schema(implementation = ProductCategoryResponseDto.class))})})
+        @ApiResponse(responseCode = "200", content = {
+            @Content(schema = @Schema(implementation = ProductCategoryResponseDto.class))})})
     private ResponseEntity<? extends BaseResponseBody> showCategories() {
         return ResponseEntity
                 .status(200)
@@ -142,9 +159,9 @@ public class ProductController {
     @GetMapping("/{productId}/chats")
     @Operation(summary = "상품 관련 채팅방 목록 조회")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200",
-                    content = {@Content(schema = @Schema(implementation = ProductChatsResponseDto.class))}),
-            @ApiResponse(responseCode = "400")})
+        @ApiResponse(responseCode = "200", content = {
+            @Content(schema = @Schema(implementation = ProductChatsResponseDto.class))}),
+        @ApiResponse(responseCode = "400")})
     public ResponseEntity<? extends BaseResponseBody> productChatList(
             @AuthenticationPrincipal Principal principal,
             @PathVariable String productId

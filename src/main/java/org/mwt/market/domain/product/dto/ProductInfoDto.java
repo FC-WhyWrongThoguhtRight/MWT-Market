@@ -15,7 +15,8 @@ public class ProductInfoDto {
     private final boolean like;
 
     @Builder
-    public ProductInfoDto(Long id, String title, Integer price, String thumbnail, String status, Integer likes, boolean like) {
+    public ProductInfoDto(Long id, String title, Integer price, String thumbnail,
+        String status, Integer likes, boolean like) {
         this.id = id;
         this.title = title;
         this.price = price;
