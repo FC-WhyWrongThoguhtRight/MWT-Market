@@ -63,6 +63,9 @@ public class SecurityConfig {
         "/swagger-ui/**", "/api-docs", "/swagger-ui-custom.html",
         "/v3/api-docs/**", "/api-docs/**", "/swagger-ui.html", "/h2-console/**"
     };
+    private static final String[] MY_PAGE = {
+        "/myInfo", "/myPage", "/myPage/**"
+    };
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -90,8 +93,9 @@ public class SecurityConfig {
                             .map(AntPathRequestMatcher::new)
                             .toArray(AntPathRequestMatcher[]::new)
                     ).permitAll()
+                    .requestMatchers(MY_PAGE).authenticated()
                     .anyRequest().permitAll()
-        );
+            );
 
         http
             .apply(

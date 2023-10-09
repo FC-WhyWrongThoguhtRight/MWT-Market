@@ -15,12 +15,16 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.io.IOException;
 import org.mwt.market.common.response.BaseResponseBody;
+import org.mwt.market.common.response.DataResponseBody;
+import org.mwt.market.config.security.token.UserPrincipal;
+import org.mwt.market.domain.user.dto.UserResponses.MyProductResponseDto;
+import org.mwt.market.domain.user.dto.UserResponses.UserInfoResponseDto;
 import org.mwt.market.domain.user.entity.User;
-import org.mwt.market.domain.user.repository.UserRepository;
+import org.mwt.market.domain.user.service.UserService;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,12 +37,10 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "User", description = "사용자 관련 API")
 public class UserController {
 
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final UserService userService;
 
-    public UserController(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
     @PostMapping("/signup")
@@ -48,16 +50,17 @@ public class UserController {
             content = {@Content(schema = @Schema(implementation = SignupResponseDto.class))}),
         @ApiResponse(responseCode = "400")
     })
-    public ResponseEntity<? extends BaseResponseBody> signup(
+    public BaseResponseBody signup(
         @RequestBody SignupRequestDto signupRequestDto) {
-        User newUser = User.create(signupRequestDto, passwordEncoder);
-        userRepository.save(newUser);
-        return ResponseEntity
-            .status(200)
-            .body(SignupResponseDto.builder()
-                .statusCode(200)
+        User newUser = userService.registerUser(signupRequestDto);
+        return DataResponseBody.success(
+            SignupResponseDto.builder()
+                .id(newUser.getUserId())
+                .email(newUser.getEmail())
+                .phone(newUser.getTel())
+                .nickname(newUser.getNickname())
                 .build()
-            );
+        );
     }
 
     @PostMapping("/login")
@@ -67,14 +70,29 @@ public class UserController {
             content = {@Content(schema = @Schema(implementation = LoginResponseDto.class))}),
         @ApiResponse(responseCode = "400")
     })
-    public ResponseEntity<? extends BaseResponseBody> login(
+    public BaseResponseBody login(
         @RequestBody LoginRequestDto loginRequestDto) {
-        return ResponseEntity
-            .status(200)
-            .body(LoginResponseDto.builder()
-                .statusCode(200)
+        throw new RuntimeException("로그인 기능은 필터에서 처리되어야 합니다.");
+    }
+
+    @GetMapping("/myInfo")
+    @Operation(summary = "사용자 정보")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200",
+            content = {@Content(schema = @Schema(implementation = UserInfoResponseDto.class))}),
+        @ApiResponse(responseCode = "400")
+    })
+    public BaseResponseBody info(
+        @AuthenticationPrincipal UserPrincipal userPrincipal) {
+        User findUser = userService.readUser(userPrincipal);
+        return DataResponseBody.success(
+            UserInfoResponseDto.builder()
+                .email(findUser.getEmail())
+                .nickname(findUser.getNickname())
+                .tel(findUser.getTel())
+                .profileImage(findUser.getProfileImage().getUrl())
                 .build()
-            );
+        );
     }
 
     @PutMapping(value = "/myPage/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -85,14 +103,34 @@ public class UserController {
                 @Content(schema = @Schema(implementation = ProfileUpdateResponseDto.class))}),
         @ApiResponse(responseCode = "400")
     })
-    public ResponseEntity<? extends BaseResponseBody> updateProfile(
-        @ModelAttribute ProfileUpdateRequestDto profileUpdateRequestDto) {
-        return ResponseEntity
-            .status(200)
-            .body(ProfileUpdateResponseDto.builder()
-                .statusCode(200)
+    public BaseResponseBody updateProfile(
+        @ModelAttribute ProfileUpdateRequestDto profileUpdateRequestDto,
+        @AuthenticationPrincipal UserPrincipal userPrincipal) {
+        User updatedUser = userService.updateUser(userPrincipal, profileUpdateRequestDto);
+        return DataResponseBody.success(
+            ProfileUpdateResponseDto.builder()
+                .id(updatedUser.getUserId())
+                .email(updatedUser.getEmail())
+                .phone(updatedUser.getTel())
+                .nickname(updatedUser.getNickname())
+                .profileImg(updatedUser.getProfileImage().getUrl())
                 .build()
-            );
+        );
+    }
+
+    @GetMapping("/myPage/products")
+    @Operation(summary = "내 판매내역 조회")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200",
+            content = {@Content(schema = @Schema(implementation = MyProductResponseDto.class))}),
+        @ApiResponse(responseCode = "400")
+    })
+    public BaseResponseBody getMyProduct(
+        @AuthenticationPrincipal UserPrincipal userPrincipal) {
+        return DataResponseBody.success(
+            MyProductResponseDto.builder()
+                .build()
+        );
     }
 
     @GetMapping("/myPage/interests")
@@ -102,13 +140,12 @@ public class UserController {
             content = {@Content(schema = @Schema(implementation = MyInterestResponseDto.class))}),
         @ApiResponse(responseCode = "400")
     })
-    public ResponseEntity<? extends BaseResponseBody> getMyInterest() {
-        return ResponseEntity
-            .status(200)
-            .body(MyInterestResponseDto.builder()
-                .statusCode(200)
+    public BaseResponseBody getMyInterest(
+        @AuthenticationPrincipal UserPrincipal userPrincipal) {
+        return DataResponseBody.success(
+            MyInterestResponseDto.builder()
                 .build()
-            );
+        );
     }
 
     @GetMapping("/myPage/chat")
@@ -118,12 +155,11 @@ public class UserController {
             content = {@Content(schema = @Schema(implementation = MyChatRoomResponseDto.class))}),
         @ApiResponse(responseCode = "400")
     })
-    public ResponseEntity<? extends BaseResponseBody> getMyChatRoom() {
-        return ResponseEntity
-            .status(200)
-            .body(MyChatRoomResponseDto.builder()
-                .statusCode(200)
+    public BaseResponseBody getMyChatRoom(
+        @AuthenticationPrincipal UserPrincipal userPrincipal) {
+        return DataResponseBody.success(
+            MyChatRoomResponseDto.builder()
                 .build()
-            );
+        );
     }
 }

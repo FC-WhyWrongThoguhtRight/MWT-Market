@@ -1,5 +1,6 @@
 package org.mwt.market.domain.user.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -36,26 +37,32 @@ public class User {
 
     private String nickname;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "profile_img")
     private ProfileImage profileImage;
 
     @CreatedDate
     private LocalDateTime createdAt;
 
-    public User(String email, String password, String tel, String nickname) {
+    public User(String email, String password, String tel, String nickname,
+        ProfileImage profileImage) {
         this.email = email;
         this.password = password;
         this.tel = tel;
         this.nickname = nickname;
+        this.profileImage = profileImage;
     }
 
-    public static User create(UserRequests.SignupRequestDto signupRequestDto,
-        PasswordEncoder passwordEncoder) {
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public static User createNewUser(UserRequests.SignupRequestDto signupRequestDto,
+        PasswordEncoder passwordEncoder, ProfileImage profileImage) {
         String email = signupRequestDto.getEmail();
         String password = passwordEncoder.encode(signupRequestDto.getPassword());
         String tel = signupRequestDto.getPhone();
         String nickname = signupRequestDto.getNickname();
-        return new User(email, password, tel, nickname);
+        return new User(email, password, tel, nickname, profileImage);
     }
 }
