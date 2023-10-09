@@ -10,11 +10,13 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Value("${remote-server.front.url}")
     private String frontUrl;
+    @Value("${remote-server.gateway.url}")
+    private String gatewayUrl;
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-            .allowedOrigins(frontUrl)
+            .allowedOrigins(frontUrl, gatewayUrl)
             .allowedMethods("GET", "POST", "PUT", "DELETE")
             .allowCredentials(true)
             .maxAge(6000);

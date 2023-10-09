@@ -16,8 +16,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.mwt.market.common.response.BaseResponseBody;
+import org.mwt.market.domain.user.entity.User;
+import org.mwt.market.domain.user.repository.UserRepository;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,6 +33,14 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "User", description = "사용자 관련 API")
 public class UserController {
 
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    public UserController(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
+
     @PostMapping("/signup")
     @Operation(summary = "회원가입")
     @ApiResponses(value = {
@@ -39,6 +50,8 @@ public class UserController {
     })
     public ResponseEntity<? extends BaseResponseBody> signup(
         @RequestBody SignupRequestDto signupRequestDto) {
+        User newUser = User.create(signupRequestDto, passwordEncoder);
+        userRepository.save(newUser);
         return ResponseEntity
             .status(200)
             .body(SignupResponseDto.builder()

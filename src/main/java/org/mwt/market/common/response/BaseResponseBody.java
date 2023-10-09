@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 public class BaseResponseBody {
+
     protected static final String SUCCESS_MSG = "success";
     protected static final String FAIL_MSG = "fail";
 
