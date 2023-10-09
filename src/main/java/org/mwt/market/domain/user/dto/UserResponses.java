@@ -3,22 +3,20 @@ package org.mwt.market.domain.user.dto;
 import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
-import org.mwt.market.common.response.BaseResponseBody;
 
 public class UserResponses {
 
     @Getter
-    public static class SignupResponseDto extends BaseResponseBody {
+    public static class SignupResponseDto {
 
-        private final String id;
+        private final Long id;
         private final String email;
         private final String phone;
         private final String nickname;
 
         @Builder
-        public SignupResponseDto(Integer statusCode, String message, String id, String email,
+        public SignupResponseDto(Long id, String email,
             String phone, String nickname) {
-            super(statusCode, message);
             this.id = id;
             this.email = email;
             this.phone = phone;
@@ -27,58 +25,82 @@ public class UserResponses {
     }
 
     @Getter
-    public static class LoginResponseDto extends BaseResponseBody {
+    public static class LoginResponseDto {
 
         private final String jwtToken;
 
         @Builder
-        public LoginResponseDto(Integer statusCode, String message, String jwtToken) {
-            super(statusCode, message);
+        public LoginResponseDto(String jwtToken) {
             this.jwtToken = jwtToken;
         }
     }
 
     @Getter
-    public static class ProfileUpdateResponseDto extends BaseResponseBody {
+    public static class UserInfoResponseDto {
 
-        private final String id;
         private final String email;
-        private final String phone;
         private final String nickname;
+        private final String tel;
+        private final String profileImage;
 
         @Builder
-        public ProfileUpdateResponseDto(Integer statusCode, String message, String id, String email,
-            String phone, String nickname) {
-            super(statusCode, message);
-            this.id = id;
+        public UserInfoResponseDto(String email, String nickname, String tel, String profileImage) {
             this.email = email;
-            this.phone = phone;
             this.nickname = nickname;
+            this.tel = tel;
+            this.profileImage = profileImage;
         }
     }
 
     @Getter
-    public static class MyInterestResponseDto extends BaseResponseBody {
+    public static class ProfileUpdateResponseDto {
+
+        private final Long id;
+        private final String email;
+        private final String phone;
+        private final String nickname;
+        private final String profileImg;
+
+        @Builder
+        public ProfileUpdateResponseDto(Long id, String email, String phone, String nickname,
+            String profileImg) {
+            this.id = id;
+            this.email = email;
+            this.phone = phone;
+            this.nickname = nickname;
+            this.profileImg = profileImg;
+        }
+    }
+
+    @Getter
+    public static class MyProductResponseDto {
 
         private final List<ProductDto> productDtoList;
 
         @Builder
-        public MyInterestResponseDto(Integer statusCode, String message,
-            List<ProductDto> productDtoList) {
-            super(statusCode, message);
+        public MyProductResponseDto(List<ProductDto> productDtoList) {
             this.productDtoList = productDtoList;
         }
     }
 
     @Getter
-    public static class MyChatRoomResponseDto extends BaseResponseBody {
+    public static class MyInterestResponseDto {
+
+        private final List<ProductDto> productDtoList;
+
+        @Builder
+        public MyInterestResponseDto(List<ProductDto> productDtoList) {
+            this.productDtoList = productDtoList;
+        }
+    }
+
+    @Getter
+    public static class MyChatRoomResponseDto {
 
         private final List<ChatRoomDto> chatRoomDtoList;
 
         @Builder
-        public MyChatRoomResponseDto(Integer statusCode, String message,
-            List<ChatRoomDto> chatRoomDtoList) {
-            super(statusCode, message);
+        public MyChatRoomResponseDto(List<ChatRoomDto> chatRoomDtoList) {
             this.chatRoomDtoList = chatRoomDtoList;
         }
     }
@@ -86,7 +108,7 @@ public class UserResponses {
     @Getter
     public static class ProductDto {
 
-        private final String id;
+        private final Long id;
         private final String title;
         private final String price;
         private final String thumbnailImage;
@@ -94,7 +116,7 @@ public class UserResponses {
         private final String likes;
 
         @Builder
-        public ProductDto(String id, String title, String price, String thumbnailImage,
+        public ProductDto(Long id, String title, String price, String thumbnailImage,
             String status, String likes) {
             this.id = id;
             this.title = title;
@@ -108,19 +130,19 @@ public class UserResponses {
     @Getter
     public static class ChatRoomDto {
 
-        private final String chatRoomId;
-        private final String productId;
+        private final Long chatRoomId;
+        private final Long productId;
         private final String productImage;
         private final String productStatus;
-        private final String personId;
+        private final Long personId;
         private final String personNickname;
         private final String personProfileImage;
         private final String lastMessage;
         private final String lastChattedAt;
 
         @Builder
-        public ChatRoomDto(String chatRoomId, String productId, String productImage,
-            String productStatus, String personId, String personNickname, String personProfileImage,
+        public ChatRoomDto(Long chatRoomId, Long productId, String productImage,
+            String productStatus, Long personId, String personNickname, String personProfileImage,
             String lastMessage, String lastChattedAt) {
             this.chatRoomId = chatRoomId;
             this.productId = productId;
