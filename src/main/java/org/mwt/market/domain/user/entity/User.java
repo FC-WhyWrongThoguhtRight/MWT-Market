@@ -65,4 +65,8 @@ public class User {
         String nickname = signupRequestDto.getNickname();
         return new User(email, password, tel, nickname, profileImage);
     }
+
+    public String getProfileImageUrl() {
+        return profileImage.getUrl();
+    }
 }

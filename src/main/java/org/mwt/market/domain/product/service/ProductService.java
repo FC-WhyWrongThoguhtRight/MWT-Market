@@ -4,8 +4,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mwt.market.config.security.token.UserPrincipal;
 import org.mwt.market.domain.product.dto.ProductInfoDto;
+import org.mwt.market.domain.product.dto.ProductResponseDto;
 import org.mwt.market.domain.product.dto.ProductSearchRequestDto;
 import org.mwt.market.domain.product.entity.Product;
+import org.mwt.market.domain.product.exception.NoPermissionException;
+import org.mwt.market.domain.product.exception.NoSuchProductException;
 import org.mwt.market.domain.product.repository.ProductRepository;
 import org.mwt.market.domain.user.entity.User;
 import org.mwt.market.domain.user.exception.NoSuchUserException;
@@ -14,7 +17,6 @@ import org.mwt.market.domain.wish.entity.Wish;
 import org.mwt.market.domain.wish.repository.WishRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +28,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional
 public class ProductService {
 
     private final ProductRepository productRepository;
@@ -53,5 +55,17 @@ public class ProductService {
                 .collect(Collectors.toList());
 
         return productInfos;
+    }
+
+    public ProductResponseDto changeStatus(UserPrincipal userPrincipal, Long productId, Integer status) {
+        Product product = productRepository.findById(productId).orElseThrow(NoSuchProductException::new);
+        if (!userPrincipal.getEmail().equals(product.getSellerEmail())) {
+            throw new NoPermissionException();
+        }
+
+        product.changeStatus(status);
+        productRepository.save(product);
+
+        return ProductResponseDto.fromEntity(product);
     }
 }

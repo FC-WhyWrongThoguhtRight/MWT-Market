@@ -65,4 +65,20 @@ public class Product {
     public void plusLikes() {
         this.likes++;
     }
+
+    public void changeStatus(Integer status) {
+        this.status = ProductStatus.getFromDbIdx(status);
+    }
+
+    public List<String> getImages() {
+        return productAlbum.stream().map(ProductImage::getUrl).toList();
+    }
+
+    public Long getCategoryId() {
+        return this.productCategory.getCategoryId();
+    }
+
+    public String getSellerEmail() {
+        return seller.getEmail();
+    }
 }

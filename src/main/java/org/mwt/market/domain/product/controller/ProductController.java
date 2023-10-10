@@ -8,14 +8,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.mwt.market.common.response.BaseResponseBody;
 import org.mwt.market.common.response.DataResponseBody;
 import org.mwt.market.config.security.token.UserPrincipal;
 import org.mwt.market.domain.product.dto.*;
-import org.mwt.market.domain.product.dto.ProductResponseDto.Seller;
 import org.mwt.market.domain.product.service.ProductService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +25,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -64,7 +61,7 @@ public class ProductController {
         ProductResponseDto data = ProductResponseDto.builder()
             .title(request.getTitle())
             .price(request.getPrice())
-            .category(request.getCategory())
+            .categoryId(request.getCategoryId())
             .content(request.getContent())
             .build();
         DataResponseBody<ProductResponseDto> body = DataResponseBody.success(data);
@@ -106,11 +103,11 @@ public class ProductController {
         @ApiResponse(responseCode = "200")
     })
     public ResponseEntity<? extends DataResponseBody<ProductResponseDto>> updateProductStatus(
-            @AuthenticationPrincipal Principal principal,
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable Long productId,
             @RequestBody ProductStatusUpdateRequestDto request
     ) {
-        ProductResponseDto data = new ProductResponseDto(0L, "title", 0, 0, "content", null, "string", 0, new Seller(0L, "a.png", "nickname"));
+        ProductResponseDto data = productService.changeStatus(userPrincipal, productId, request.getStatus());
         DataResponseBody<ProductResponseDto> body = DataResponseBody.success(data);
 
         return ResponseEntity
@@ -133,7 +130,7 @@ public class ProductController {
             .title(request.getTitle())
             .content(request.getContent())
             .price(request.getPrice())
-            .category(request.getCategory())
+            .categoryId(request.getCategoryId())
             .images(request.getImages())
             .build();
         DataResponseBody<ProductResponseDto> body = DataResponseBody.success(data);

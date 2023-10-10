@@ -7,7 +7,8 @@ public enum ErrorCode {
     NoSuchElement(400, "noSuchElement"),
     NoSuchProduct(400, "noSuchProduct"),
     AlreadyExistWish(400, "alreadyExistWish"),
-    NoSuchWish(400, "noSuchWish")
+    NoSuchWish(400, "noSuchWish"),
+    NoPermission(401, "noPermission")
     ;
 
     private final Integer code;
