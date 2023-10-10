@@ -66,6 +66,22 @@ public class Product {
         this.likes++;
     }
 
+    public void changeStatus(String status) {
+        this.status = ProductStatus.getFromValue(status);
+    }
+
+    public List<String> getImages() {
+        return productAlbum.stream().map(ProductImage::getUrl).toList();
+    }
+
+    public Long getCategoryId() {
+        return this.productCategory.getCategoryId();
+    }
+
+    public String getSellerEmail() {
+        return seller.getEmail();
+    }
+
     public String getThumbnail() {
         if (productAlbum == null || productAlbum.isEmpty()) {
             return "https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png";

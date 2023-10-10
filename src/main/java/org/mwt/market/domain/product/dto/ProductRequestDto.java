@@ -21,7 +21,7 @@ public class ProductRequestDto {
 
     @NotBlank(message = "상품 카테고리는 필수 항목입니다.")
     @Schema(description = "상품 카테고리", example = "test_category")
-    private Integer category;
+    private Long categoryId;
 
     @NotBlank(message = "상품 내용은 필수 항목입니다.")
     @Schema(description = "상품 설명", example = "test_content")

@@ -8,8 +8,10 @@ import org.mwt.market.domain.chat.entity.ChatRoom;
 import org.mwt.market.domain.chat.repository.ChatRoomRepository;
 import org.mwt.market.domain.product.dto.ProductChatResponseDto;
 import org.mwt.market.domain.product.dto.ProductInfoDto;
+import org.mwt.market.domain.product.dto.ProductResponseDto;
 import org.mwt.market.domain.product.dto.ProductSearchRequestDto;
 import org.mwt.market.domain.product.entity.Product;
+import org.mwt.market.domain.product.exception.NoPermissionException;
 import org.mwt.market.domain.product.exception.NoSuchProductException;
 import org.mwt.market.domain.product.repository.ProductRepository;
 import org.mwt.market.domain.user.entity.User;
@@ -58,6 +60,20 @@ public class ProductService {
                 .collect(Collectors.toList());
 
         return productInfos;
+    }
+
+    @Transactional
+    public ProductResponseDto changeStatus(UserPrincipal userPrincipal, Long productId, String status) {
+        Product product = productRepository.findById(productId)
+            .orElseThrow(NoSuchProductException::new);
+        if (!userPrincipal.getEmail().equals(product.getSellerEmail())) {
+            throw new NoPermissionException();
+        }
+
+        product.changeStatus(status);
+        productRepository.save(product);
+
+        return ProductResponseDto.fromEntity(product);
     }
 
     public List<ProductChatResponseDto> findChats(UserPrincipal userPrincipal, Long productId) {

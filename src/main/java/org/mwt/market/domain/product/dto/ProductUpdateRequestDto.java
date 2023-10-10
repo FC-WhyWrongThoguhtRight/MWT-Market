@@ -16,6 +16,6 @@ public class ProductUpdateRequestDto {
     private String title;
     private String content;
     private Integer price;
-    private Integer category;
+    private Long categoryId;
     private List<String> images;
 }
