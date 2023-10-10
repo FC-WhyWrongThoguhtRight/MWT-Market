@@ -1,17 +1,13 @@
 package org.mwt.market.domain.chat.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.mwt.market.common.response.DataResponseBody;
 import org.mwt.market.domain.chat.dto.ChatRoomRequestDto;
-import org.mwt.market.domain.chat.dto.ChatRoomResponseDto;
 import org.mwt.market.domain.chat.entity.ChatRoom;
 import org.mwt.market.domain.chat.service.ChatService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -43,20 +39,14 @@ public class ChatController {
 //                .build());
 //    }
 
-
     @PostMapping("/seller/{productId}/joinChat")
     @Operation(summary = "상품의 채팅창에 접속")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200",
-            content = {@Content(schema = @Schema(implementation = ChatRoomResponseDto.class))}),
+        @ApiResponse(responseCode = "200"),
         @ApiResponse(responseCode = "400")})
     public DataResponseBody<ChatRoom> joinChat(
         @RequestBody ChatRoomRequestDto chatRoomRequestDto) {
-
         ChatRoom chatRoom = chatService.joinChatRoom(chatRoomRequestDto);
-
         return DataResponseBody.success(chatRoom);
     }
-
-
 }
