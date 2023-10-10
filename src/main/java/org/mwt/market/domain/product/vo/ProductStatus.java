@@ -22,4 +22,12 @@ public enum ProductStatus {
         }
         throw new NoSuchStatusException(ErrorCode.NoSuchElement);
     }
+
+    public static ProductStatus getFromValue(String value) {
+        try {
+            return ProductStatus.valueOf(value);
+        } catch (IllegalArgumentException e) {
+            throw new NoSuchStatusException(ErrorCode.NoSuchElement);
+        }
+    }
 }

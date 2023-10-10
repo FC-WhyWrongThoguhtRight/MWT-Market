@@ -19,4 +19,5 @@ public class ProductUpdateRequestDto {
     private Integer price;
     private Long categoryId;
     private List<MultipartFile> images;
+
 }

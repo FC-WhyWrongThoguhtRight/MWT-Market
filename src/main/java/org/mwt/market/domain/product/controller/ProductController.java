@@ -100,11 +100,12 @@ public class ProductController {
     @Operation(summary = "상품 상태 변경")
     @ApiResponses(value = {@ApiResponse(responseCode = "200")})
     public DataResponseBody<ProductResponseDto> updateProductStatus(
-            @AuthenticationPrincipal Principal principal,
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable Long productId,
             @RequestBody ProductStatusUpdateRequestDto request
     ) {
-        ProductResponseDto data = new ProductResponseDto(0L, "title", 0, 0, "content", null, "string", 0, new Seller(0L, "a.png", "nickname"));
+        ProductResponseDto data = productService.changeStatus(userPrincipal, productId, request.getStatus());
+        DataResponseBody<ProductResponseDto> body = DataResponseBody.success(data);
 
         return DataResponseBody.success(data);
     }
@@ -132,20 +133,13 @@ public class ProductController {
         @ApiResponse(responseCode = "400", content = {
             @Content(schema = @Schema(implementation = BaseResponseBody.class))})})
     public ResponseEntity<? extends DataResponseBody<List<ProductChatResponseDto>>> productChatList(
-            @AuthenticationPrincipal Principal principal,
-            @PathVariable String productId
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable Long productId
     ) {
-        List<ProductChatResponseDto> data = List.of(
-            ProductChatResponseDto.builder()
-                .thumbnail("thumbnail")
-                .statusCode(200)
-                .build()
-        );
-
-        DataResponseBody<List<ProductChatResponseDto>> body = DataResponseBody.success(data);
+        List<ProductChatResponseDto> data = productService.findChats(userPrincipal, productId);
 
         return ResponseEntity
                 .status(200)
-                .body(body);
+                .body(DataResponseBody.success(data));
     }
 }
