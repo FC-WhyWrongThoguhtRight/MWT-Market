@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.mwt.market.common.response.DataResponseBody;
 import org.mwt.market.domain.chat.dto.ChatRoomRequestDto;
 import org.mwt.market.domain.chat.dto.ChatRoomResponseDto;
 import org.mwt.market.domain.chat.entity.ChatRoom;
@@ -49,17 +50,12 @@ public class ChatController {
         @ApiResponse(responseCode = "200",
             content = {@Content(schema = @Schema(implementation = ChatRoomResponseDto.class))}),
         @ApiResponse(responseCode = "400")})
-    public ResponseEntity<ChatRoomResponseDto> joinChat(
+    public DataResponseBody<ChatRoom> joinChat(
         @RequestBody ChatRoomRequestDto chatRoomRequestDto) {
 
         ChatRoom chatRoom = chatService.joinChatRoom(chatRoomRequestDto);
 
-        return ResponseEntity
-            .status(200)
-            .body(ChatRoomResponseDto.builder()
-                .statusCode(200)
-                .chatRoom(chatRoom)
-                .build());
+        return DataResponseBody.success(chatRoom);
     }
 
 
