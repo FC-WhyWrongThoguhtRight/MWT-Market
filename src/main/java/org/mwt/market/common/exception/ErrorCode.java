@@ -4,7 +4,10 @@ import lombok.Getter;
 
 @Getter
 public enum ErrorCode {
-    NoSuchElement(400, "noSuchElement");
+    NoSuchElement(400, "noSuchElement"),
+    NoSuchProduct(400, "noSuchProduct"),
+    AlreadyExistWish(400, "alreadyExistWish")
+    ;
 
     private final Integer code;
     private final String msg;
