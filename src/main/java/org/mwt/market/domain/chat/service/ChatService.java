@@ -22,19 +22,15 @@ public class ChatService {
 
     public ChatRoom joinChatRoom(ChatRoomRequestDto chatRoomRequestDto) {
 
-        Optional<ChatRoom> chatRoomOptional = chatRoomRepository
+        Optional<ChatRoom> optChatRoom = chatRoomRepository
             .findByBuyerIdAndProductId(chatRoomRequestDto.getUserId(),
                 chatRoomRequestDto.getProductId());
 
-        if (chatRoomOptional.isEmpty()) {
-            chatRoomRepository.save(
-                ChatRoom.createChatRoom(chatRoomRequestDto)
-            );
-            chatRoomOptional = chatRoomRepository.findByBuyerIdAndProductId(
-                chatRoomRequestDto.getUserId(), chatRoomRequestDto.getProductId());
-        }
+        ChatRoom chatRoom = optChatRoom.orElseGet(() -> chatRoomRepository.save(
+            ChatRoom.createChatRoom(chatRoomRequestDto)
+        ));
 
-        return chatRoomOptional.orElseThrow();
+        return chatRoom;
 
 
     }
