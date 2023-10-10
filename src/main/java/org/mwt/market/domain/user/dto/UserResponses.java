@@ -110,14 +110,14 @@ public class UserResponses {
 
         private final Long id;
         private final String title;
-        private final String price;
+        private final Integer price;
         private final String thumbnailImage;
         private final String status;
-        private final String likes;
+        private final Integer likes;
 
         @Builder
-        public ProductDto(Long id, String title, String price, String thumbnailImage,
-            String status, String likes) {
+        public ProductDto(Long id, String title, Integer price, String thumbnailImage,
+            String status, Integer likes) {
             this.id = id;
             this.title = title;
             this.price = price;

@@ -5,7 +5,6 @@ import static org.mwt.market.domain.user.dto.UserRequests.ProfileUpdateRequestDt
 import static org.mwt.market.domain.user.dto.UserRequests.SignupRequestDto;
 import static org.mwt.market.domain.user.dto.UserResponses.LoginResponseDto;
 import static org.mwt.market.domain.user.dto.UserResponses.MyChatRoomResponseDto;
-import static org.mwt.market.domain.user.dto.UserResponses.MyInterestResponseDto;
 import static org.mwt.market.domain.user.dto.UserResponses.ProfileUpdateResponseDto;
 import static org.mwt.market.domain.user.dto.UserResponses.SignupResponseDto;
 
@@ -131,6 +130,7 @@ public class UserController {
                 .build()
         );
     }
+
 
     @GetMapping("/myPage/interests")
     @Operation(summary = "내 관심목록 조회")
