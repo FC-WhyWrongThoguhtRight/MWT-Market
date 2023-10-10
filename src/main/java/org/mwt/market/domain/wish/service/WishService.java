@@ -4,27 +4,32 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.mwt.market.config.security.token.UserPrincipal;
 import org.mwt.market.domain.product.entity.Product;
+import org.mwt.market.domain.product.exception.NoSuchProductException;
+import org.mwt.market.domain.product.repository.ProductRepository;
 import org.mwt.market.domain.product.service.ProductService;
 import org.mwt.market.domain.user.entity.User;
+import org.mwt.market.domain.user.exception.NoSuchUserException;
+import org.mwt.market.domain.user.repository.UserRepository;
 import org.mwt.market.domain.user.service.UserService;
 import org.mwt.market.domain.wish.dto.WishResponseDto;
 import org.mwt.market.domain.wish.entity.Wish;
 import org.mwt.market.domain.wish.exception.AlreadyExistWishException;
 import org.mwt.market.domain.wish.repository.WishRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class WishService {
 
-    private final UserService userService;
-    private final ProductService productService;
-
     private final WishRepository wishRepository;
+    private final UserRepository userRepository;
+    private final ProductRepository productRepository;
 
     public void addWish(UserPrincipal userPrincipal, Long productId) {
-        User user = userService.readUser(userPrincipal);
-        Product product = productService.getProduct(productId);
+        User user = userRepository.findByEmail(userPrincipal.getEmail()).orElseThrow(NoSuchUserException::new);
+        Product product = productRepository.findById(productId).orElseThrow(NoSuchProductException::new);
 
         if (wishRepository.existsByUserAndProduct(user, product)) {
             throw new AlreadyExistWishException();
@@ -35,7 +40,7 @@ public class WishService {
     }
 
     public List<WishResponseDto> getMyWishes(UserPrincipal userPrincipal) {
-        User user = userService.readUser(userPrincipal);
+        User user = userRepository.findByEmail(userPrincipal.getEmail()).orElseThrow(NoSuchUserException::new);
         List<Wish> wishes = wishRepository.findByUser(user);
 
         return wishes.stream()
