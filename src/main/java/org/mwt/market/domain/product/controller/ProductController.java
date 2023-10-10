@@ -140,20 +140,6 @@ public class ProductController {
                 .body(body);
     }
 
-    @GetMapping("/categories")
-    @Operation(summary = "상품 카테고리 목록 조회")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200")
-    })
-    private ResponseEntity<? extends DataResponseBody<List<CategoryResponseDto>>> showCategories() {
-        List<CategoryResponseDto> data = List.of(new CategoryResponseDto(1L, "카테고리"));
-        DataResponseBody<List<CategoryResponseDto>> body = DataResponseBody.success(data);
-
-        return ResponseEntity
-                .status(200)
-                .body(body);
-    }
-
     @GetMapping("/{productId}/chats")
     @Operation(summary = "상품 관련 채팅방 목록 조회")
     @ApiResponses(value = {
@@ -161,20 +147,13 @@ public class ProductController {
         @ApiResponse(responseCode = "400", content = {
             @Content(schema = @Schema(implementation = BaseResponseBody.class))})})
     public ResponseEntity<? extends DataResponseBody<List<ProductChatResponseDto>>> productChatList(
-            @AuthenticationPrincipal Principal principal,
-            @PathVariable String productId
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable Long productId
     ) {
-        List<ProductChatResponseDto> data = List.of(
-            ProductChatResponseDto.builder()
-                .thumbnail("thumbnail")
-                .statusCode(200)
-                .build()
-        );
-
-        DataResponseBody<List<ProductChatResponseDto>> body = DataResponseBody.success(data);
+        List<ProductChatResponseDto> data = productService.findChats(userPrincipal, productId);
 
         return ResponseEntity
                 .status(200)
-                .body(body);
+                .body(DataResponseBody.success(data));
     }
 }

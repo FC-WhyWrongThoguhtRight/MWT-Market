@@ -1,8 +1,12 @@
 package org.mwt.market.domain.product.service;
 
+import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mwt.market.config.security.token.UserPrincipal;
+import org.mwt.market.domain.chat.entity.ChatRoom;
+import org.mwt.market.domain.chat.repository.ChatRoomRepository;
+import org.mwt.market.domain.product.dto.ProductChatResponseDto;
 import org.mwt.market.domain.product.dto.ProductInfoDto;
 import org.mwt.market.domain.product.dto.ProductResponseDto;
 import org.mwt.market.domain.product.dto.ProductSearchRequestDto;
@@ -34,6 +38,7 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final WishRepository wishRepository;
     private final UserRepository userRepository;
+    private final ChatRoomRepository chatRoomRepository;
 
     public List<ProductInfoDto> findAllProducts(ProductSearchRequestDto request, UserPrincipal userPrincipal) {
 
@@ -59,7 +64,8 @@ public class ProductService {
 
     @Transactional
     public ProductResponseDto changeStatus(UserPrincipal userPrincipal, Long productId, String status) {
-        Product product = productRepository.findById(productId).orElseThrow(NoSuchProductException::new);
+        Product product = productRepository.findById(productId)
+            .orElseThrow(NoSuchProductException::new);
         if (!userPrincipal.getEmail().equals(product.getSellerEmail())) {
             throw new NoPermissionException();
         }
@@ -68,5 +74,33 @@ public class ProductService {
         productRepository.save(product);
 
         return ProductResponseDto.fromEntity(product);
+    }
+
+    public List<ProductChatResponseDto> findChats(UserPrincipal userPrincipal, Long productId) {
+        Product product = productRepository.findById(productId).orElseThrow(NoSuchProductException::new);
+
+        List<ChatRoom> chatRooms = chatRoomRepository.findAllByProduct(product);
+        List<ProductChatResponseDto> dtos = new ArrayList<>();
+        for (ChatRoom chatRoom : chatRooms) {
+            User buyer = chatRoom.getBuyer();
+            User you;
+            if (userPrincipal.getEmail().equals(buyer.getEmail())) {
+                you = product.getSeller();
+            } else {
+                you = buyer;
+            }
+
+            ProductChatResponseDto dto = ProductChatResponseDto.builder()
+                .chatRoomId(chatRoom.getChatRoomId())
+                .productThumbnail(product.getThumbnail())
+                .youId(you.getUserId())
+                .youNickname(you.getNickname())
+                .youProfileImage(you.getProfileImageUrl())
+                .lastChatMessage("미구현") // TODO 종훈님 구현완료 후 수정
+                .build();
+            dtos.add(dto);
+        }
+
+        return dtos;
     }
 }

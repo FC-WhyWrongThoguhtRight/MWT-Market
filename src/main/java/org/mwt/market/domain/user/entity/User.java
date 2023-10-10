@@ -67,6 +67,6 @@ public class User {
     }
 
     public String getProfileImageUrl() {
-        return profileImage.getUrl();
+        return this.profileImage.getUrl();
     }
 }

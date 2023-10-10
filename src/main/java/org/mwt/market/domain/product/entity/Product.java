@@ -81,4 +81,11 @@ public class Product {
     public String getSellerEmail() {
         return seller.getEmail();
     }
+
+    public String getThumbnail() {
+        if (productAlbum == null || productAlbum.isEmpty()) {
+            return "https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png";
+        }
+        return productAlbum.get(0).getUrl();
+    }
 }
