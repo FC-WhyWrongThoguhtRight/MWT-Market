@@ -65,4 +65,11 @@ public class Product {
     public void plusLikes() {
         this.likes++;
     }
+
+    public String getThumbnail() {
+        if (productAlbum == null || productAlbum.isEmpty()) {
+            return "https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png";
+        }
+        return productAlbum.get(0).getUrl();
+    }
 }
