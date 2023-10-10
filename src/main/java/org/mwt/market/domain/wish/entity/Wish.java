@@ -37,4 +37,27 @@ public class Wish {
         this.user = user;
         this.product = product;
     }
+
+    public String getProductTitle() {
+        return product.getTitle();
+    }
+
+    public Integer getProductPrice() {
+        return product.getPrice();
+    }
+
+    public String getProductThumbnail() {
+        if (product.getProductAlbum() == null || product.getProductAlbum().isEmpty()) {
+            return "";
+        }
+        return product.getProductAlbum().get(0).getUrl();
+    }
+
+    public String getProductStatus() {
+        return product.getStatus().getValue();
+    }
+
+    public Integer getProductLikes() {
+        return product.getLikes();
+    }
 }

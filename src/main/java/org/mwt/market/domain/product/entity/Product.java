@@ -14,6 +14,7 @@ import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 import org.mwt.market.common.util.BooleanToNumConverter;
 import org.mwt.market.common.util.ProductStatusToNumConverter;
 import org.mwt.market.domain.product.vo.ProductStatus;
@@ -47,10 +48,13 @@ public class Product {
     private ProductStatus status;
 
     @CreatedDate
+    @CreationTimestamp
     private LocalDateTime createdAt;
 
     @Convert(converter = BooleanToNumConverter.class)
     private boolean isDeleted;
 
     private LocalDateTime deletedAt;
+
+    private Integer likes;
 }

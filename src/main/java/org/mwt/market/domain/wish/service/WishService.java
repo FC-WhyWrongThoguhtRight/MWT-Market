@@ -1,11 +1,13 @@
 package org.mwt.market.domain.wish.service;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.mwt.market.config.security.token.UserPrincipal;
 import org.mwt.market.domain.product.entity.Product;
 import org.mwt.market.domain.product.service.ProductService;
 import org.mwt.market.domain.user.entity.User;
 import org.mwt.market.domain.user.service.UserService;
+import org.mwt.market.domain.wish.dto.WishResponseDto;
 import org.mwt.market.domain.wish.entity.Wish;
 import org.mwt.market.domain.wish.exception.AlreadyExistWishException;
 import org.mwt.market.domain.wish.repository.WishRepository;
@@ -30,5 +32,14 @@ public class WishService {
 
         Wish wish = new Wish(user, product);
         wishRepository.save(wish);
+    }
+
+    public List<WishResponseDto> getMyWishes(UserPrincipal userPrincipal) {
+        User user = userService.readUser(userPrincipal);
+        List<Wish> wishes = wishRepository.findByUser(user);
+
+        return wishes.stream()
+            .map(WishResponseDto::fromEntity)
+            .toList();
     }
 }
