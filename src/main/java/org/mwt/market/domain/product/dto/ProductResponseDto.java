@@ -6,7 +6,7 @@ import lombok.Getter;
 import org.mwt.market.common.response.BaseResponseBody;
 
 @Getter
-public class ProductResponseDto extends BaseResponseBody {
+public class ProductResponseDto {
 
     private final Long id;
     private final String title;
@@ -19,10 +19,9 @@ public class ProductResponseDto extends BaseResponseBody {
     private final Seller seller;
 
     @Builder
-    public ProductResponseDto(Integer statusCode, String message, Long id, String title,
+    public ProductResponseDto(Long id, String title,
         Integer price, Integer category, String content, List<String> images, String status,
         Integer likes, Seller seller) {
-        super(statusCode, message);
         this.id = id;
         this.title = title;
         this.price = price;
