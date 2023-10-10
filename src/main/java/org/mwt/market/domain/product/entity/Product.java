@@ -62,4 +62,12 @@ public class Product {
         this.isDeleted = true;
         this.deletedAt = LocalDateTime.now();
     }
+    
+    public void minusLikes() {
+        this.likes--;
+    }
+
+    public void plusLikes() {
+        this.likes++;
+    }
 }
