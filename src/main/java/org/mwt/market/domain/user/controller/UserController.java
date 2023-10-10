@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.mwt.market.common.response.BaseResponseBody;
 import org.mwt.market.common.response.DataResponseBody;
 import org.mwt.market.config.security.token.UserPrincipal;
+import org.mwt.market.domain.user.dto.UserResponses.MyInterestResponseDto;
 import org.mwt.market.domain.user.dto.UserResponses.MyProductResponseDto;
 import org.mwt.market.domain.user.dto.UserResponses.UserInfoResponseDto;
 import org.mwt.market.domain.user.entity.User;
