@@ -2,6 +2,7 @@ package org.mwt.market.domain.product.dto;
 
 import lombok.Builder;
 import lombok.Getter;
+import org.mwt.market.domain.product.entity.Product;
 
 @Getter
 public class ProductInfoDto {
@@ -24,5 +25,17 @@ public class ProductInfoDto {
         this.status = status;
         this.likes = likes;
         this.like = like;
+    }
+
+    public static ProductInfoDto toDto(Product product) {
+        return ProductInfoDto.builder()
+                .id(product.getId())
+                .title(product.getTitle())
+                .price(product.getPrice())
+                .status(product.getStatus().getValue())
+                .likes(product.getLikes())
+                .like(false)
+                .thumbnail(product.getProductAlbum().get(0).getUrl())
+                .build();
     }
 }

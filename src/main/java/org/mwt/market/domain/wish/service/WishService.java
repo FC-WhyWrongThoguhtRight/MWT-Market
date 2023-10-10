@@ -6,11 +6,9 @@ import org.mwt.market.config.security.token.UserPrincipal;
 import org.mwt.market.domain.product.entity.Product;
 import org.mwt.market.domain.product.exception.NoSuchProductException;
 import org.mwt.market.domain.product.repository.ProductRepository;
-import org.mwt.market.domain.product.service.ProductService;
 import org.mwt.market.domain.user.entity.User;
 import org.mwt.market.domain.user.exception.NoSuchUserException;
 import org.mwt.market.domain.user.repository.UserRepository;
-import org.mwt.market.domain.user.service.UserService;
 import org.mwt.market.domain.wish.dto.WishResponseDto;
 import org.mwt.market.domain.wish.entity.Wish;
 import org.mwt.market.domain.wish.exception.AlreadyExistWishException;
@@ -41,7 +39,7 @@ public class WishService {
 
     public List<WishResponseDto> getMyWishes(UserPrincipal userPrincipal) {
         User user = userRepository.findByEmail(userPrincipal.getEmail()).orElseThrow(NoSuchUserException::new);
-        List<Wish> wishes = wishRepository.findByUser(user);
+        List<Wish> wishes = wishRepository.findAllByUser(user);
 
         return wishes.stream()
             .map(WishResponseDto::fromEntity)

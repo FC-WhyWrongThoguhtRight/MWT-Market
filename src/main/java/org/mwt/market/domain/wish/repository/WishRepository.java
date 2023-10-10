@@ -12,5 +12,5 @@ public interface WishRepository extends JpaRepository<Wish, Long> {
 
     boolean existsByUserAndProduct(User user, Product product);
 
-    List<Wish> findByUser(User user);
+    List<Wish> findAllByUser(User user);
 }
