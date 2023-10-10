@@ -48,7 +48,7 @@ public class Wish {
 
     public String getProductThumbnail() {
         if (product.getProductAlbum() == null || product.getProductAlbum().isEmpty()) {
-            return "";
+            return "https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png";
         }
         return product.getProductAlbum().get(0).getUrl();
     }
