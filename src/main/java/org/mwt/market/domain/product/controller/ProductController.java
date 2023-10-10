@@ -55,20 +55,14 @@ public class ProductController {
     @ApiResponses(value = {@ApiResponse(responseCode = "200")}
     )
     public ResponseEntity<? extends DataResponseBody<ProductResponseDto>> registerProduct(
-            @AuthenticationPrincipal Principal principal,
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Valid @ModelAttribute ProductRequestDto request
     ) {
-        ProductResponseDto data = ProductResponseDto.builder()
-            .title(request.getTitle())
-            .price(request.getPrice())
-            .categoryId(request.getCategoryId())
-            .content(request.getContent())
-            .build();
-        DataResponseBody<ProductResponseDto> body = DataResponseBody.success(data);
+        ProductResponseDto data = productService.addProduct(userPrincipal, request);
 
         return ResponseEntity
                 .status(200)
-                .body(body);
+                .body(DataResponseBody.success(data));
     }
 
     @GetMapping("/{productId}")
