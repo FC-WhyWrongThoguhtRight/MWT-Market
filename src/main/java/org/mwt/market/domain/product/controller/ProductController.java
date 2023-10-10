@@ -78,14 +78,11 @@ public class ProductController {
     public ResponseEntity<? extends DataResponseBody<ProductResponseDto>> showProductDetails(
             @PathVariable Long productId
     ) {
-        ProductResponseDto data = ProductResponseDto.builder()
-            .id(productId)
-            .build();
-        DataResponseBody<ProductResponseDto> body = DataResponseBody.success(data);
+        ProductResponseDto data = productService.findProduct(productId);
 
         return ResponseEntity
                 .status(200)
-                .body(body);
+                .body(DataResponseBody.success(data));
     }
 
     @DeleteMapping("/{productId}")
