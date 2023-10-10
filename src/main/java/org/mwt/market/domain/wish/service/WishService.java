@@ -36,6 +36,9 @@ public class WishService {
 
         Wish wish = new Wish(user, product);
         wishRepository.save(wish);
+
+        product.plusLikes();
+        productRepository.save(product);
     }
 
     public List<WishResponseDto> getWishes(UserPrincipal userPrincipal) {
@@ -53,5 +56,8 @@ public class WishService {
 
         Wish wish = wishRepository.findByUserAndProduct(user, product).orElseThrow(NoSuchWishException::new);
         wishRepository.delete(wish);
+
+        product.minusLikes();
+        productRepository.save(product);
     }
 }
