@@ -23,4 +23,14 @@ public class ProfileImage {
 
     @CreatedDate
     private LocalDateTime createdAt;
+
+    public static ProfileImage createDefault() {
+        ProfileImage newProfileImage = new ProfileImage();
+        newProfileImage.update("https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/user/default.png");
+        return newProfileImage;
+    }
+
+    public void update(String url) {
+        this.url = url;
+    }
 }

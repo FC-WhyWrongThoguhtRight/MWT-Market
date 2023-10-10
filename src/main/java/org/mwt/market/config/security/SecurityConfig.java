@@ -12,6 +12,7 @@ import org.mwt.market.config.security.provider.JwtProvider;
 import org.mwt.market.config.security.service.AjaxUserDetailService;
 import org.mwt.market.config.security.service.RefreshTokenService;
 import org.mwt.market.config.security.token.AuthenticationDetails;
+import org.mwt.market.config.security.token.UserPrincipal;
 import org.mwt.market.domain.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -63,6 +64,9 @@ public class SecurityConfig {
         "/swagger-ui/**", "/api-docs", "/swagger-ui-custom.html",
         "/v3/api-docs/**", "/api-docs/**", "/swagger-ui.html", "/h2-console/**"
     };
+    private static final String[] MY_PAGE = {
+        "/myInfo", "/myPage", "/myPage/**"
+    };
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -79,8 +83,7 @@ public class SecurityConfig {
             .csrf(CsrfConfigurer::disable)
             .sessionManagement(sessionManagementConfigurer ->
                 sessionManagementConfigurer
-                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            );
+                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         http
             .authorizeHttpRequests((authorizeHttpRequests) ->
@@ -90,8 +93,8 @@ public class SecurityConfig {
                             .map(AntPathRequestMatcher::new)
                             .toArray(AntPathRequestMatcher[]::new)
                     ).permitAll()
-                    .anyRequest().permitAll()
-        );
+                    .requestMatchers(MY_PAGE).authenticated()
+                    .anyRequest().permitAll());
 
         http
             .apply(
@@ -103,6 +106,11 @@ public class SecurityConfig {
             .failureHandlerAjax(new AjaxAuthenticationFailureHandler())
             .setAuthenticationDetailsSource(authenticationDetailsSource())
             .loginProcessingUrl(loginProcUrl);
+
+        http
+            .anonymous((anonymous) ->
+                anonymous
+                    .principal(new UserPrincipal(null, "anonymous")));
 
         http
             .addFilterBefore(

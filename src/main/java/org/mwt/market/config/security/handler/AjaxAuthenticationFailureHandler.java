@@ -5,7 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import org.mwt.market.domain.user.dto.UserResponses;
+import org.mwt.market.common.response.ErrorResponseBody;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -31,11 +31,6 @@ public class AjaxAuthenticationFailureHandler implements AuthenticationFailureHa
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
 
-        objectMapper.writeValue(response.getWriter(), UserResponses.LoginResponseDto.builder()
-            .statusCode(400)
-            .message(errorMessage)
-            .build()
-        );
-
+        objectMapper.writeValue(response.getWriter(), ErrorResponseBody.unsuccessful(errorMessage));
     }
 }

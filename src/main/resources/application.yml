@@ -20,6 +20,14 @@ spring:
       username: username
       password: password
 
+  cloud:
+    aws:
+      credentials:
+        access-key: 나는야엑세스키
+        secret-key: 나는야시크릿키
+      region:
+        static: ap-northeast-2
+
 server:
   servlet:
     context-path: /api/v1
