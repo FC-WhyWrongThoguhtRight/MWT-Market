@@ -38,10 +38,10 @@ public class WishController {
         @ApiResponse(responseCode = "400",
             content = {@Content(schema = @Schema(implementation = BaseResponseBody.class))})
     })
-    public ResponseEntity<? extends DataResponseBody<List<WishResponseDto>>> getMyWishes(
+    public ResponseEntity<? extends DataResponseBody<List<WishResponseDto>>> getWishes(
         @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
-        List<WishResponseDto> data = wishService.getMyWishes(userPrincipal);
+        List<WishResponseDto> data = wishService.getWishes(userPrincipal);
 
         return ResponseEntity
             .status(200)
@@ -73,9 +73,12 @@ public class WishController {
         @ApiResponse(responseCode = "400",
             content = {@Content(schema = @Schema(implementation = BaseResponseBody.class))})
     })
-    public ResponseEntity<? extends BaseResponseBody> removeMyInterest(
+    public ResponseEntity<? extends BaseResponseBody> removeWish(
+        @AuthenticationPrincipal UserPrincipal userPrincipal,
         @RequestBody WishReqeuestDto wishReqeuestDto
     ) {
+        wishService.removeWish(userPrincipal, wishReqeuestDto.getProductId());
+
         return ResponseEntity
             .status(200)
             .body(BaseResponseBody.success());
