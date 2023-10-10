@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -138,20 +137,6 @@ public class ProductController {
             .images(request.getImages())
             .build();
         DataResponseBody<ProductResponseDto> body = DataResponseBody.success(data);
-
-        return ResponseEntity
-                .status(200)
-                .body(body);
-    }
-
-    @GetMapping("/categories")
-    @Operation(summary = "상품 카테고리 목록 조회")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200")
-    })
-    private ResponseEntity<? extends DataResponseBody<List<CategoryResponseDto>>> showCategories() {
-        List<CategoryResponseDto> data = List.of(new CategoryResponseDto(1L, "카테고리"));
-        DataResponseBody<List<CategoryResponseDto>> body = DataResponseBody.success(data);
 
         return ResponseEntity
                 .status(200)
