@@ -17,13 +17,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import org.mwt.market.common.response.BaseResponseBody;
 import org.mwt.market.common.response.DataResponseBody;
-import org.mwt.market.domain.product.dto.ProductInfoDto;
+import org.mwt.market.domain.user.dto.MyInterestRequestDto;
 import org.mwt.market.domain.user.dto.UserResponses.ProductDto;
 import org.mwt.market.domain.user.entity.User;
 import org.mwt.market.domain.user.repository.UserRepository;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -113,6 +114,36 @@ public class UserController {
         return ResponseEntity
             .status(200)
             .body(DataResponseBody.success(data));
+    }
+
+    @PostMapping("/myPage/interests")
+    @Operation(summary = "내 관심목록 등록")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400",
+            content = {@Content(schema = @Schema(implementation = BaseResponseBody.class))})
+    })
+    public ResponseEntity<? extends BaseResponseBody> addMyInterest(
+        @RequestBody MyInterestRequestDto myInterestRequestDto
+    ) {
+        return ResponseEntity
+            .status(200)
+            .body(BaseResponseBody.success());
+    }
+
+    @DeleteMapping("/myPage/interests")
+    @Operation(summary = "내 관심목록 삭제")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400",
+            content = {@Content(schema = @Schema(implementation = BaseResponseBody.class))})
+    })
+    public ResponseEntity<? extends BaseResponseBody> removeMyInterest(
+        @RequestBody MyInterestRequestDto myInterestRequestDto
+    ) {
+        return ResponseEntity
+            .status(200)
+            .body(BaseResponseBody.success());
     }
 
     @GetMapping("/myPage/chat")
