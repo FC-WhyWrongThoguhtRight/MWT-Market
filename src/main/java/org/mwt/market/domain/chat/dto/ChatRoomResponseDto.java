@@ -15,4 +15,6 @@ public class ChatRoomResponseDto extends BaseResponseBody {
         super(statusCode, message);
         this.chatRoom = chatRoom;
     }
+
+
 }
