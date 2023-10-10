@@ -94,7 +94,11 @@ public class SecurityConfig {
                             .map(AntPathRequestMatcher::new)
                             .toArray(AntPathRequestMatcher[]::new)
                     ).permitAll()
-                    .requestMatchers(MY_PAGE).authenticated()
+                    .requestMatchers(
+                        Arrays.stream(MY_PAGE)
+                            .map(AntPathRequestMatcher::new)
+                            .toArray(AntPathRequestMatcher[]::new)
+                    ).authenticated()
                     .anyRequest().permitAll());
 
         http
