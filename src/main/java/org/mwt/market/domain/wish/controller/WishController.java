@@ -10,6 +10,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.mwt.market.common.response.BaseResponseBody;
 import org.mwt.market.common.response.DataResponseBody;
+import org.mwt.market.common.response.ErrorResponseBody;
 import org.mwt.market.config.security.token.UserPrincipal;
 import org.mwt.market.domain.wish.dto.WishReqeuestDto;
 import org.mwt.market.domain.wish.dto.WishResponseDto;
@@ -36,7 +37,7 @@ public class WishController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200"),
         @ApiResponse(responseCode = "400",
-            content = {@Content(schema = @Schema(implementation = BaseResponseBody.class))})
+            content = {@Content(schema = @Schema(implementation = ErrorResponseBody.class))})
     })
     public ResponseEntity<? extends DataResponseBody<List<WishResponseDto>>> getWishes(
         @AuthenticationPrincipal UserPrincipal userPrincipal
@@ -53,7 +54,7 @@ public class WishController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200"),
         @ApiResponse(responseCode = "400",
-            content = {@Content(schema = @Schema(implementation = BaseResponseBody.class))})
+            content = {@Content(schema = @Schema(implementation = ErrorResponseBody.class))})
     })
     public ResponseEntity<? extends BaseResponseBody> addWish(
         @AuthenticationPrincipal UserPrincipal userPrincipal,
@@ -71,7 +72,7 @@ public class WishController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200"),
         @ApiResponse(responseCode = "400",
-            content = {@Content(schema = @Schema(implementation = BaseResponseBody.class))})
+            content = {@Content(schema = @Schema(implementation = ErrorResponseBody.class))})
     })
     public ResponseEntity<? extends BaseResponseBody> removeWish(
         @AuthenticationPrincipal UserPrincipal userPrincipal,
