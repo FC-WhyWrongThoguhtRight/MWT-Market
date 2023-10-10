@@ -20,6 +20,7 @@ import org.mwt.market.common.util.ProductStatusToNumConverter;
 import org.mwt.market.domain.product.vo.ProductStatus;
 import org.mwt.market.domain.user.entity.User;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.security.core.parameters.P;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -61,6 +62,14 @@ public class Product {
     public void delete() {
         this.isDeleted = true;
         this.deletedAt = LocalDateTime.now();
+    }
+
+    public void update(String title, String content, ProductCategory category, Integer price, List<ProductImage> productAlbum) {
+        this.title = title;
+        this.content = content;
+        this.price = price;
+        this.productCategory = category;
+        this.productAlbum = productAlbum;
     }
     
     public void minusLikes() {

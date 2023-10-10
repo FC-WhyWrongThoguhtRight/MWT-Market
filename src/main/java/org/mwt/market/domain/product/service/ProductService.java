@@ -1,15 +1,26 @@
 package org.mwt.market.domain.product.service;
 
+import io.awspring.cloud.s3.ObjectMetadata;
+import io.awspring.cloud.s3.S3Resource;
+import io.awspring.cloud.s3.S3Template;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mwt.market.config.security.token.UserPrincipal;
 import org.mwt.market.domain.product.dto.ProductInfoDto;
 import org.mwt.market.domain.product.dto.ProductSearchRequestDto;
+import org.mwt.market.domain.product.dto.ProductUpdateRequestDto;
 import org.mwt.market.domain.product.entity.Product;
+import org.mwt.market.domain.product.entity.ProductCategory;
+import org.mwt.market.domain.product.entity.ProductImage;
 import org.mwt.market.domain.product.exception.AlreadyGoneException;
+import org.mwt.market.domain.product.exception.NoSuchCategoryException;
+import org.mwt.market.domain.product.exception.NoSuchProductException;
+import org.mwt.market.domain.product.exception.ProductUpdateException;
+import org.mwt.market.domain.product.repository.ProductCategoryRepository;
 import org.mwt.market.domain.product.repository.ProductRepository;
 import org.mwt.market.domain.user.entity.User;
 import org.mwt.market.domain.user.exception.NoSuchUserException;
+import org.mwt.market.domain.user.exception.UserUpdateException;
 import org.mwt.market.domain.user.repository.UserRepository;
 import org.mwt.market.domain.wish.entity.Wish;
 import org.mwt.market.domain.wish.repository.WishRepository;
@@ -18,7 +29,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -30,8 +45,10 @@ import java.util.stream.Collectors;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final ProductCategoryRepository productCategoryRepository;
     private final WishRepository wishRepository;
     private final UserRepository userRepository;
+    private final S3Template s3Template;
 
     public List<ProductInfoDto> findAllProducts(ProductSearchRequestDto request, UserPrincipal userPrincipal) {
 
@@ -59,5 +76,38 @@ public class ProductService {
     public void deleteProduct(Long productId) {
         Product product = productRepository.findById(productId).orElseThrow(AlreadyGoneException::new);
         product.delete();
+        productRepository.save(product);
+    }
+
+    @Transactional
+    public void updateProduct(Long productId, ProductUpdateRequestDto request) {
+        Product product = productRepository.findById(productId).orElseThrow(AlreadyGoneException::new);
+
+        Long categoryId = request.getCategoryId();
+        ProductCategory productCategory = productCategoryRepository.findById(categoryId).orElseThrow(NoSuchCategoryException::new);
+
+        List<ProductImage> productAlbum = new ArrayList<>();
+        for (int i = 0; i < request.getImages().size(); i++) {
+            MultipartFile image = request.getImages().get(i);
+            productAlbum.add(uploadImage(product, image, i));
+        }
+
+        product.update(request.getTitle(), request.getContent(), productCategory, request.getPrice(), productAlbum);
+        productRepository.save(product);
+    }
+
+    private ProductImage uploadImage(Product product, MultipartFile image, int order) {
+        String extension = StringUtils.getFilenameExtension(image.getOriginalFilename());
+
+        try {
+            S3Resource resource = s3Template.upload("mwtmarketbucket",
+                    "products/" + product.getId() + "/" + System.currentTimeMillis() + "/" + order,
+                    image.getInputStream(),
+                    ObjectMetadata.builder().contentType(extension).build());
+
+            return new ProductImage(product, resource.getURL().toString(), order);
+        } catch (IOException ex) {
+            throw new ProductUpdateException();
+        }
     }
 }

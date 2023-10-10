@@ -34,4 +34,10 @@ public class ProductImage {
 
     @CreatedDate
     private LocalDateTime createdAt;
+
+    public ProductImage(Product product, String url, Integer order) {
+        this.product = product;
+        this.url = url;
+        this.order = order;
+    }
 }
