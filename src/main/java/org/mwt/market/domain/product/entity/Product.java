@@ -65,4 +65,11 @@ public class Product {
     public void plusLikes() {
         this.likes++;
     }
+
+    public String getThumbnail() {
+        if (productAlbum == null || productAlbum.isEmpty()) {
+            return "";
+        }
+        return productAlbum.get(0).getUrl();
+    }
 }
