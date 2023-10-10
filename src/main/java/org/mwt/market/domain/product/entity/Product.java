@@ -57,4 +57,12 @@ public class Product {
     private LocalDateTime deletedAt;
 
     private Integer likes;
+
+    public void minusLikes() {
+        this.likes--;
+    }
+
+    public void plusLikes() {
+        this.likes++;
+    }
 }
