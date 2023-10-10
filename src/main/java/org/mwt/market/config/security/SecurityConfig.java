@@ -26,6 +26,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig;
 import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -93,7 +94,11 @@ public class SecurityConfig {
                             .map(AntPathRequestMatcher::new)
                             .toArray(AntPathRequestMatcher[]::new)
                     ).permitAll()
-                    .requestMatchers(MY_PAGE).authenticated()
+                    .requestMatchers(
+                        Arrays.stream(MY_PAGE)
+                            .map(AntPathRequestMatcher::new)
+                            .toArray(AntPathRequestMatcher[]::new)
+                    ).authenticated()
                     .anyRequest().permitAll());
 
         http
@@ -116,6 +121,11 @@ public class SecurityConfig {
             .addFilterBefore(
                 new JwtAuthenticationFilter(authenticationManager(), authenticationDetailsSource()),
                 AnonymousAuthenticationFilter.class);
+
+        http
+            .headers(
+                httpSecurityHeadersConfigurer ->
+                    httpSecurityHeadersConfigurer.frameOptions(FrameOptionsConfig::sameOrigin));
 
         return http.build();
     }

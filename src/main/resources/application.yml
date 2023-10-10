@@ -1,15 +1,18 @@
 spring:
-  datasource:
+  datasource-mysql:
     driver-class-name: org.h2.Driver
     url: jdbc:h2:mem:testdb
     username: sa
     password:
   h2:
     console:
-      enabled: false
+      enabled: true
   jpa:
+    database-platform: H2
+    show-sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
+    generate-ddl: true
 
   data:
     mongodb:
