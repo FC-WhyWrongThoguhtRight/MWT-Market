@@ -13,12 +13,12 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.mwt.market.common.response.BaseResponseBody;
 import org.mwt.market.common.response.DataResponseBody;
-import org.mwt.market.domain.product.dto.ProductCategoryResponseDto;
-import org.mwt.market.domain.product.dto.ProductChatsResponseDto;
+import org.mwt.market.domain.product.dto.CategoryResponseDto;
+import org.mwt.market.domain.product.dto.ProductChatResponseDto;
 import org.mwt.market.domain.product.dto.ProductInfoDto;
-import org.mwt.market.domain.product.dto.ProductListResponseDto;
 import org.mwt.market.domain.product.dto.ProductRequestDto;
 import org.mwt.market.domain.product.dto.ProductResponseDto;
+import org.mwt.market.domain.product.dto.ProductResponseDto.Seller;
 import org.mwt.market.domain.product.dto.ProductStatusUpdateRequestDto;
 import org.mwt.market.domain.product.dto.ProductUpdateRequestDto;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -42,53 +42,56 @@ public class ProductController {
 
     @GetMapping("/list")
     @Operation(summary = "전체 상품 조회")
-    @ApiResponses(value = {@ApiResponse(responseCode = "200",
-            content = {@Content(schema = @Schema(implementation = ProductListResponseDto.class))})}
+    @ApiResponses(value = {@ApiResponse(responseCode = "200")}
     )
-    public ResponseEntity<? extends BaseResponseBody> showAllProducts(
+    public ResponseEntity<? extends DataResponseBody<List<ProductInfoDto>>> showAllProducts(
             @RequestParam(required = false) String searchWord
     ) {
-        List<ProductInfoDto> productInfos = new ArrayList<>();
+        List<ProductInfoDto> data = List.of(
+            new ProductInfoDto(0L, "title", 0, "thumbnail", "status", 0, false)
+        );
 
         return ResponseEntity
                 .status(200)
-                .body(DataResponseBody.success(ProductListResponseDto.of(productInfos)));
+                .body(DataResponseBody.success(data));
     }
 
     @PostMapping
     @Operation(summary = "상품 등록")
-    @ApiResponses(value = {@ApiResponse(responseCode = "200",
-            content = {@Content(schema = @Schema(implementation = ProductResponseDto.class))})}
+    @ApiResponses(value = {@ApiResponse(responseCode = "200")}
     )
-    public ResponseEntity<? extends BaseResponseBody> registerProduct(
+    public ResponseEntity<? extends DataResponseBody<ProductResponseDto>> registerProduct(
             @AuthenticationPrincipal Principal principal,
             @Valid @ModelAttribute ProductRequestDto request
     ) {
+        ProductResponseDto data = ProductResponseDto.builder()
+            .title(request.getTitle())
+            .price(request.getPrice())
+            .category(request.getCategory())
+            .content(request.getContent())
+            .build();
+        DataResponseBody<ProductResponseDto> body = DataResponseBody.success(data);
+
         return ResponseEntity
                 .status(200)
-                .body(ProductResponseDto.builder()
-                        .statusCode(200)
-                        .title(request.getTitle())
-                        .price(request.getPrice())
-                        .category(request.getCategory())
-                        .content(request.getContent())
-                        .build());
+                .body(body);
     }
 
     @GetMapping("/{productId}")
     @Operation(summary = "단건 상품 상세 조회")
-    @ApiResponses(value = {@ApiResponse(responseCode = "200",
-            content = {@Content(schema = @Schema(implementation = ProductResponseDto.class))})}
+    @ApiResponses(value = {@ApiResponse(responseCode = "200")}
     )
-    public ResponseEntity<? extends BaseResponseBody> showProductDetails(
+    public ResponseEntity<? extends DataResponseBody<ProductResponseDto>> showProductDetails(
             @PathVariable Long productId
     ) {
+        ProductResponseDto data = ProductResponseDto.builder()
+            .id(productId)
+            .build();
+        DataResponseBody<ProductResponseDto> body = DataResponseBody.success(data);
+
         return ResponseEntity
                 .status(200)
-                .body(ProductResponseDto.builder()
-                        .statusCode(200)
-                        .id(productId)
-                        .build());
+                .body(body);
     }
 
     @DeleteMapping("/{productId}")
@@ -102,74 +105,82 @@ public class ProductController {
 
     @PutMapping("/{productId}/status")
     @Operation(summary = "상품 상태 변경")
-    @ApiResponses(value = {@ApiResponse(responseCode = "200",
-            content = {@Content(schema = @Schema(implementation = ProductResponseDto.class))})}
-    )
-    public ResponseEntity<? extends BaseResponseBody> updateProductStatus(
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200")
+    })
+    public ResponseEntity<? extends DataResponseBody<ProductResponseDto>> updateProductStatus(
             @AuthenticationPrincipal Principal principal,
             @PathVariable Long productId,
             @RequestBody ProductStatusUpdateRequestDto request
     ) {
+        ProductResponseDto data = new ProductResponseDto(0L, "title", 0, 0, "content", null, "string", 0, new Seller(0L, "a.png", "nickname"));
+        DataResponseBody<ProductResponseDto> body = DataResponseBody.success(data);
+
         return ResponseEntity
                 .status(200)
-                .body(ProductResponseDto.builder()
-                        .statusCode(200)
-                        .id(productId)
-                        .status(request.getStatus())
-                        .build());
+                .body(body);
     }
 
     @PutMapping("/{productId}")
     @Operation(summary = "상품 수정")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200",
-            content = {@Content(schema = @Schema(implementation = ProductResponseDto.class))}),
+        @ApiResponse(responseCode = "200"),
         @ApiResponse(responseCode = "400")})
-    public ResponseEntity<? extends BaseResponseBody> updateProduct(
+    public ResponseEntity<? extends DataResponseBody<ProductResponseDto>> updateProduct(
             @AuthenticationPrincipal Principal principal,
             @PathVariable Long productId,
             @RequestBody ProductUpdateRequestDto request
     ) {
+        ProductResponseDto data = ProductResponseDto.builder()
+            .id(productId)
+            .title(request.getTitle())
+            .content(request.getContent())
+            .price(request.getPrice())
+            .category(request.getCategory())
+            .images(request.getImages())
+            .build();
+        DataResponseBody<ProductResponseDto> body = DataResponseBody.success(data);
+
         return ResponseEntity
                 .status(200)
-                .body(ProductResponseDto.builder()
-                        .statusCode(200)
-                        .id(productId)
-                        .title(request.getTitle())
-                        .content(request.getContent())
-                        .price(request.getPrice())
-                        .category(request.getCategory())
-                        .images(request.getImages())
-                        .build());
+                .body(body);
     }
 
     @GetMapping("/categories")
     @Operation(summary = "상품 카테고리 목록 조회")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", content = {
-            @Content(schema = @Schema(implementation = ProductCategoryResponseDto.class))})})
-    private ResponseEntity<? extends BaseResponseBody> showCategories() {
+        @ApiResponse(responseCode = "200")
+    })
+    private ResponseEntity<? extends DataResponseBody<List<CategoryResponseDto>>> showCategories() {
+        List<CategoryResponseDto> data = List.of(new CategoryResponseDto(1L, "카테고리"));
+        DataResponseBody<List<CategoryResponseDto>> body = DataResponseBody.success(data);
+
         return ResponseEntity
                 .status(200)
-                .body(ProductCategoryResponseDto.builder()
-                        .statusCode(200)
-                        .build());
+                .body(body);
     }
 
     @GetMapping("/{productId}/chats")
     @Operation(summary = "상품 관련 채팅방 목록 조회")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", content = {
-            @Content(schema = @Schema(implementation = ProductChatsResponseDto.class))}),
-        @ApiResponse(responseCode = "400")})
-    public ResponseEntity<? extends BaseResponseBody> productChatList(
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400", content = {
+            @Content(schema = @Schema(implementation = BaseResponseBody.class))})})
+    public ResponseEntity<? extends DataResponseBody<List<ProductChatResponseDto>>> productChatList(
             @AuthenticationPrincipal Principal principal,
             @PathVariable String productId
     ) {
+        List<ProductChatResponseDto> data = List.of(
+            ProductChatResponseDto.builder()
+                .thumbnail("thumbnail")
+                .statusCode(200)
+                .build()
+        );
+
+        DataResponseBody<List<ProductChatResponseDto>> body = DataResponseBody.success(data);
+
         return ResponseEntity
                 .status(200)
-                .body(ProductChatsResponseDto.builder()
-                        .statusCode(200)
-                        .build());
+                .body(body);
     }
 }

@@ -58,19 +58,6 @@ public class UserResponses {
     }
 
     @Getter
-    public static class MyInterestResponseDto extends BaseResponseBody {
-
-        private final List<ProductDto> productDtoList;
-
-        @Builder
-        public MyInterestResponseDto(Integer statusCode, String message,
-            List<ProductDto> productDtoList) {
-            super(statusCode, message);
-            this.productDtoList = productDtoList;
-        }
-    }
-
-    @Getter
     public static class MyChatRoomResponseDto extends BaseResponseBody {
 
         private final List<ChatRoomDto> chatRoomDtoList;
@@ -86,16 +73,16 @@ public class UserResponses {
     @Getter
     public static class ProductDto {
 
-        private final String id;
+        private final Long id;
         private final String title;
-        private final String price;
+        private final Integer price;
         private final String thumbnailImage;
         private final String status;
-        private final String likes;
+        private final Integer likes;
 
         @Builder
-        public ProductDto(String id, String title, String price, String thumbnailImage,
-            String status, String likes) {
+        public ProductDto(Long id, String title, Integer price, String thumbnailImage,
+            String status, Integer likes) {
             this.id = id;
             this.title = title;
             this.price = price;

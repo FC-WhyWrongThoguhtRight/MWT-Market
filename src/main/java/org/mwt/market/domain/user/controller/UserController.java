@@ -5,7 +5,6 @@ import static org.mwt.market.domain.user.dto.UserRequests.ProfileUpdateRequestDt
 import static org.mwt.market.domain.user.dto.UserRequests.SignupRequestDto;
 import static org.mwt.market.domain.user.dto.UserResponses.LoginResponseDto;
 import static org.mwt.market.domain.user.dto.UserResponses.MyChatRoomResponseDto;
-import static org.mwt.market.domain.user.dto.UserResponses.MyInterestResponseDto;
 import static org.mwt.market.domain.user.dto.UserResponses.ProfileUpdateResponseDto;
 import static org.mwt.market.domain.user.dto.UserResponses.SignupResponseDto;
 
@@ -15,12 +14,17 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import org.mwt.market.common.response.BaseResponseBody;
+import org.mwt.market.common.response.DataResponseBody;
+import org.mwt.market.domain.user.dto.MyInterestRequestDto;
+import org.mwt.market.domain.user.dto.UserResponses.ProductDto;
 import org.mwt.market.domain.user.entity.User;
 import org.mwt.market.domain.user.repository.UserRepository;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -98,17 +102,48 @@ public class UserController {
     @GetMapping("/myPage/interests")
     @Operation(summary = "내 관심목록 조회")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200",
-            content = {@Content(schema = @Schema(implementation = MyInterestResponseDto.class))}),
-        @ApiResponse(responseCode = "400")
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400",
+            content = {@Content(schema = @Schema(implementation = BaseResponseBody.class))})
     })
-    public ResponseEntity<? extends BaseResponseBody> getMyInterest() {
+    public ResponseEntity<? extends DataResponseBody<List<ProductDto>>> getMyInterest() {
+        List<ProductDto> data = List.of(
+            new ProductDto(0L, "title", 0, "thumbnail", "status", 0)
+        );
+
         return ResponseEntity
             .status(200)
-            .body(MyInterestResponseDto.builder()
-                .statusCode(200)
-                .build()
-            );
+            .body(DataResponseBody.success(data));
+    }
+
+    @PostMapping("/myPage/interests")
+    @Operation(summary = "내 관심목록 등록")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400",
+            content = {@Content(schema = @Schema(implementation = BaseResponseBody.class))})
+    })
+    public ResponseEntity<? extends BaseResponseBody> addMyInterest(
+        @RequestBody MyInterestRequestDto myInterestRequestDto
+    ) {
+        return ResponseEntity
+            .status(200)
+            .body(BaseResponseBody.success());
+    }
+
+    @DeleteMapping("/myPage/interests")
+    @Operation(summary = "내 관심목록 삭제")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400",
+            content = {@Content(schema = @Schema(implementation = BaseResponseBody.class))})
+    })
+    public ResponseEntity<? extends BaseResponseBody> removeMyInterest(
+        @RequestBody MyInterestRequestDto myInterestRequestDto
+    ) {
+        return ResponseEntity
+            .status(200)
+            .body(BaseResponseBody.success());
     }
 
     @GetMapping("/myPage/chat")
