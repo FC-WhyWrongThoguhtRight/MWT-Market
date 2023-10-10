@@ -3,7 +3,6 @@ package org.mwt.market.domain.product.dto;
 import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
-import org.mwt.market.common.response.BaseResponseBody;
 
 @Getter
 public class ProductResponseDto {

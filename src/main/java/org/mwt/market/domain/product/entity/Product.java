@@ -57,4 +57,9 @@ public class Product {
     private LocalDateTime deletedAt;
 
     private Integer likes;
+
+    public void delete() {
+        this.isDeleted = true;
+        this.deletedAt = LocalDateTime.now();
+    }
 }

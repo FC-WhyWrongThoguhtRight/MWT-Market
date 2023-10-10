@@ -6,6 +6,7 @@ import org.mwt.market.config.security.token.UserPrincipal;
 import org.mwt.market.domain.product.dto.ProductInfoDto;
 import org.mwt.market.domain.product.dto.ProductSearchRequestDto;
 import org.mwt.market.domain.product.entity.Product;
+import org.mwt.market.domain.product.exception.AlreadyGoneException;
 import org.mwt.market.domain.product.repository.ProductRepository;
 import org.mwt.market.domain.user.entity.User;
 import org.mwt.market.domain.user.exception.NoSuchUserException;
@@ -14,7 +15,6 @@ import org.mwt.market.domain.wish.entity.Wish;
 import org.mwt.market.domain.wish.repository.WishRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,5 +53,11 @@ public class ProductService {
                 .collect(Collectors.toList());
 
         return productInfos;
+    }
+
+    @Transactional
+    public void deleteProduct(Long productId) {
+        Product product = productRepository.findById(productId).orElseThrow(AlreadyGoneException::new);
+        product.delete();
     }
 }
