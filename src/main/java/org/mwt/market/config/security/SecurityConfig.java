@@ -12,6 +12,7 @@ import org.mwt.market.config.security.provider.JwtProvider;
 import org.mwt.market.config.security.service.AjaxUserDetailService;
 import org.mwt.market.config.security.service.RefreshTokenService;
 import org.mwt.market.config.security.token.AuthenticationDetails;
+import org.mwt.market.config.security.token.UserPrincipal;
 import org.mwt.market.domain.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -82,8 +83,7 @@ public class SecurityConfig {
             .csrf(CsrfConfigurer::disable)
             .sessionManagement(sessionManagementConfigurer ->
                 sessionManagementConfigurer
-                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            );
+                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         http
             .authorizeHttpRequests((authorizeHttpRequests) ->
@@ -94,8 +94,7 @@ public class SecurityConfig {
                             .toArray(AntPathRequestMatcher[]::new)
                     ).permitAll()
                     .requestMatchers(MY_PAGE).authenticated()
-                    .anyRequest().permitAll()
-            );
+                    .anyRequest().permitAll());
 
         http
             .apply(
@@ -107,6 +106,11 @@ public class SecurityConfig {
             .failureHandlerAjax(new AjaxAuthenticationFailureHandler())
             .setAuthenticationDetailsSource(authenticationDetailsSource())
             .loginProcessingUrl(loginProcUrl);
+
+        http
+            .anonymous((anonymous) ->
+                anonymous
+                    .principal(new UserPrincipal(null, "anonymous")));
 
         http
             .addFilterBefore(
