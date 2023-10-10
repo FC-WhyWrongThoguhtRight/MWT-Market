@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 import org.mwt.market.domain.product.entity.Product;
 import org.mwt.market.domain.user.entity.User;
 import org.springframework.data.annotation.CreatedDate;
@@ -29,5 +30,34 @@ public class Wish {
     private Product product;
 
     @CreatedDate
+    @CreationTimestamp
     private LocalDateTime createdAt;
+
+    public Wish(User user, Product product) {
+        this.user = user;
+        this.product = product;
+    }
+
+    public String getProductTitle() {
+        return product.getTitle();
+    }
+
+    public Integer getProductPrice() {
+        return product.getPrice();
+    }
+
+    public String getProductThumbnail() {
+        if (product.getProductAlbum() == null || product.getProductAlbum().isEmpty()) {
+            return "https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png";
+        }
+        return product.getProductAlbum().get(0).getUrl();
+    }
+
+    public String getProductStatus() {
+        return product.getStatus().getValue();
+    }
+
+    public Integer getProductLikes() {
+        return product.getLikes();
+    }
 }

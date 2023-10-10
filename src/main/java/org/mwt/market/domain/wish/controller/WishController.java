@@ -7,11 +7,16 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.mwt.market.common.response.BaseResponseBody;
 import org.mwt.market.common.response.DataResponseBody;
+import org.mwt.market.common.response.ErrorResponseBody;
+import org.mwt.market.config.security.token.UserPrincipal;
 import org.mwt.market.domain.wish.dto.WishReqeuestDto;
 import org.mwt.market.domain.wish.dto.WishResponseDto;
+import org.mwt.market.domain.wish.service.WishService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,19 +27,22 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/wish")
 @Tag(name = "Wish", description = "관심목록 관련 API")
+@RequiredArgsConstructor
 public class WishController {
+
+    private final WishService wishService;
 
     @GetMapping
     @Operation(summary = "내 관심목록 조회")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200"),
         @ApiResponse(responseCode = "400",
-            content = {@Content(schema = @Schema(implementation = BaseResponseBody.class))})
+            content = {@Content(schema = @Schema(implementation = ErrorResponseBody.class))})
     })
-    public ResponseEntity<? extends DataResponseBody<List<WishResponseDto>>> getMyInterest() {
-        List<WishResponseDto> data = List.of(
-            new WishResponseDto(0L, "title", 0, "thumbnail", "status", 0)
-        );
+    public ResponseEntity<? extends DataResponseBody<List<WishResponseDto>>> getWishes(
+        @AuthenticationPrincipal UserPrincipal userPrincipal
+    ) {
+        List<WishResponseDto> data = wishService.getWishes(userPrincipal);
 
         return ResponseEntity
             .status(200)
@@ -46,11 +54,14 @@ public class WishController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200"),
         @ApiResponse(responseCode = "400",
-            content = {@Content(schema = @Schema(implementation = BaseResponseBody.class))})
+            content = {@Content(schema = @Schema(implementation = ErrorResponseBody.class))})
     })
-    public ResponseEntity<? extends BaseResponseBody> addMyInterest(
+    public ResponseEntity<? extends BaseResponseBody> addWish(
+        @AuthenticationPrincipal UserPrincipal userPrincipal,
         @RequestBody WishReqeuestDto wishReqeuestDto
     ) {
+        wishService.addWish(userPrincipal, wishReqeuestDto.getProductId());
+
         return ResponseEntity
             .status(200)
             .body(BaseResponseBody.success());
@@ -61,11 +72,14 @@ public class WishController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200"),
         @ApiResponse(responseCode = "400",
-            content = {@Content(schema = @Schema(implementation = BaseResponseBody.class))})
+            content = {@Content(schema = @Schema(implementation = ErrorResponseBody.class))})
     })
-    public ResponseEntity<? extends BaseResponseBody> removeMyInterest(
+    public ResponseEntity<? extends BaseResponseBody> removeWish(
+        @AuthenticationPrincipal UserPrincipal userPrincipal,
         @RequestBody WishReqeuestDto wishReqeuestDto
     ) {
+        wishService.removeWish(userPrincipal, wishReqeuestDto.getProductId());
+
         return ResponseEntity
             .status(200)
             .body(BaseResponseBody.success());
