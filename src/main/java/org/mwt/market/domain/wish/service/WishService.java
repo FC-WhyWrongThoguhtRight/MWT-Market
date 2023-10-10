@@ -12,6 +12,7 @@ import org.mwt.market.domain.user.repository.UserRepository;
 import org.mwt.market.domain.wish.dto.WishResponseDto;
 import org.mwt.market.domain.wish.entity.Wish;
 import org.mwt.market.domain.wish.exception.AlreadyExistWishException;
+import org.mwt.market.domain.wish.exception.NoSuchWishException;
 import org.mwt.market.domain.wish.repository.WishRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,12 +38,20 @@ public class WishService {
         wishRepository.save(wish);
     }
 
-    public List<WishResponseDto> getMyWishes(UserPrincipal userPrincipal) {
+    public List<WishResponseDto> getWishes(UserPrincipal userPrincipal) {
         User user = userRepository.findByEmail(userPrincipal.getEmail()).orElseThrow(NoSuchUserException::new);
         List<Wish> wishes = wishRepository.findAllByUser(user);
 
         return wishes.stream()
             .map(WishResponseDto::fromEntity)
             .toList();
+    }
+
+    public void removeWish(UserPrincipal userPrincipal, Long productId) {
+        User user = userRepository.findByEmail(userPrincipal.getEmail()).orElseThrow(NoSuchUserException::new);
+        Product product = productRepository.findById(productId).orElseThrow(NoSuchProductException::new);
+
+        Wish wish = wishRepository.findByUserAndProduct(user, product).orElseThrow(NoSuchWishException::new);
+        wishRepository.delete(wish);
     }
 }

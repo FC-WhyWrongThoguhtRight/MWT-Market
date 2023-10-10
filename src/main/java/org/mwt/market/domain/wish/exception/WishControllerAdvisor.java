@@ -19,7 +19,7 @@ public class WishControllerAdvisor {
 
     private final Logger logger = LoggerFactory.getLogger(WishControllerAdvisor.class);
 
-    @ExceptionHandler(AlreadyExistWishException.class)
+    @ExceptionHandler(value = { AlreadyExistWishException.class, NoSuchWishException.class } )
     public ResponseEntity<ErrorResponseBody> handleUserInfoException(AlreadyExistWishException ex) {
         logger.error(ex.getMessage(), ex);
         return ResponseEntity

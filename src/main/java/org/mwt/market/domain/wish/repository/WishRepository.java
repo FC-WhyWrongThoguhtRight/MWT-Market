@@ -1,6 +1,7 @@
 package org.mwt.market.domain.wish.repository;
 
 import java.util.List;
+import java.util.Optional;
 import org.mwt.market.domain.product.entity.Product;
 import org.mwt.market.domain.user.entity.User;
 import org.mwt.market.domain.wish.entity.Wish;
@@ -13,4 +14,6 @@ public interface WishRepository extends JpaRepository<Wish, Long> {
     boolean existsByUserAndProduct(User user, Product product);
 
     List<Wish> findAllByUser(User user);
+
+    Optional<Wish> findByUserAndProduct(User user, Product product);
 }
