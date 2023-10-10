@@ -7,35 +7,6 @@ import lombok.Getter;
 public class UserResponses {
 
     @Getter
-    public static class SignupResponseDto {
-
-        private final Long id;
-        private final String email;
-        private final String phone;
-        private final String nickname;
-
-        @Builder
-        public SignupResponseDto(Long id, String email,
-            String phone, String nickname) {
-            this.id = id;
-            this.email = email;
-            this.phone = phone;
-            this.nickname = nickname;
-        }
-    }
-
-    @Getter
-    public static class LoginResponseDto {
-
-        private final String jwtToken;
-
-        @Builder
-        public LoginResponseDto(String jwtToken) {
-            this.jwtToken = jwtToken;
-        }
-    }
-
-    @Getter
     public static class UserInfoResponseDto {
 
         private final String email;
