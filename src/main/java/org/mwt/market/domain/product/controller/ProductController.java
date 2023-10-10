@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.mwt.market.common.response.BaseResponseBody;
 import org.mwt.market.common.response.DataResponseBody;
 import org.mwt.market.domain.product.dto.ProductCategoryResponseDto;
-import org.mwt.market.domain.product.dto.ProductChatsResponseDto;
+import org.mwt.market.domain.product.dto.ProductChatResponseDto;
 import org.mwt.market.domain.product.dto.ProductInfoDto;
 import org.mwt.market.domain.product.dto.ProductListResponseDto;
 import org.mwt.market.domain.product.dto.ProductRequestDto;
@@ -159,17 +159,24 @@ public class ProductController {
     @GetMapping("/{productId}/chats")
     @Operation(summary = "상품 관련 채팅방 목록 조회")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", content = {
-            @Content(schema = @Schema(implementation = ProductChatsResponseDto.class))}),
-        @ApiResponse(responseCode = "400")})
-    public ResponseEntity<? extends BaseResponseBody> productChatList(
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400", content = {
+            @Content(schema = @Schema(implementation = BaseResponseBody.class))})})
+    public ResponseEntity<? extends DataResponseBody<List<ProductChatResponseDto>>> productChatList(
             @AuthenticationPrincipal Principal principal,
             @PathVariable String productId
     ) {
+        List<ProductChatResponseDto> data = List.of(
+            ProductChatResponseDto.builder()
+                .thumbnail("thumbnail")
+                .statusCode(200)
+                .build()
+        );
+
+        DataResponseBody<List<ProductChatResponseDto>> body = DataResponseBody.success(data);
+
         return ResponseEntity
                 .status(200)
-                .body(ProductChatsResponseDto.builder()
-                        .statusCode(200)
-                        .build());
+                .body(body);
     }
 }
