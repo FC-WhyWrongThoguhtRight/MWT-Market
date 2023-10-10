@@ -1,10 +1,10 @@
-package org.mwt.market.domain.user.dto;
+package org.mwt.market.domain.wish.dto;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class MyInterestRequestDto {
+public class WishReqeuestDto {
     private Long productId;
 }
