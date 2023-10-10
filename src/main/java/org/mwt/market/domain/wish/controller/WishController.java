@@ -38,10 +38,10 @@ public class WishController {
         @ApiResponse(responseCode = "400",
             content = {@Content(schema = @Schema(implementation = BaseResponseBody.class))})
     })
-    public ResponseEntity<? extends DataResponseBody<List<WishResponseDto>>> getMyInterest() {
-        List<WishResponseDto> data = List.of(
-            new WishResponseDto(0L, "title", 0, "thumbnail", "status", 0)
-        );
+    public ResponseEntity<? extends DataResponseBody<List<WishResponseDto>>> getMyWishes(
+        @AuthenticationPrincipal UserPrincipal userPrincipal
+    ) {
+        List<WishResponseDto> data = wishService.getMyWishes(userPrincipal);
 
         return ResponseEntity
             .status(200)

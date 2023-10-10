@@ -2,6 +2,7 @@ package org.mwt.market.domain.wish.dto;
 
 import lombok.Builder;
 import lombok.Getter;
+import org.mwt.market.domain.wish.entity.Wish;
 
 @Getter
 public class WishResponseDto {
@@ -22,5 +23,16 @@ public class WishResponseDto {
         this.thumbnailImage = thumbnailImage;
         this.status = status;
         this.likes = likes;
+    }
+
+    public static WishResponseDto fromEntity(Wish wish) {
+        return new WishResponseDto(
+            wish.getWishId(),
+            wish.getProductTitle(),
+            wish.getProductPrice(),
+            wish.getProductThumbnail(),
+            wish.getProductStatus(),
+            wish.getProductLikes()
+        );
     }
 }
