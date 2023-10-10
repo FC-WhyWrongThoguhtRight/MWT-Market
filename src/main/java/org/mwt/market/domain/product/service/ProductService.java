@@ -52,7 +52,7 @@ public class ProductService {
         User user = userRepository.findById(userPrincipal.getId()).orElseThrow(NoSuchUserException::new);
         List<Wish> findWishProducts = wishRepository.findAllByUser(user);
         Set<Long> wishProductIds = findWishProducts.stream()
-                .map(wish -> wish.getProduct().getId())
+                .map(wish -> wish.getProduct().getProductId())
                 .collect(Collectors.toSet());
 
         List<ProductInfoDto> productInfos = products.stream()

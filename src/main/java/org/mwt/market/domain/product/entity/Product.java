@@ -1,6 +1,5 @@
 package org.mwt.market.domain.product.entity;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -28,8 +27,7 @@ public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "product_id")
-    private Long id;
+    private Long productId;
     private String sellPlace;
     private String title;
     private String content;
