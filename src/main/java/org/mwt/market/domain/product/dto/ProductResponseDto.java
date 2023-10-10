@@ -16,13 +16,13 @@ public class ProductResponseDto {
     private final Long categoryId;
     private final String content;
     private final List<String> images;
-    private final Integer status;
+    private final String status;
     private final Integer likes;
     private final Seller seller;
 
     @Builder
     public ProductResponseDto(Long id, String title,
-        Integer price, Long categoryId, String content, List<String> images, Integer status,
+        Integer price, Long categoryId, String content, List<String> images, String status,
         Integer likes, Seller seller) {
         this.id = id;
         this.title = title;
@@ -44,7 +44,7 @@ public class ProductResponseDto {
             .images(product.getImages())
             .price(product.getPrice())
             .seller(Seller.fromEntity(product.getSeller()))
-            .status(product.getStatus().getDbIdx())
+            .status(product.getStatus().getValue())
             .title(product.getTitle())
             .build();
     }

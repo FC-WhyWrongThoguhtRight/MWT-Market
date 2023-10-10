@@ -11,5 +11,5 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ProductStatusUpdateRequestDto {
 
-    private Integer status;
+    private String status;
 }

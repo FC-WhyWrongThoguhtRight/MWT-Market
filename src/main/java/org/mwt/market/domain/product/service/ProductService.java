@@ -58,7 +58,7 @@ public class ProductService {
     }
 
     @Transactional
-    public ProductResponseDto changeStatus(UserPrincipal userPrincipal, Long productId, Integer status) {
+    public ProductResponseDto changeStatus(UserPrincipal userPrincipal, Long productId, String status) {
         Product product = productRepository.findById(productId).orElseThrow(NoSuchProductException::new);
         if (!userPrincipal.getEmail().equals(product.getSellerEmail())) {
             throw new NoPermissionException();
