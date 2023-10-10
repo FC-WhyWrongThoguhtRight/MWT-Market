@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 public class ProductService {
 
     private final ProductRepository productRepository;
@@ -57,6 +57,7 @@ public class ProductService {
         return productInfos;
     }
 
+    @Transactional
     public ProductResponseDto changeStatus(UserPrincipal userPrincipal, Long productId, Integer status) {
         Product product = productRepository.findById(productId).orElseThrow(NoSuchProductException::new);
         if (!userPrincipal.getEmail().equals(product.getSellerEmail())) {
