@@ -15,7 +15,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.io.IOException;
 import org.mwt.market.common.response.BaseResponseBody;
 import org.mwt.market.common.response.DataResponseBody;
 import org.mwt.market.config.security.token.UserPrincipal;
