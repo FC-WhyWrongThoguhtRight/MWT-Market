@@ -12,7 +12,7 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
 
     Optional<ChatRoom> findByChatRoomId(Long ChatRoomId);
 
-    Optional<ChatRoom> findByBuyerIdAndProductId(Long buyerId, Long ChatRoomId);
+    Optional<ChatRoom> findByBuyer_UserIdAndChatRoomId(Long userId, Long ChatRoomId);
 
     List<ChatRoom> findAllByProduct(Product product);
 }

@@ -33,7 +33,7 @@ public class ChatService {
     @Transactional
     public ChatRoom joinChatRoom(ChatRoomRequestDto chatRoomRequestDto) {
         Optional<ChatRoom> optChatRoom = chatRoomRepository
-            .findByBuyerIdAndProductId(chatRoomRequestDto.getUserId(),
+            .findByBuyer_UserIdAndChatRoomId(chatRoomRequestDto.getUserId(),
                 chatRoomRequestDto.getProductId());
 
         ChatRoom chatRoom = optChatRoom.orElseGet(() -> {
