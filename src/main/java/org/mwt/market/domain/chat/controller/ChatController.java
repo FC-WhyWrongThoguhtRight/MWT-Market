@@ -25,7 +25,6 @@ public class ChatController {
         this.chatService = chatService;
     }
 
-
 // 채팅방 접속할때 채팅방이 없으면 신규 채팅방 생성후 리턴 하도록 만들었습니다.
 
 //    @PostMapping("/sellers/{productId}/createChat")

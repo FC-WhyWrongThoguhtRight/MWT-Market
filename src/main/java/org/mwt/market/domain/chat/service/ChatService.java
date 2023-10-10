@@ -3,7 +3,6 @@ package org.mwt.market.domain.chat.service;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.mwt.market.domain.chat.dto.ChatRoomRequestDto;
-import org.mwt.market.domain.chat.dto.ChatRoomResponseDto;
 import org.mwt.market.domain.chat.entity.ChatRoom;
 import org.mwt.market.domain.chat.repository.ChatRoomRepository;
 import org.springframework.stereotype.Service;
@@ -24,17 +23,18 @@ public class ChatService {
     public ChatRoom joinChatRoom(ChatRoomRequestDto chatRoomRequestDto) {
 
         Optional<ChatRoom> chatRoomOptional = chatRoomRepository
-            .findByBuyerIdAndProductId(chatRoomRequestDto.getUserId(), chatRoomRequestDto.getProductId());
+            .findByBuyerIdAndProductId(chatRoomRequestDto.getUserId(),
+                chatRoomRequestDto.getProductId());
 
-        if(!chatRoomOptional.isPresent()){
+        if (chatRoomOptional.isEmpty()) {
             chatRoomRepository.save(
-               ChatRoom.createChatRoom(chatRoomRequestDto)
+                ChatRoom.createChatRoom(chatRoomRequestDto)
             );
-            chatRoomOptional = chatRoomRepository.findByBuyerIdAndProductId(chatRoomRequestDto.getUserId(), chatRoomRequestDto.getProductId());
+            chatRoomOptional = chatRoomRepository.findByBuyerIdAndProductId(
+                chatRoomRequestDto.getUserId(), chatRoomRequestDto.getProductId());
         }
 
         return chatRoomOptional.orElseThrow();
-
 
 
     }
