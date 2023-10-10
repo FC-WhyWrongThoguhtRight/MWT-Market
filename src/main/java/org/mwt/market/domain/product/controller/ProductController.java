@@ -13,14 +13,10 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.mwt.market.common.response.BaseResponseBody;
 import org.mwt.market.common.response.DataResponseBody;
-import org.mwt.market.domain.product.dto.CategoryResponseDto;
-import org.mwt.market.domain.product.dto.ProductChatResponseDto;
-import org.mwt.market.domain.product.dto.ProductInfoDto;
-import org.mwt.market.domain.product.dto.ProductRequestDto;
-import org.mwt.market.domain.product.dto.ProductResponseDto;
+import org.mwt.market.config.security.token.UserPrincipal;
+import org.mwt.market.domain.product.dto.*;
 import org.mwt.market.domain.product.dto.ProductResponseDto.Seller;
-import org.mwt.market.domain.product.dto.ProductStatusUpdateRequestDto;
-import org.mwt.market.domain.product.dto.ProductUpdateRequestDto;
+import org.mwt.market.domain.product.service.ProductService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -40,20 +36,21 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class ProductController {
 
+    private final ProductService productService;
+
     @GetMapping("/list")
     @Operation(summary = "전체 상품 조회")
     @ApiResponses(value = {@ApiResponse(responseCode = "200")}
     )
     public ResponseEntity<? extends DataResponseBody<List<ProductInfoDto>>> showAllProducts(
-            @RequestParam(required = false) String searchWord
-    ) {
-        List<ProductInfoDto> data = List.of(
-            new ProductInfoDto(0L, "title", 0, "thumbnail", "status", 0, false)
-        );
+            @RequestBody ProductSearchRequestDto request,
+            @AuthenticationPrincipal UserPrincipal userPrincipal
+            ) {
+        List<ProductInfoDto> ProductInfos = productService.findAllProducts(request, userPrincipal);
 
         return ResponseEntity
                 .status(200)
-                .body(DataResponseBody.success(data));
+                .body(DataResponseBody.success(ProductInfos));
     }
 
     @PostMapping

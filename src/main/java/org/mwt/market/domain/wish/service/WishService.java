@@ -40,7 +40,7 @@ public class WishService {
 
     public List<WishResponseDto> getWishes(UserPrincipal userPrincipal) {
         User user = userRepository.findByEmail(userPrincipal.getEmail()).orElseThrow(NoSuchUserException::new);
-        List<Wish> wishes = wishRepository.findByUser(user);
+        List<Wish> wishes = wishRepository.findAllByUser(user);
 
         return wishes.stream()
             .map(WishResponseDto::fromEntity)
