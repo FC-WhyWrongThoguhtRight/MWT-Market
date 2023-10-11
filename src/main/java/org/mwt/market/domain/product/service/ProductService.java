@@ -131,6 +131,7 @@ public class ProductService {
         }
     }
 
+    @Transactional
     public ProductResponseDto changeStatus(UserPrincipal userPrincipal, Long productId, String status) {
         Product product = productRepository.findById(productId)
             .orElseThrow(NoSuchProductException::new);
@@ -172,6 +173,7 @@ public class ProductService {
         return dtos;
     }
 
+    @Transactional
     public ProductResponseDto addProduct(UserPrincipal userPrincipal, ProductRequestDto request) {
         User user = userRepository.findByEmail(userPrincipal.getEmail()).orElseThrow(NoSuchUserException::new);
         ProductCategory category = categoryRepository.findById(request.getCategoryId()).orElseThrow(
