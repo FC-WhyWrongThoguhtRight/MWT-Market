@@ -1,6 +1,5 @@
 package org.mwt.market.domain.product.entity;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -12,6 +11,7 @@ import jakarta.persistence.OneToMany;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -28,8 +28,7 @@ public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "product_id")
-    private Long id;
+    private Long productId;
     private String sellPlace;
     private String title;
     private String content;
@@ -58,11 +57,25 @@ public class Product {
 
     private Integer likes;
 
+    @Builder
+    public Product(String title, String content, Integer price, List<ProductImage> productAlbum,
+        User seller, ProductCategory productCategory) {
+        this.title = title;
+        this.content = content;
+        this.price = price;
+        this.productAlbum = productAlbum;
+        this.seller = seller;
+        this.productCategory = productCategory;
+        this.status = ProductStatus.TRADE;
+        this.isDeleted = false;
+        this.likes = 0;
+    }
+
     public void delete() {
         this.isDeleted = true;
         this.deletedAt = LocalDateTime.now();
     }
-
+  
     public void update(String title, String content, ProductCategory category, Integer price, List<ProductImage> productAlbum) {
         this.title = title;
         this.content = content;
@@ -70,7 +83,7 @@ public class Product {
         this.productCategory = category;
         this.productAlbum = productAlbum;
     }
-    
+   
     public void minusLikes() {
         this.likes--;
     }
@@ -100,5 +113,9 @@ public class Product {
             return "https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png";
         }
         return productAlbum.get(0).getUrl();
+    }
+
+    public void setProductAlbum(List<ProductImage> productAlbum) {
+        this.productAlbum = productAlbum;
     }
 }

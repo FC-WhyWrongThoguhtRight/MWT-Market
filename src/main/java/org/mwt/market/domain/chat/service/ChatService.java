@@ -2,7 +2,8 @@ package org.mwt.market.domain.chat.service;
 
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
-import org.mwt.market.domain.chat.dto.ChatRoomRequestDto;
+import org.mwt.market.config.security.token.UserPrincipal;
+import org.mwt.market.domain.chat.dto.ChatRoomDto;
 import org.mwt.market.domain.chat.entity.ChatRoom;
 import org.mwt.market.domain.chat.repository.ChatRoomRepository;
 import org.mwt.market.domain.product.entity.Product;
@@ -31,19 +32,29 @@ public class ChatService {
     }
 
     @Transactional
-    public ChatRoom joinChatRoom(ChatRoomRequestDto chatRoomRequestDto) {
+    public ChatRoomDto joinChatRoom(UserPrincipal userPrincipal, Long productId) {
+        Long userId = userPrincipal.getId();
+
         Optional<ChatRoom> optChatRoom = chatRoomRepository
-            .findByBuyer_UserIdAndChatRoomId(chatRoomRequestDto.getUserId(),
-                chatRoomRequestDto.getProductId());
+            .findByBuyer_UserIdAndProduct_ProductId(userId,
+                productId);
 
         ChatRoom chatRoom = optChatRoom.orElseGet(() -> {
-            User buyer = userRepository.findById(chatRoomRequestDto.getUserId())
+            User buyer = userRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchUserException());
-            Product product = productRepository.findById(chatRoomRequestDto.getProductId())
+            Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new NoSuchProductException());
             return chatRoomRepository.save(ChatRoom.createChatRoom(buyer, product));
         });
 
-        return chatRoom;
+        return ChatRoomDto.builder()
+            .chatRoomId(chatRoom.getChatRoomId())
+            .buyerId(chatRoom.getBuyer().getUserId())
+            .nickName(chatRoom.getBuyer().getNickname())
+            .buyerProfileImg(chatRoom.getBuyer().getProfileImageUrl())
+            //TODO: MongoDB로부터 마지막 메시지 받아오기
+            .lastMessage(null)
+            .lasteCreatedAt(null)
+            .build();
     }
 }

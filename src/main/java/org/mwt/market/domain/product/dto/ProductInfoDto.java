@@ -29,7 +29,7 @@ public class ProductInfoDto {
 
     public static ProductInfoDto toDto(Product product) {
         return ProductInfoDto.builder()
-                .id(product.getId())
+                .id(product.getProductId())
                 .title(product.getTitle())
                 .price(product.getPrice())
                 .status(product.getStatus().getValue())
