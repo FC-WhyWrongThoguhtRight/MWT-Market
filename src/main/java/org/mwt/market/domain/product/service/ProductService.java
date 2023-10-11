@@ -25,6 +25,7 @@ import org.mwt.market.domain.product.exception.ImageUploadErrorException;
 import org.mwt.market.domain.product.exception.NoPermissionException;
 import org.mwt.market.domain.product.exception.NoSuchProductException;
 import org.mwt.market.domain.product.repository.ProductCategoryRepository;
+import org.mwt.market.domain.product.repository.ProductImageRepository;
 import org.mwt.market.domain.product.repository.ProductRepository;
 import org.mwt.market.domain.user.entity.User;
 import org.mwt.market.domain.user.exception.NoSuchUserException;
@@ -54,6 +55,7 @@ public class ProductService {
     private final UserRepository userRepository;
     private final ChatRoomRepository chatRoomRepository;
     private final ProductCategoryRepository categoryRepository;
+    private final ProductImageRepository productImageRepository;
 
     private final S3Template s3Template;
 
@@ -157,7 +159,9 @@ public class ProductService {
                 image.getInputStream(),
                 ObjectMetadata.builder().contentType(extension).build());
 
-            return new ProductImage(product, resource.getURL().toString(), order);
+            return productImageRepository.save(
+                new ProductImage(product, resource.getURL().toString(), order)
+            );
         } catch (IOException ex) {
             throw new ImageUploadErrorException();
         }
