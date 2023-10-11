@@ -109,4 +109,9 @@ public class ProductService {
 
         return dtos;
     }
+
+    public ProductResponseDto findProduct(Long productId) {
+        Product product = productRepository.findById(productId).orElseThrow(NoSuchProductException::new);
+        return ProductResponseDto.fromEntity(product);
+    }
 }
