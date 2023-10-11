@@ -13,7 +13,7 @@ public class ProductInfoDto {
     private final String thumbnail;
     private final String status;
     private final Integer likes;
-    private final boolean like;
+    private boolean like;
 
     @Builder
     public ProductInfoDto(Long id, String title, Integer price, String thumbnail,
@@ -29,13 +29,17 @@ public class ProductInfoDto {
 
     public static ProductInfoDto toDto(Product product) {
         return ProductInfoDto.builder()
-                .id(product.getProductId())
-                .title(product.getTitle())
-                .price(product.getPrice())
-                .status(product.getStatus().getValue())
-                .likes(product.getLikes())
-                .like(false)
-                .thumbnail(product.getProductAlbum().get(0).getUrl())
-                .build();
+            .id(product.getProductId())
+            .title(product.getTitle())
+            .price(product.getPrice())
+            .status(product.getStatus().getValue())
+            .likes(product.getLikes())
+            .like(false)
+            .thumbnail(product.getProductAlbum().get(0).getUrl())
+            .build();
+    }
+
+    public void setLike(boolean like) {
+        this.like = like;
     }
 }
