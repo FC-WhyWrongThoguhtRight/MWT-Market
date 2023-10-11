@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
@@ -17,5 +18,6 @@ public class ProductUpdateRequestDto {
     private String content;
     private Integer price;
     private Long categoryId;
-    private List<String> images;
+    private List<MultipartFile> images;
+
 }

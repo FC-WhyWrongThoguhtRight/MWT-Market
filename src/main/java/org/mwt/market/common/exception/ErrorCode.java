@@ -6,6 +6,7 @@ import lombok.Getter;
 public enum ErrorCode {
     NoSuchElement(400, "noSuchElement"),
     NoSuchProduct(400, "noSuchProduct"),
+    NoSuchCategory(400, "noSuchCategory"),
     AlreadyExistWish(400, "alreadyExistWish"),
     NoSuchWish(400, "noSuchWish"),
     NoPermission(401, "noPermission"),

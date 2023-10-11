@@ -16,14 +16,16 @@ import org.mwt.market.domain.product.dto.ProductInfoDto;
 import org.mwt.market.domain.product.dto.ProductRequestDto;
 import org.mwt.market.domain.product.dto.ProductResponseDto;
 import org.mwt.market.domain.product.dto.ProductSearchRequestDto;
+import org.mwt.market.domain.product.dto.ProductUpdateRequestDto;
 import org.mwt.market.domain.product.entity.Product;
 import org.mwt.market.domain.product.entity.ProductCategory;
 import org.mwt.market.domain.product.entity.ProductImage;
-import org.mwt.market.domain.product.exception.ImageUploadErrorException;
-import org.mwt.market.domain.product.exception.AlreadyGoneException;
+import org.mwt.market.domain.product.exception.NoSuchCategoryException;
 import org.mwt.market.domain.product.exception.NoPermissionException;
 import org.mwt.market.domain.product.exception.NoSuchProductException;
+import org.mwt.market.domain.product.exception.ProductUpdateException;
 import org.mwt.market.domain.product.repository.ProductCategoryRepository;
+import org.mwt.market.domain.product.exception.ImageUploadErrorException;
 import org.mwt.market.domain.product.repository.ProductImageRepository;
 import org.mwt.market.domain.product.repository.ProductRepository;
 import org.mwt.market.domain.user.entity.User;
@@ -36,12 +38,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.springframework.util.StringUtils;
-import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Service
@@ -50,13 +51,13 @@ import org.springframework.web.multipart.MultipartFile;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final ProductCategoryRepository productCategoryRepository;
     private final WishRepository wishRepository;
     private final UserRepository userRepository;
+    private final S3Template s3Template;
     private final ChatRoomRepository chatRoomRepository;
     private final ProductCategoryRepository categoryRepository;
     private final ProductImageRepository productImageRepository;
-
-    private final S3Template s3Template;
 
     public List<ProductInfoDto> findAllProducts(ProductSearchRequestDto request, UserPrincipal userPrincipal) {
 
@@ -81,9 +82,53 @@ public class ProductService {
     }
 
     @Transactional
-    public void deleteProduct(Long productId) {
-        Product product = productRepository.findById(productId).orElseThrow(AlreadyGoneException::new);
+    public void deleteProduct(Long productId, UserPrincipal userPrincipal) {
+        Product product = productRepository.findById(productId).orElseThrow(NoSuchProductException::new);
+        if (!userPrincipal.getId().equals(product.getSeller().getUserId())) {
+            throw new NoPermissionException();
+        }
+
         product.delete();
+        productRepository.save(product);
+    }
+
+    @Transactional
+    public void updateProduct(Long productId, ProductUpdateRequestDto request) {
+        Product product = productRepository.findById(productId).orElseThrow(NoSuchProductException::new);
+
+        Long categoryId = request.getCategoryId();
+        ProductCategory productCategory = productCategoryRepository.findById(categoryId).orElseThrow(NoSuchCategoryException::new);
+
+        List<Long> productImageIds = product.getProductAlbum().stream()
+                        .map(ProductImage::getImgId)
+                        .toList();
+
+        productImageIds.forEach(productImageRepository::deleteById);
+        List<ProductImage> productAlbum = new ArrayList<>();
+        for (int i = 0; i < request.getImages().size(); i++) {
+            MultipartFile image = request.getImages().get(i);
+            productAlbum.add(updateImage(product, image, i));
+        }
+
+        product.update(request.getTitle(), request.getContent(), productCategory, request.getPrice(), productAlbum);
+        productRepository.save(product);
+    }
+
+    private ProductImage updateImage(Product product, MultipartFile image, int order) {
+        String extension = StringUtils.getFilenameExtension(image.getOriginalFilename());
+
+        try {
+            S3Resource resource = s3Template.upload("mwtmarketbucket",
+                    "products/" + product.getProductId() + "/" + System.currentTimeMillis() + "/" + order,
+                    image.getInputStream(),
+                    ObjectMetadata.builder().contentType(extension).build());
+
+            return productImageRepository.save(
+                    new ProductImage(product, resource.getURL().toString(), order)
+            );
+        } catch (IOException ex) {
+            throw new ProductUpdateException();
+        }
     }
 
     public ProductResponseDto changeStatus(UserPrincipal userPrincipal, Long productId, String status) {

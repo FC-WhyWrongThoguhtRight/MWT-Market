@@ -39,62 +39,56 @@ public class ProductController {
     @Operation(summary = "전체 상품 조회")
     @ApiResponses(value = {@ApiResponse(responseCode = "200")}
     )
-    public ResponseEntity<? extends DataResponseBody<List<ProductInfoDto>>> showAllProducts(
+    public DataResponseBody<List<ProductInfoDto>> showAllProducts(
             @RequestBody ProductSearchRequestDto request,
             @AuthenticationPrincipal UserPrincipal userPrincipal
             ) {
         List<ProductInfoDto> ProductInfos = productService.findAllProducts(request, userPrincipal);
 
-        return ResponseEntity
-                .status(200)
-                .body(DataResponseBody.success(ProductInfos));
+        return DataResponseBody.success(ProductInfos);
     }
 
     @PostMapping
     @Operation(summary = "상품 등록")
     @ApiResponses(value = {@ApiResponse(responseCode = "200")}
     )
-    public ResponseEntity<? extends DataResponseBody<ProductResponseDto>> registerProduct(
+    public DataResponseBody<ProductResponseDto> registerProduct(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Valid @ModelAttribute ProductRequestDto request
     ) {
         ProductResponseDto data = productService.addProduct(userPrincipal, request);
 
-        return ResponseEntity
-                .status(200)
-                .body(DataResponseBody.success(data));
+        return DataResponseBody.success(data);
     }
 
     @GetMapping("/{productId}")
     @Operation(summary = "단건 상품 상세 조회")
     @ApiResponses(value = {@ApiResponse(responseCode = "200")}
     )
-    public ResponseEntity<? extends DataResponseBody<ProductResponseDto>> showProductDetails(
+    public DataResponseBody<ProductResponseDto> showProductDetails(
             @PathVariable Long productId
     ) {
         ProductResponseDto data = productService.findProduct(productId);
 
-        return ResponseEntity
-                .status(200)
-                .body(DataResponseBody.success(data));
+        return DataResponseBody.success(data);
     }
 
     @DeleteMapping("/{productId}")
     @Operation(summary = "상품 삭제")
     @ApiResponses(value = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400")})
-    public void deleteProduct(
-            @AuthenticationPrincipal Principal principal,
+    public BaseResponseBody deleteProduct(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable Long productId
     ) {
-        productService.deleteProduct(productId);
+        productService.deleteProduct(productId, userPrincipal);
+        
+        return BaseResponseBody.success("상품 삭제완료");
     }
 
     @PutMapping("/{productId}/status")
     @Operation(summary = "상품 상태 변경")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200")
-    })
-    public ResponseEntity<? extends DataResponseBody<ProductResponseDto>> updateProductStatus(
+    @ApiResponses(value = {@ApiResponse(responseCode = "200")})
+    public DataResponseBody<ProductResponseDto> updateProductStatus(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable Long productId,
             @RequestBody ProductStatusUpdateRequestDto request
@@ -102,9 +96,7 @@ public class ProductController {
         ProductResponseDto data = productService.changeStatus(userPrincipal, productId, request.getStatus());
         DataResponseBody<ProductResponseDto> body = DataResponseBody.success(data);
 
-        return ResponseEntity
-                .status(200)
-                .body(body);
+        return DataResponseBody.success(data);
     }
 
     @PutMapping("/{productId}")
@@ -112,24 +104,15 @@ public class ProductController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200"),
         @ApiResponse(responseCode = "400")})
-    public ResponseEntity<? extends DataResponseBody<ProductResponseDto>> updateProduct(
+    public BaseResponseBody updateProduct(
             @AuthenticationPrincipal Principal principal,
             @PathVariable Long productId,
             @RequestBody ProductUpdateRequestDto request
     ) {
-        ProductResponseDto data = ProductResponseDto.builder()
-            .id(productId)
-            .title(request.getTitle())
-            .content(request.getContent())
-            .price(request.getPrice())
-            .categoryId(request.getCategoryId())
-            .images(request.getImages())
-            .build();
-        DataResponseBody<ProductResponseDto> body = DataResponseBody.success(data);
 
-        return ResponseEntity
-                .status(200)
-                .body(body);
+        productService.updateProduct(productId, request);
+
+        return BaseResponseBody.success("상품 수정완료");
     }
 
     @GetMapping("/{productId}/chats")
