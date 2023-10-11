@@ -17,7 +17,6 @@ import org.mwt.market.domain.product.dto.ProductUpdateRequestDto;
 import org.mwt.market.domain.product.entity.Product;
 import org.mwt.market.domain.product.entity.ProductCategory;
 import org.mwt.market.domain.product.entity.ProductImage;
-import org.mwt.market.domain.product.exception.AlreadyGoneException;
 import org.mwt.market.domain.product.exception.NoSuchCategoryException;
 import org.mwt.market.domain.product.exception.NoSuchProductException;
 import org.mwt.market.domain.product.exception.ProductUpdateException;
@@ -78,7 +77,7 @@ public class ProductService {
 
     @Transactional
     public void deleteProduct(Long productId, UserPrincipal userPrincipal) {
-        Product product = productRepository.findById(productId).orElseThrow(AlreadyGoneException::new);
+        Product product = productRepository.findById(productId).orElseThrow(NoSuchProductException::new);
         if (!userPrincipal.getId().equals(product.getSeller().getUserId())) {
             throw new NoPermissionException();
         }
@@ -89,7 +88,7 @@ public class ProductService {
 
     @Transactional
     public void updateProduct(Long productId, ProductUpdateRequestDto request) {
-        Product product = productRepository.findById(productId).orElseThrow(AlreadyGoneException::new);
+        Product product = productRepository.findById(productId).orElseThrow(NoSuchProductException::new);
 
         Long categoryId = request.getCategoryId();
         ProductCategory productCategory = productCategoryRepository.findById(categoryId).orElseThrow(NoSuchCategoryException::new);
