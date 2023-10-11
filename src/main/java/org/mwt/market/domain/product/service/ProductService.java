@@ -19,6 +19,8 @@ import org.mwt.market.domain.product.entity.ProductCategory;
 import org.mwt.market.domain.product.entity.ProductImage;
 import org.mwt.market.domain.product.exception.AlreadyGoneException;
 import org.mwt.market.domain.product.exception.NoSuchCategoryException;
+import org.mwt.market.domain.product.exception.AlreadyGoneException;
+import org.mwt.market.domain.product.exception.NoPermissionException;
 import org.mwt.market.domain.product.exception.NoSuchProductException;
 import org.mwt.market.domain.product.exception.ProductUpdateException;
 import org.mwt.market.domain.product.repository.ProductCategoryRepository;
@@ -117,7 +119,6 @@ public class ProductService {
         } catch (IOException ex) {
             throw new ProductUpdateException();
         }
-    }
 
     public ProductResponseDto changeStatus(UserPrincipal userPrincipal, Long productId, String status) {
         Product product = productRepository.findById(productId)
