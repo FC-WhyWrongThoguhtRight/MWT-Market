@@ -4,9 +4,18 @@ import io.awspring.cloud.s3.ObjectMetadata;
 import io.awspring.cloud.s3.S3Resource;
 import io.awspring.cloud.s3.S3Template;
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.mwt.market.config.security.token.UserPrincipal;
+import org.mwt.market.domain.chat.entity.ChatRoom;
+import org.mwt.market.domain.chat.repository.ChatRoomRepository;
+import org.mwt.market.domain.product.entity.Product;
+import org.mwt.market.domain.product.repository.ProductRepository;
+import org.mwt.market.domain.user.dto.UserRequests.PageRequestDto;
 import org.mwt.market.domain.user.dto.UserRequests.ProfileUpdateRequestDto;
 import org.mwt.market.domain.user.dto.UserRequests.SignupRequestDto;
+import org.mwt.market.domain.user.dto.UserResponses.ChatRoomDto;
+import org.mwt.market.domain.user.dto.UserResponses.ProductDto;
 import org.mwt.market.domain.user.entity.ProfileImage;
 import org.mwt.market.domain.user.entity.User;
 import org.mwt.market.domain.user.exception.NoSuchUserException;
@@ -14,6 +23,8 @@ import org.mwt.market.domain.user.exception.UserRegisterException;
 import org.mwt.market.domain.user.exception.UserUpdateException;
 import org.mwt.market.domain.user.repository.UserRepository;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,13 +36,18 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final ProductRepository productRepository;
+    private final ChatRoomRepository chatRoomRepository;
     private final PasswordEncoder passwordEncoder;
     private final S3Template s3Template;
 
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder,
+    public UserService(UserRepository userRepository, ProductRepository productRepository,
+        ChatRoomRepository chatRoomRepository, PasswordEncoder passwordEncoder,
         S3Template s3Template) {
         this.userRepository = userRepository;
+        this.productRepository = productRepository;
+        this.chatRoomRepository = chatRoomRepository;
         this.passwordEncoder = passwordEncoder;
         this.s3Template = s3Template;
     }
@@ -75,5 +91,33 @@ public class UserService {
             throw new UserUpdateException("파일 에러 발생", ex);
         }
         return currUser;
+    }
+
+    public List<ProductDto> getMyProduct(PageRequestDto pageRequestDto,
+        UserPrincipal userPrincipal) {
+
+        Integer page = pageRequestDto.getPage() - 1;
+        Integer pageSize = pageRequestDto.getPageSize();
+
+        Page<Product> myProductList = productRepository.findBySeller_UserId(
+            PageRequest.of(page, pageSize), userPrincipal.getId());
+
+        return myProductList.stream()
+            .map(ProductDto::fromEntity)
+            .collect(Collectors.toList());
+    }
+
+    public List<ChatRoomDto> getMyChatRoom(PageRequestDto pageRequestDto,
+        UserPrincipal userPrincipal) {
+
+        Integer page = pageRequestDto.getPage() - 1;
+        Integer pageSize = pageRequestDto.getPageSize();
+
+        List<ChatRoom> myChatRoomList = chatRoomRepository.findByBuyer_UserIdOrProduct_Seller_UserId(
+            PageRequest.of(page, pageSize), userPrincipal.getId(), userPrincipal.getId());
+
+        return myChatRoomList.stream()
+            .map(ChatRoomDto::fromEntity)
+            .collect(Collectors.toList());
     }
 }

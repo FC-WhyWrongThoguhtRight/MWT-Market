@@ -53,4 +53,16 @@ public class UserRequests {
         @Schema(description = "이미지 바이너리 데이터")
         private MultipartFile profileImg;
     }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class PageRequestDto {
+
+        @Schema(description = "페이지 번호", example = "1")
+        private Integer page = 1;
+        @Schema(description = "한 페이지에 보여줄 상품 수", example = "15")
+        private Integer pageSize = 10;
+    }
 }

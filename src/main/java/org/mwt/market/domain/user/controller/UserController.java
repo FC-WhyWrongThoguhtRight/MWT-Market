@@ -3,7 +3,6 @@ package org.mwt.market.domain.user.controller;
 import static org.mwt.market.domain.user.dto.UserRequests.LoginRequestDto;
 import static org.mwt.market.domain.user.dto.UserRequests.ProfileUpdateRequestDto;
 import static org.mwt.market.domain.user.dto.UserRequests.SignupRequestDto;
-import static org.mwt.market.domain.user.dto.UserResponses.MyChatRoomResponseDto;
 import static org.mwt.market.domain.user.dto.UserResponses.ProfileUpdateResponseDto;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,12 +11,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import org.mwt.market.common.response.BaseResponseBody;
 import org.mwt.market.common.response.DataResponseBody;
 import org.mwt.market.common.response.ErrorResponseBody;
 import org.mwt.market.config.security.token.UserPrincipal;
-import org.mwt.market.domain.user.dto.UserResponses.MyInterestResponseDto;
-import org.mwt.market.domain.user.dto.UserResponses.MyProductResponseDto;
+import org.mwt.market.domain.user.dto.UserRequests.PageRequestDto;
+import org.mwt.market.domain.user.dto.UserResponses.ChatRoomDto;
+import org.mwt.market.domain.user.dto.UserResponses.ProductDto;
 import org.mwt.market.domain.user.dto.UserResponses.UserInfoResponseDto;
 import org.mwt.market.domain.user.entity.User;
 import org.mwt.market.domain.user.exception.UserRegisterException;
@@ -116,42 +117,25 @@ public class UserController {
         @ApiResponse(responseCode = "400",
             content = {@Content(schema = @Schema(implementation = ErrorResponseBody.class))})
     })
-    public DataResponseBody<MyProductResponseDto> getMyProduct(
+    public DataResponseBody<List<ProductDto>> getMyProduct(
+        @RequestBody PageRequestDto pageRequestDto,
         @AuthenticationPrincipal UserPrincipal userPrincipal) {
-        return DataResponseBody.success(
-            MyProductResponseDto.builder()
-                .build()
-        );
+        List<ProductDto> myProductList = userService.getMyProduct(pageRequestDto,
+            userPrincipal);
+        return DataResponseBody.success(myProductList);
     }
 
-
-    @GetMapping("/myPage/interests")
-    @Operation(summary = "내 관심목록 조회")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200"),
-        @ApiResponse(responseCode = "400",
-            content = {@Content(schema = @Schema(implementation = ErrorResponseBody.class))})
-    })
-    public DataResponseBody<MyInterestResponseDto> getMyInterest(
-        @AuthenticationPrincipal UserPrincipal userPrincipal) {
-        return DataResponseBody.success(
-            MyInterestResponseDto.builder()
-                .build()
-        );
-    }
-
-    @GetMapping("/myPage/chat")
+    @GetMapping("/myPage/chats")
     @Operation(summary = "나의 채팅방 목록 조회")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200"),
         @ApiResponse(responseCode = "400",
             content = {@Content(schema = @Schema(implementation = ErrorResponseBody.class))})
     })
-    public DataResponseBody<MyChatRoomResponseDto> getMyChatRoom(
+    public DataResponseBody<List<ChatRoomDto>> getMyChatRoom(
+        @RequestBody PageRequestDto pageRequestDto,
         @AuthenticationPrincipal UserPrincipal userPrincipal) {
-        return DataResponseBody.success(
-            MyChatRoomResponseDto.builder()
-                .build()
-        );
+        List<ChatRoomDto> myChatRoomDto = userService.getMyChatRoom(pageRequestDto, userPrincipal);
+        return DataResponseBody.success(myChatRoomDto);
     }
 }
