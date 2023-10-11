@@ -12,11 +12,12 @@ public class WebConfig implements WebMvcConfigurer {
     private String frontUrl;
     @Value("${remote-server.gateway.url}")
     private String gatewayUrl;
+    private String frontUrlLocal = "http://localhost:3000";
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-            .allowedOrigins(frontUrl, gatewayUrl)
+            .allowedOrigins(frontUrl, gatewayUrl, frontUrlLocal)
             .allowedMethods("GET", "POST", "PUT", "DELETE")
             .allowCredentials(true)
             .maxAge(6000);
