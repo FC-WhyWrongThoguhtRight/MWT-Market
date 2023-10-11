@@ -38,7 +38,7 @@ public class ProductResponseDto {
         return ProductResponseDto.builder()
             .categoryId(product.getCategoryId())
             .content(product.getContent())
-            .id(product.getId())
+            .id(product.getProductId())
             .likes(product.getLikes())
             .images(product.getImages())
             .price(product.getPrice())

@@ -9,9 +9,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
+import java.util.List;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 
 @Entity
@@ -33,6 +36,7 @@ public class ProductImage {
     private Integer order;
 
     @CreatedDate
+    @CreationTimestamp
     private LocalDateTime createdAt;
 
     public ProductImage(Product product, String url, Integer order) {

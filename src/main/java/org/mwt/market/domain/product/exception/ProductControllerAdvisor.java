@@ -2,6 +2,7 @@ package org.mwt.market.domain.product.exception;
 
 import org.mwt.market.common.response.ErrorResponseBody;
 import org.mwt.market.domain.product.controller.ProductController;
+import org.mwt.market.domain.user.exception.NoSuchUserException;
 import org.mwt.market.domain.wish.controller.WishController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +19,8 @@ public class ProductControllerAdvisor {
     private final Logger logger = LoggerFactory.getLogger(ProductControllerAdvisor.class);
 
     @ExceptionHandler(value = {
-        NoSuchProductException.class, NoSuchStatusException.class, NoPermissionException.class
+        NoSuchProductException.class, NoSuchStatusException.class, NoPermissionException.class,
+        ImageUploadErrorException.class, NoSuchUserException.class
     })
     public ResponseEntity<ErrorResponseBody> handleUserInfoException(NoSuchProductException ex) {
         logger.error(ex.getMessage(), ex);

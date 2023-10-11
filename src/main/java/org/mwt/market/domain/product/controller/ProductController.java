@@ -52,11 +52,13 @@ public class ProductController {
     @Operation(summary = "상품 등록")
     @ApiResponses(value = {@ApiResponse(responseCode = "200")}
     )
-    public BaseResponseBody registerProduct(
-            @AuthenticationPrincipal Principal principal,
+    public DataResponseBody<ProductResponseDto> registerProduct(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Valid @ModelAttribute ProductRequestDto request
     ) {
-        return BaseResponseBody.success("상품 등록완료");
+        ProductResponseDto data = productService.addProduct(userPrincipal, request);
+
+        return DataResponseBody.success(data);
     }
 
     @GetMapping("/{productId}")
@@ -66,9 +68,7 @@ public class ProductController {
     public DataResponseBody<ProductResponseDto> showProductDetails(
             @PathVariable Long productId
     ) {
-        ProductResponseDto data = ProductResponseDto.builder()
-            .id(productId)
-            .build();
+        ProductResponseDto data = productService.findProduct(productId);
 
         return DataResponseBody.success(data);
     }
