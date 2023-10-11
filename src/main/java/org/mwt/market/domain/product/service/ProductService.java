@@ -4,8 +4,6 @@ import io.awspring.cloud.s3.ObjectMetadata;
 import io.awspring.cloud.s3.S3Resource;
 import io.awspring.cloud.s3.S3Template;
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +20,7 @@ import org.mwt.market.domain.product.entity.Product;
 import org.mwt.market.domain.product.entity.ProductCategory;
 import org.mwt.market.domain.product.entity.ProductImage;
 import org.mwt.market.domain.product.exception.ImageUploadErrorException;
+import org.mwt.market.domain.product.exception.AlreadyGoneException;
 import org.mwt.market.domain.product.exception.NoPermissionException;
 import org.mwt.market.domain.product.exception.NoSuchProductException;
 import org.mwt.market.domain.product.repository.ProductCategoryRepository;
@@ -71,7 +70,7 @@ public class ProductService {
         User user = userRepository.findById(userPrincipal.getId()).orElseThrow(NoSuchUserException::new);
         List<Wish> findWishProducts = wishRepository.findAllByUser(user);
         Set<Long> wishProductIds = findWishProducts.stream()
-                .map(wish -> wish.getProduct().getId())
+                .map(wish -> wish.getProduct().getProductId())
                 .collect(Collectors.toSet());
 
         List<ProductInfoDto> productInfos = products.stream()
@@ -82,6 +81,11 @@ public class ProductService {
     }
 
     @Transactional
+    public void deleteProduct(Long productId) {
+        Product product = productRepository.findById(productId).orElseThrow(AlreadyGoneException::new);
+        product.delete();
+    }
+
     public ProductResponseDto changeStatus(UserPrincipal userPrincipal, Long productId, String status) {
         Product product = productRepository.findById(productId)
             .orElseThrow(NoSuchProductException::new);
@@ -155,7 +159,7 @@ public class ProductService {
 
         try {
             S3Resource resource = s3Template.upload("mwtmarketbucket",
-                "products/" + product.getId() + "/" + System.currentTimeMillis() + "/" + order,
+                "products/" + product.getProductId() + "/" + System.currentTimeMillis() + "/" + order,
                 image.getInputStream(),
                 ObjectMetadata.builder().contentType(extension).build());
 
@@ -165,5 +169,10 @@ public class ProductService {
         } catch (IOException ex) {
             throw new ImageUploadErrorException();
         }
+    }
+
+    public ProductResponseDto findProduct(Long productId) {
+        Product product = productRepository.findById(productId).orElseThrow(NoSuchProductException::new);
+        return ProductResponseDto.fromEntity(product);
     }
 }

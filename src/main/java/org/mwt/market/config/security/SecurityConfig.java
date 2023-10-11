@@ -89,16 +89,16 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests((authorizeHttpRequests) ->
                 authorizeHttpRequests
-                    .requestMatchers(
-                        Arrays.stream(AUTH_WHITELIST)
-                            .map(AntPathRequestMatcher::new)
-                            .toArray(AntPathRequestMatcher[]::new)
-                    ).permitAll()
-                    .requestMatchers(
-                        Arrays.stream(MY_PAGE)
-                            .map(AntPathRequestMatcher::new)
-                            .toArray(AntPathRequestMatcher[]::new)
-                    ).authenticated()
+//                    .requestMatchers(
+//                        Arrays.stream(AUTH_WHITELIST)
+//                            .map(AntPathRequestMatcher::new)
+//                            .toArray(AntPathRequestMatcher[]::new)
+//                    ).permitAll()
+//                    .requestMatchers(
+//                        Arrays.stream(MY_PAGE)
+//                            .map(AntPathRequestMatcher::new)
+//                            .toArray(AntPathRequestMatcher[]::new)
+//                    ).authenticated()
                     .anyRequest().permitAll());
 
         http

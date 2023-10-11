@@ -3,6 +3,7 @@ package org.mwt.market.config.swagger;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Contact;
 import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.servers.Server;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
@@ -13,8 +14,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
-@Profile({"local", "dev"})
+@Profile("dev")
 @OpenAPIDefinition(
+    servers = {
+//        @Server(url = "https://api.mwt-market.store/api/v1", description = "Server"),
+        @Server(url = "https://ec2-13-125-49-11.ap-northeast-2.compute.amazonaws.com", description = "Server"),
+//        @Server(url = "https://localhost:8080/api/v1", description = "local")
+    },
     info = @Info(
         title = "MWT Market API",
         description = "MWT Market Service를 위한 API",
