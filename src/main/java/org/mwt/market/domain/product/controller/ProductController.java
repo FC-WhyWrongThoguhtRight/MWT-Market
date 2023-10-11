@@ -1,7 +1,5 @@
 package org.mwt.market.domain.product.controller;
 
-import io.awspring.cloud.s3.ObjectMetadata;
-import io.awspring.cloud.s3.S3Resource;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -9,24 +7,16 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-
-import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
-import java.util.stream.Collectors;
-
 import lombok.RequiredArgsConstructor;
 import org.mwt.market.common.response.BaseResponseBody;
 import org.mwt.market.common.response.DataResponseBody;
 import org.mwt.market.config.security.token.UserPrincipal;
 import org.mwt.market.domain.product.dto.*;
-import org.mwt.market.domain.product.dto.ProductResponseDto.Seller;
-import org.mwt.market.domain.product.entity.Product;
 import org.mwt.market.domain.product.service.ProductService;
-import org.mwt.market.domain.user.exception.UserUpdateException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -36,7 +26,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @Tag(name = "Products", description = "상품 관련 API")
@@ -88,10 +77,10 @@ public class ProductController {
     @Operation(summary = "상품 삭제")
     @ApiResponses(value = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400")})
     public BaseResponseBody deleteProduct(
-            @AuthenticationPrincipal Principal principal,
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable Long productId
     ) {
-        productService.deleteProduct(productId);
+        productService.deleteProduct(productId, userPrincipal);
         
         return BaseResponseBody.success("상품 삭제완료");
     }

@@ -20,7 +20,6 @@ import org.mwt.market.common.util.ProductStatusToNumConverter;
 import org.mwt.market.domain.product.vo.ProductStatus;
 import org.mwt.market.domain.user.entity.User;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.security.core.parameters.P;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

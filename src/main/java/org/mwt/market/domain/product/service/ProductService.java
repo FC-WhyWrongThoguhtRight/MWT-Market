@@ -77,8 +77,12 @@ public class ProductService {
     }
 
     @Transactional
-    public void deleteProduct(Long productId) {
+    public void deleteProduct(Long productId, UserPrincipal userPrincipal) {
         Product product = productRepository.findById(productId).orElseThrow(AlreadyGoneException::new);
+        if (!userPrincipal.getId().equals(product.getSeller().getUserId())) {
+            throw new NoPermissionException();
+        }
+
         product.delete();
         productRepository.save(product);
     }
