@@ -58,6 +58,11 @@ public class Product {
 
     private Integer likes;
 
+    public void delete() {
+        this.isDeleted = true;
+        this.deletedAt = LocalDateTime.now();
+    }
+    
     public void minusLikes() {
         this.likes--;
     }
