@@ -26,7 +26,8 @@ public class ProductControllerAdvisor {
     private final Logger logger = LoggerFactory.getLogger(ProductControllerAdvisor.class);
 
     @ExceptionHandler(value = {
-        NoSuchProductException.class, NoSuchStatusException.class, NoPermissionException.class
+        NoSuchProductException.class, NoSuchStatusException.class, NoPermissionException.class,
+        ImageUploadErrorException.class, NoSuchUserException.class
     })
     public ResponseEntity<ErrorResponseBody> handleUserInfoException(NoSuchProductException ex) {
         logger.error(ex.getMessage(), ex);

@@ -11,6 +11,7 @@ import jakarta.persistence.OneToMany;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -56,11 +57,25 @@ public class Product {
 
     private Integer likes;
 
+    @Builder
+    public Product(String title, String content, Integer price, List<ProductImage> productAlbum,
+        User seller, ProductCategory productCategory) {
+        this.title = title;
+        this.content = content;
+        this.price = price;
+        this.productAlbum = productAlbum;
+        this.seller = seller;
+        this.productCategory = productCategory;
+        this.status = ProductStatus.TRADE;
+        this.isDeleted = false;
+        this.likes = 0;
+    }
+
     public void delete() {
         this.isDeleted = true;
         this.deletedAt = LocalDateTime.now();
     }
-    
+
     public void minusLikes() {
         this.likes--;
     }
@@ -90,5 +105,9 @@ public class Product {
             return "https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png";
         }
         return productAlbum.get(0).getUrl();
+    }
+
+    public void setProductAlbum(List<ProductImage> productAlbum) {
+        this.productAlbum = productAlbum;
     }
 }

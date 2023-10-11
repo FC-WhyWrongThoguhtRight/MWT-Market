@@ -2,6 +2,7 @@ package org.mwt.market.domain.product.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,7 +20,7 @@ public class ProductRequestDto {
     @Schema(description = "상품 제목", example = "test_title")
     private String title;
 
-    @NotBlank(message = "상품 카테고리는 필수 항목입니다.")
+    @NotNull(message = "상품 카테고리는 필수 항목입니다.")
     @Schema(description = "상품 카테고리", example = "test_category")
     private Long categoryId;
 

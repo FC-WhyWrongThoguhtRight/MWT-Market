@@ -8,8 +8,9 @@ public enum ErrorCode {
     NoSuchProduct(400, "noSuchProduct"),
     AlreadyExistWish(400, "alreadyExistWish"),
     NoSuchWish(400, "noSuchWish"),
-    AlreadyGone(400, "alreadyGone"),
-    NoPermission(401, "noPermission")
+    NoPermission(401, "noPermission"),
+    ImageUploadError(400, "이미지 업로드 중 오류 발생"),
+    AlreadyGone(400, "alreadyGone")
     ;
 
     private final Integer code;
