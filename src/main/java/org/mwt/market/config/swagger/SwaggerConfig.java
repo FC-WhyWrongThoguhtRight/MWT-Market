@@ -18,7 +18,7 @@ import org.springframework.context.annotation.Profile;
 @OpenAPIDefinition(
     servers = {
 //        @Server(url = "https://api.mwt-market.store/api/v1", description = "Server"),
-        @Server(url = "https://ec2-13-125-49-11.ap-northeast-2.compute.amazonaws.com", description = "Server"),
+        @Server(url = "http://ec2-13-125-49-11.ap-northeast-2.compute.amazonaws.com", description = "Server"),
 //        @Server(url = "https://localhost:8080/api/v1", description = "local")
     },
     info = @Info(
