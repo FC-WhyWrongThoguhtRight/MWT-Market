@@ -59,7 +59,7 @@ public class ChatController {
     @SendTo("/chat/receive")
     @Operation(summary = "상품 판매자와 1:1 채팅 메시지 전송")
     public DataResponseBody<ChatMessageDto> chat(
-        ChatMessageDto chatMessageDto){
+        ChatMessageDto chatMessageDto) {
         return DataResponseBody.success(new ChatMessageDto("테스트"));
     }
 
