@@ -11,6 +11,7 @@ import org.mwt.market.domain.product.dto.ProductInfoDto;
 import org.mwt.market.domain.product.dto.ProductResponseDto;
 import org.mwt.market.domain.product.dto.ProductSearchRequestDto;
 import org.mwt.market.domain.product.entity.Product;
+import org.mwt.market.domain.product.exception.AlreadyGoneException;
 import org.mwt.market.domain.product.exception.NoPermissionException;
 import org.mwt.market.domain.product.exception.NoSuchProductException;
 import org.mwt.market.domain.product.repository.ProductRepository;
@@ -63,6 +64,11 @@ public class ProductService {
     }
 
     @Transactional
+    public void deleteProduct(Long productId) {
+        Product product = productRepository.findById(productId).orElseThrow(AlreadyGoneException::new);
+        product.delete();
+    }
+
     public ProductResponseDto changeStatus(UserPrincipal userPrincipal, Long productId, String status) {
         Product product = productRepository.findById(productId)
             .orElseThrow(NoSuchProductException::new);

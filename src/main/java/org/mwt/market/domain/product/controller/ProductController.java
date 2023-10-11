@@ -95,6 +95,7 @@ public class ProductController {
             @AuthenticationPrincipal Principal principal,
             @PathVariable Long productId
     ) {
+        productService.deleteProduct(productId);
     }
 
     @PutMapping("/{productId}/status")
