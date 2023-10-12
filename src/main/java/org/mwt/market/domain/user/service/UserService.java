@@ -11,7 +11,6 @@ import org.mwt.market.domain.chat.entity.ChatRoom;
 import org.mwt.market.domain.chat.repository.ChatRoomRepository;
 import org.mwt.market.domain.product.entity.Product;
 import org.mwt.market.domain.product.repository.ProductRepository;
-import org.mwt.market.domain.user.dto.UserRequests.PageRequestDto;
 import org.mwt.market.domain.user.dto.UserRequests.ProfileUpdateRequestDto;
 import org.mwt.market.domain.user.dto.UserRequests.SignupRequestDto;
 import org.mwt.market.domain.user.dto.UserResponses.ChatRoomDto;
@@ -93,11 +92,8 @@ public class UserService {
         return currUser;
     }
 
-    public List<ProductDto> getMyProduct(PageRequestDto pageRequestDto,
+    public List<ProductDto> getMyProduct(Integer page, Integer pageSize,
         UserPrincipal userPrincipal) {
-
-        Integer page = pageRequestDto.getPage() - 1;
-        Integer pageSize = pageRequestDto.getPageSize();
 
         Page<Product> myProductList = productRepository.findBySeller_UserId(
             PageRequest.of(page, pageSize), userPrincipal.getId());
@@ -107,11 +103,8 @@ public class UserService {
             .collect(Collectors.toList());
     }
 
-    public List<ChatRoomDto> getMyChatRoom(PageRequestDto pageRequestDto,
+    public List<ChatRoomDto> getMyChatRoom(Integer page, Integer pageSize,
         UserPrincipal userPrincipal) {
-
-        Integer page = pageRequestDto.getPage() - 1;
-        Integer pageSize = pageRequestDto.getPageSize();
 
         List<ChatRoom> myChatRoomList = chatRoomRepository.findByBuyer_UserIdOrProduct_Seller_UserId(
             PageRequest.of(page, pageSize), userPrincipal.getId(), userPrincipal.getId());
