@@ -13,7 +13,7 @@ public class ProductInfoDto {
     private final String thumbnail;
     private final String status;
     private final Integer likes;
-    private final boolean like;
+    private boolean like;
 
     @Builder
     public ProductInfoDto(Long id, String title, Integer price, String thumbnail,
@@ -37,5 +37,10 @@ public class ProductInfoDto {
                 .like(false)
                 .thumbnail(product.getThumbnail())
                 .build();
+
+    }
+  
+    public void setLike(boolean like) {
+        this.like = like;
     }
 }

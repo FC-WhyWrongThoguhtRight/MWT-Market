@@ -5,7 +5,11 @@ import io.awspring.cloud.s3.S3Resource;
 import io.awspring.cloud.s3.S3Template;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mwt.market.config.security.token.UserPrincipal;
@@ -21,6 +25,11 @@ import org.mwt.market.domain.product.entity.Product;
 import org.mwt.market.domain.product.entity.ProductCategory;
 import org.mwt.market.domain.product.entity.ProductImage;
 import org.mwt.market.domain.product.exception.*;
+import org.mwt.market.domain.product.exception.ImageUploadErrorException;
+import org.mwt.market.domain.product.exception.NoPermissionException;
+import org.mwt.market.domain.product.exception.NoSuchCategoryException;
+import org.mwt.market.domain.product.exception.NoSuchProductException;
+import org.mwt.market.domain.product.exception.ProductUpdateException;
 import org.mwt.market.domain.product.repository.ProductCategoryRepository;
 import org.mwt.market.domain.product.repository.ProductImageRepository;
 import org.mwt.market.domain.product.repository.ProductRepository;
@@ -31,14 +40,10 @@ import org.mwt.market.domain.wish.entity.Wish;
 import org.mwt.market.domain.wish.repository.WishRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -55,26 +60,47 @@ public class ProductService {
     private final ProductCategoryRepository categoryRepository;
     private final ProductImageRepository productImageRepository;
 
-    public List<ProductInfoDto> findAllProducts(ProductSearchRequestDto request, UserPrincipal userPrincipal) {
+    public List<ProductInfoDto> findAllProducts(ProductSearchRequestDto request,
+        UserPrincipal userPrincipal) {
 
-        List<Integer> categoryIds = request.getCategoryIds();
+        List<Long> categoryIds = request.getCategoryIds();
         String searchWord = request.getSearchWord();
         Integer pageSize = request.getPageSize();
         Integer page = request.getPage();
 
-        Page<Product> products = productRepository.findAll(PageRequest.of(page, pageSize, Sort.sort(Product.class).descending()));
+        Page<Product> products;
+        if (categoryIds.size() != 0 && StringUtils.hasText(searchWord)) {
+            products = productRepository.findAllByCategory_CategoryIdInTitleContainingOrderByProductIdDesc(
+                PageRequest.of(page, pageSize),
+                categoryIds, searchWord);
+        } else if (categoryIds.size() != 0) {
+            products = productRepository.findAllByCategory_CategoryIdIn(
+                PageRequest.of(page, pageSize), categoryIds);
+        } else if (StringUtils.hasText(searchWord)) {
+            products = productRepository.findAllByTitleContaining(PageRequest.of(page, pageSize),
+                searchWord);
+        } else {
+            products = productRepository.findAllByOrderByProductIdDesc(
+                PageRequest.of(page, pageSize));
+        }
 
-        User user = userRepository.findById(userPrincipal.getId()).orElseThrow(NoSuchUserException::new);
-        List<Wish> findWishProducts = wishRepository.findAllByUser(user);
-        Set<Long> wishProductIds = findWishProducts.stream()
+        Set<Long> wishProductIds = Collections.emptySet();
+        if (!"anonymous".equals(userPrincipal.getName())) {
+            User currUser = userRepository.findById(userPrincipal.getId())
+                .orElseThrow(() -> new NoSuchUserException());
+            List<Wish> findWishProducts = wishRepository.findAllByUser(currUser);
+            wishProductIds = findWishProducts.stream()
                 .map(wish -> wish.getProduct().getProductId())
                 .collect(Collectors.toSet());
+        }
 
-        List<ProductInfoDto> productInfos = products.stream()
-                .map(ProductInfoDto::toDto)
-                .collect(Collectors.toList());
-
-        return productInfos;
+        List<ProductInfoDto> result = products.stream()
+            .map(ProductInfoDto::toDto)
+            .collect(Collectors.toList());
+        for (ProductInfoDto productInfoDto : result) {
+            productInfoDto.setLike(wishProductIds.contains(productInfoDto.getId()));
+        }
+        return result;
     }
 
     @Transactional
@@ -109,13 +135,13 @@ public class ProductService {
             MultipartFile image = request.getImages().get(order);
             productAlbum.add(uploadImage(product, image, order));
         }
-
+      
         product.update(request.getTitle(), request.getContent(), productCategory, request.getPrice(), productAlbum);
     }
 
     private void deleteImage(Product product, int order) {
         ProductImage image = product.getProductAlbum().get(order);
-
+      
         s3Template.deleteObject("mwtmarketbucket",
                 "products/" + product.getProductId() + "/" + order);
 
@@ -137,7 +163,8 @@ public class ProductService {
     }
 
     public List<ProductChatResponseDto> findChats(UserPrincipal userPrincipal, Long productId) {
-        Product product = productRepository.findById(productId).orElseThrow(NoSuchProductException::new);
+        Product product = productRepository.findById(productId)
+            .orElseThrow(NoSuchProductException::new);
 
         List<ChatRoom> chatRooms = chatRoomRepository.findAllByProduct(product);
         List<ProductChatResponseDto> dtos = new ArrayList<>();
@@ -166,7 +193,8 @@ public class ProductService {
 
     @Transactional
     public ProductResponseDto addProduct(UserPrincipal userPrincipal, ProductRequestDto request) {
-        User user = userRepository.findByEmail(userPrincipal.getEmail()).orElseThrow(NoSuchUserException::new);
+        User user = userRepository.findByEmail(userPrincipal.getEmail())
+            .orElseThrow(NoSuchUserException::new);
         ProductCategory category = categoryRepository.findById(request.getCategoryId()).orElseThrow(
             NoSuchElementException::new);
 
@@ -175,7 +203,7 @@ public class ProductService {
             .content(request.getContent())
             .price(request.getPrice())
             .seller(user)
-            .productCategory(category)
+            .category(category)
             .build();
 
         Product savedProduct = productRepository.save(product);
@@ -210,7 +238,8 @@ public class ProductService {
     }
 
     public ProductResponseDto findProduct(Long productId) {
-        Product product = productRepository.findById(productId).orElseThrow(NoSuchProductException::new);
+        Product product = productRepository.findById(productId)
+            .orElseThrow(NoSuchProductException::new);
         return ProductResponseDto.fromEntity(product);
     }
 }
