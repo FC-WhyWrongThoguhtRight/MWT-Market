@@ -1,8 +1,9 @@
 package org.mwt.market.domain.user.dto;
 
-import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
+import org.mwt.market.domain.chat.entity.ChatRoom;
+import org.mwt.market.domain.product.entity.Product;
 
 public class UserResponses {
 
@@ -44,57 +45,35 @@ public class UserResponses {
     }
 
     @Getter
-    public static class MyProductResponseDto {
-
-        private final List<ProductDto> productDtoList;
-
-        @Builder
-        public MyProductResponseDto(List<ProductDto> productDtoList) {
-            this.productDtoList = productDtoList;
-        }
-    }
-
-    @Getter
-    public static class MyInterestResponseDto {
-
-        private final List<ProductDto> productDtoList;
-
-        @Builder
-        public MyInterestResponseDto(List<ProductDto> productDtoList) {
-            this.productDtoList = productDtoList;
-        }
-    }
-
-    @Getter
-    public static class MyChatRoomResponseDto {
-
-        private final List<ChatRoomDto> chatRoomDtoList;
-
-        @Builder
-        public MyChatRoomResponseDto(List<ChatRoomDto> chatRoomDtoList) {
-            this.chatRoomDtoList = chatRoomDtoList;
-        }
-    }
-
-    @Getter
     public static class ProductDto {
 
         private final Long id;
         private final String title;
         private final Integer price;
-        private final String thumbnailImage;
+        private final String thumbnail;
         private final String status;
         private final Integer likes;
 
         @Builder
-        public ProductDto(Long id, String title, Integer price, String thumbnailImage,
+        public ProductDto(Long id, String title, Integer price, String thumbnail,
             String status, Integer likes) {
             this.id = id;
             this.title = title;
             this.price = price;
-            this.thumbnailImage = thumbnailImage;
+            this.thumbnail = thumbnail;
             this.status = status;
             this.likes = likes;
+        }
+
+        public static ProductDto fromEntity(Product product) {
+            return ProductDto.builder()
+                .id(product.getProductId())
+                .title(product.getTitle())
+                .price(product.getPrice())
+                .status(product.getStatus().getValue())
+                .likes(product.getLikes())
+                .thumbnail(product.getProductAlbum().get(0).getUrl())
+                .build();
         }
     }
 
@@ -124,6 +103,21 @@ public class UserResponses {
             this.personProfileImage = personProfileImage;
             this.lastMessage = lastMessage;
             this.lastChattedAt = lastChattedAt;
+        }
+
+        public static ChatRoomDto fromEntity(ChatRoom chatRoom) {
+            return ChatRoomDto.builder()
+                .chatRoomId(chatRoom.getChatRoomId())
+                .productId(chatRoom.getProduct().getProductId())
+                .productImage(chatRoom.getProduct().getThumbnail())
+                .productStatus(chatRoom.getProduct().getStatus().getValue())
+                //TODO: 내 채팅방 ResponseDto
+//                .personId(chatRoom.getBuyer().getUserId())
+//                .personNickname()
+//                .personProfileImage()
+//                .lastMessage()
+//                .lastChattedAt()
+                .build();
         }
     }
 }
