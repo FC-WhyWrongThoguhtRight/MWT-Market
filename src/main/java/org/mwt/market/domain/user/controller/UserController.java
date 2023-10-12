@@ -16,7 +16,6 @@ import org.mwt.market.common.response.BaseResponseBody;
 import org.mwt.market.common.response.DataResponseBody;
 import org.mwt.market.common.response.ErrorResponseBody;
 import org.mwt.market.config.security.token.UserPrincipal;
-import org.mwt.market.domain.user.dto.UserRequests.PageRequestDto;
 import org.mwt.market.domain.user.dto.UserResponses.ChatRoomDto;
 import org.mwt.market.domain.user.dto.UserResponses.ProductDto;
 import org.mwt.market.domain.user.dto.UserResponses.UserInfoResponseDto;
@@ -30,6 +29,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
@@ -118,9 +118,10 @@ public class UserController {
             content = {@Content(schema = @Schema(implementation = ErrorResponseBody.class))})
     })
     public DataResponseBody<List<ProductDto>> getMyProduct(
-        @RequestBody PageRequestDto pageRequestDto,
+        @RequestParam(required = false, defaultValue = "1") Integer page,
+        @RequestParam(required = false, defaultValue = "10") Integer pageSize,
         @AuthenticationPrincipal UserPrincipal userPrincipal) {
-        List<ProductDto> myProductList = userService.getMyProduct(pageRequestDto,
+        List<ProductDto> myProductList = userService.getMyProduct(page - 1, pageSize,
             userPrincipal);
         return DataResponseBody.success(myProductList);
     }
@@ -133,9 +134,11 @@ public class UserController {
             content = {@Content(schema = @Schema(implementation = ErrorResponseBody.class))})
     })
     public DataResponseBody<List<ChatRoomDto>> getMyChatRoom(
-        @RequestBody PageRequestDto pageRequestDto,
+        @RequestParam(required = false, defaultValue = "1") Integer page,
+        @RequestParam(required = false, defaultValue = "10") Integer pageSize,
         @AuthenticationPrincipal UserPrincipal userPrincipal) {
-        List<ChatRoomDto> myChatRoomDto = userService.getMyChatRoom(pageRequestDto, userPrincipal);
+        List<ChatRoomDto> myChatRoomDto = userService.getMyChatRoom(page - 1, pageSize,
+            userPrincipal);
         return DataResponseBody.success(myChatRoomDto);
     }
 }
