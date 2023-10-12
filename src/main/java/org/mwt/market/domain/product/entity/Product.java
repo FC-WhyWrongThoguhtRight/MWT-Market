@@ -6,15 +6,16 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.CreationTimestamp;
 import org.mwt.market.common.util.BooleanToNumConverter;
 import org.mwt.market.common.util.ProductStatusToNumConverter;
@@ -35,6 +36,7 @@ public class Product {
     private String content;
     private Integer price;
 
+    @BatchSize(size = 100)
     @OneToMany(mappedBy = "product")
     private List<ProductImage> productAlbum;
 
@@ -42,7 +44,8 @@ public class Product {
     private User seller;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private ProductCategory productCategory;
+    @JoinColumn(name = "category_id")
+    private ProductCategory category;
 
     @Convert(converter = ProductStatusToNumConverter.class)
     private ProductStatus status;
@@ -60,13 +63,13 @@ public class Product {
 
     @Builder
     public Product(String title, String content, Integer price, List<ProductImage> productAlbum,
-        User seller, ProductCategory productCategory) {
+        User seller, ProductCategory category) {
         this.title = title;
         this.content = content;
         this.price = price;
         this.productAlbum = productAlbum;
         this.seller = seller;
-        this.productCategory = productCategory;
+        this.category = category;
         this.status = ProductStatus.TRADE;
         this.isDeleted = false;
         this.likes = 0;
@@ -81,7 +84,7 @@ public class Product {
         this.title = title;
         this.content = content;
         this.price = price;
-        this.productCategory = category;
+        this.category = category;
         this.productAlbum = productAlbum;
     }
 
@@ -102,7 +105,7 @@ public class Product {
     }
 
     public Long getCategoryId() {
-        return this.productCategory.getCategoryId();
+        return this.category.getCategoryId();
     }
 
     public String getSellerEmail() {

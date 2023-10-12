@@ -44,7 +44,6 @@ public class ProductController {
             @AuthenticationPrincipal UserPrincipal userPrincipal
             ) {
         List<ProductInfoDto> ProductInfos = productService.findAllProducts(request, userPrincipal);
-
         return DataResponseBody.success(ProductInfos);
     }
 
