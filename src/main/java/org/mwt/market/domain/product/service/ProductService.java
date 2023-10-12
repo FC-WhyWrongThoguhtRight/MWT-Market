@@ -19,7 +19,6 @@ import org.mwt.market.domain.product.dto.ProductChatResponseDto;
 import org.mwt.market.domain.product.dto.ProductInfoDto;
 import org.mwt.market.domain.product.dto.ProductRequestDto;
 import org.mwt.market.domain.product.dto.ProductResponseDto;
-import org.mwt.market.domain.product.dto.ProductSearchRequestDto;
 import org.mwt.market.domain.product.dto.ProductUpdateRequestDto;
 import org.mwt.market.domain.product.entity.Product;
 import org.mwt.market.domain.product.entity.ProductCategory;
@@ -58,13 +57,8 @@ public class ProductService {
     private final ProductCategoryRepository categoryRepository;
     private final ProductImageRepository productImageRepository;
 
-    public List<ProductInfoDto> findAllProducts(ProductSearchRequestDto request,
-        UserPrincipal userPrincipal) {
-
-        List<Long> categoryIds = request.getCategoryIds();
-        String searchWord = request.getSearchWord();
-        Integer pageSize = request.getPageSize();
-        Integer page = request.getPage();
+    public List<ProductInfoDto> findAllProducts(List<Long> categoryIds, String searchWord,
+        Integer page, Integer pageSize, UserPrincipal userPrincipal) {
 
         Page<Product> products;
         if (categoryIds.size() != 0 && StringUtils.hasText(searchWord)) {
