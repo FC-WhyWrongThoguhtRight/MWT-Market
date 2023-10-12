@@ -2,7 +2,6 @@ package org.mwt.market.domain.product.repository;
 
 import java.util.List;
 import org.mwt.market.domain.product.entity.Product;
-import org.mwt.market.domain.product.entity.ProductCategory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -25,8 +24,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Page<Product> findAllByCategory_CategoryIdInTitleContainingOrderByProductIdDesc(
         Pageable pageable, List<Long> categoryIds,
         String searchWord);
-
-    Page<Product> findByProductCategory(ProductCategory productCategory, Pageable pageable);
 
     Page<Product> findBySeller_UserId(Pageable pageable, Long userId);
 }
