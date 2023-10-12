@@ -24,6 +24,7 @@ import org.mwt.market.domain.product.dto.ProductUpdateRequestDto;
 import org.mwt.market.domain.product.entity.Product;
 import org.mwt.market.domain.product.entity.ProductCategory;
 import org.mwt.market.domain.product.entity.ProductImage;
+import org.mwt.market.domain.product.exception.*;
 import org.mwt.market.domain.product.exception.ImageUploadErrorException;
 import org.mwt.market.domain.product.exception.NoPermissionException;
 import org.mwt.market.domain.product.exception.NoSuchCategoryException;
@@ -103,57 +104,48 @@ public class ProductService {
     }
 
     @Transactional
-    public void deleteProduct(Long productId, UserPrincipal userPrincipal) {
+    public void deleteProduct(UserPrincipal userPrincipal, Long productId) {
         Product product = productRepository.findById(productId)
-            .orElseThrow(NoSuchProductException::new);
-        if (!userPrincipal.getId().equals(product.getSeller().getUserId())) {
+                .orElseThrow(NoSuchProductException::new);
+        if (!userPrincipal.getEmail().equals(product.getSellerEmail())) {
             throw new NoPermissionException();
         }
 
         product.delete();
-        productRepository.save(product);
     }
 
     @Transactional
-    public void updateProduct(Long productId, ProductUpdateRequestDto request) {
+    public void updateProduct(UserPrincipal userPrincipal, Long productId, ProductUpdateRequestDto request) {
         Product product = productRepository.findById(productId)
-            .orElseThrow(NoSuchProductException::new);
+                .orElseThrow(NoSuchProductException::new);
+        if (!userPrincipal.getEmail().equals(product.getSellerEmail())) {
+            throw new NoPermissionException();
+        }
 
         Long categoryId = request.getCategoryId();
         ProductCategory productCategory = productCategoryRepository.findById(categoryId)
-            .orElseThrow(NoSuchCategoryException::new);
+                .orElseThrow(NoSuchCategoryException::new);
 
-        List<Long> productImageIds = product.getProductAlbum().stream()
-            .map(ProductImage::getImgId)
-            .toList();
-
-        productImageIds.forEach(productImageRepository::deleteById);
-        List<ProductImage> productAlbum = new ArrayList<>();
-        for (int i = 0; i < request.getImages().size(); i++) {
-            MultipartFile image = request.getImages().get(i);
-            productAlbum.add(updateImage(product, image, i));
+        for (int order = 0; order < product.getProductAlbum().size(); order++) {
+            deleteImage(product, order);
         }
 
-        product.update(request.getTitle(), request.getContent(), productCategory,
-            request.getPrice(), productAlbum);
-        productRepository.save(product);
+        List<ProductImage> productAlbum = new ArrayList<>();
+        for (int order = 0; order < request.getImages().size(); order++) {
+            MultipartFile image = request.getImages().get(order);
+            productAlbum.add(uploadImage(product, image, order));
+        }
+      
+        product.update(request.getTitle(), request.getContent(), productCategory, request.getPrice(), productAlbum);
     }
 
-    private ProductImage updateImage(Product product, MultipartFile image, int order) {
-        String extension = StringUtils.getFilenameExtension(image.getOriginalFilename());
+    private void deleteImage(Product product, int order) {
+        ProductImage image = product.getProductAlbum().get(order);
+      
+        s3Template.deleteObject("mwtmarketbucket",
+                "products/" + product.getProductId() + "/" + order);
 
-        try {
-            S3Resource resource = s3Template.upload("mwtmarketbucket",
-                "products/" + product.getProductId() + "/" + System.currentTimeMillis() + "/"
-                    + order,
-                image.getInputStream(), ObjectMetadata.builder().contentType(extension).build());
-
-            return productImageRepository.save(
-                new ProductImage(product, resource.getURL().toString(), order)
-            );
-        } catch (IOException ex) {
-            throw new ProductUpdateException();
-        }
+        productImageRepository.deleteById(image.getImgId());
     }
 
     @Transactional
@@ -233,8 +225,7 @@ public class ProductService {
 
         try {
             S3Resource resource = s3Template.upload("mwtmarketbucket",
-                "products/" + product.getProductId() + "/" + System.currentTimeMillis() + "/"
-                    + order,
+                "products/" + product.getProductId() + "/" + order,
                 image.getInputStream(),
                 ObjectMetadata.builder().contentType(extension).build());
 

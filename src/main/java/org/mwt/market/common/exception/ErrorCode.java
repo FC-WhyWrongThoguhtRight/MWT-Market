@@ -11,7 +11,7 @@ public enum ErrorCode {
     NoSuchWish(400, "noSuchWish"),
     NoPermission(401, "noPermission"),
     ImageUploadError(400, "이미지 업로드 중 오류 발생"),
-    AlreadyGone(400, "alreadyGone")
+    ImageDeleteError(400, "이미지 삭제 중 오류 발생"),
     ;
 
     private final Integer code;
