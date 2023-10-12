@@ -35,7 +35,7 @@ public class ProductInfoDto {
                 .status(product.getStatus().getValue())
                 .likes(product.getLikes())
                 .like(false)
-                .thumbnail(product.getProductAlbum().get(0).getUrl())
+                .thumbnail(product.getThumbnail())
                 .build();
     }
 }

@@ -80,7 +80,7 @@ public class ProductController {
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable Long productId
     ) {
-        productService.deleteProduct(productId, userPrincipal);
+        productService.deleteProduct(userPrincipal, productId);
         
         return BaseResponseBody.success("상품 삭제완료");
     }
@@ -105,12 +105,12 @@ public class ProductController {
         @ApiResponse(responseCode = "200"),
         @ApiResponse(responseCode = "400")})
     public BaseResponseBody updateProduct(
-            @AuthenticationPrincipal Principal principal,
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable Long productId,
-            @RequestBody ProductUpdateRequestDto request
+            @Valid @ModelAttribute ProductUpdateRequestDto request
     ) {
 
-        productService.updateProduct(productId, request);
+        productService.updateProduct(userPrincipal, productId, request);
 
         return BaseResponseBody.success("상품 수정완료");
     }
