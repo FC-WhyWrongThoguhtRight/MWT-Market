@@ -156,8 +156,8 @@ public class ProductService {
         }
     }
 
-    public ProductResponseDto changeStatus(UserPrincipal userPrincipal, Long productId,
-        String status) {
+    @Transactional
+    public ProductResponseDto changeStatus(UserPrincipal userPrincipal, Long productId, String status) {
         Product product = productRepository.findById(productId)
             .orElseThrow(NoSuchProductException::new);
         if (!userPrincipal.getEmail().equals(product.getSellerEmail())) {

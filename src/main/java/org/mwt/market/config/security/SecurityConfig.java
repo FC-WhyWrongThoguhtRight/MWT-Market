@@ -50,6 +50,8 @@ public class SecurityConfig {
     private String frontUrl;
     @Value("${remote-server.gateway.url}")
     private String gatewayUrl;
+    private String frontUrlLocal = "http://localhost:3000";
+
     private static final String loginProcUrl = "/login";
 
     @Autowired
@@ -136,6 +138,7 @@ public class SecurityConfig {
 
         corsConfiguration.addAllowedOrigin(frontUrl);
         corsConfiguration.addAllowedOrigin(gatewayUrl);
+        corsConfiguration.addAllowedOrigin(frontUrlLocal);
         corsConfiguration.addAllowedHeader("*");
         corsConfiguration.addAllowedMethod("*");
         corsConfiguration.setAllowCredentials(true);
