@@ -1,7 +1,7 @@
-package org.mwt.market.domain.refreshtoken.repository;
+package org.mwt.market.domain.user.repository;
 
 import java.util.Optional;
-import org.mwt.market.domain.refreshtoken.entity.RefreshToken;
+import org.mwt.market.domain.user.entity.RefreshToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

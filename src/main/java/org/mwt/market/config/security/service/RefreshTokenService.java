@@ -5,11 +5,13 @@ import java.util.UUID;
 import org.mwt.market.config.security.exception.RefreshTokenException;
 import org.mwt.market.config.security.token.AuthenticationDetails;
 import org.mwt.market.config.security.token.UserPrincipal;
-import org.mwt.market.domain.refreshtoken.entity.RefreshToken;
-import org.mwt.market.domain.refreshtoken.repository.RefreshTokenRepository;
+import org.mwt.market.domain.user.entity.RefreshToken;
+import org.mwt.market.domain.user.repository.RefreshTokenRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional(readOnly = true)
 public class RefreshTokenService {
 
     private final RefreshTokenRepository refreshTokenRepository;
@@ -27,6 +29,7 @@ public class RefreshTokenService {
                 && findRefreshToken.getUserAgent().equals(details.getUserAgent());
     }
 
+    @Transactional
     public String updateRefreshToken(UserPrincipal principal, AuthenticationDetails details) {
         Long userId = principal.getId();
         String clientIp = details.getClientIp();
