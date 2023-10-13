@@ -99,7 +99,7 @@ public class ProductController {
     }
 
     @PutMapping("/{productId}/status")
-    @Operation(summary = "상품 상태 변경")
+    @Operation(summary = "상품 상태 변경", description = "상품상태 코드 1: 판매중, 2:예약중, 3:거래완료")
     @ApiResponses(value = {@ApiResponse(responseCode = "200")})
     public DataResponseBody<ProductResponseDto> updateProductStatus(
         @AuthenticationPrincipal UserPrincipal userPrincipal,
@@ -108,8 +108,6 @@ public class ProductController {
     ) {
         ProductResponseDto data = productService.changeStatus(userPrincipal, productId,
             request.getStatus());
-        DataResponseBody<ProductResponseDto> body = DataResponseBody.success(data);
-
         return DataResponseBody.success(data);
     }
 

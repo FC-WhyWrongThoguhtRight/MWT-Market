@@ -96,8 +96,8 @@ public class Product {
         this.likes++;
     }
 
-    public void changeStatus(String status) {
-        this.status = ProductStatus.getFromDbIdx(Integer.parseInt(status));
+    public void changeStatus(Integer status) {
+        this.status = ProductStatus.getFromDbIdx(status);
     }
 
     public List<String> getImages() {
