@@ -97,7 +97,7 @@ public class Product {
     }
 
     public void changeStatus(String status) {
-        this.status = ProductStatus.getFromValue(status);
+        this.status = ProductStatus.getFromDbIdx(Integer.parseInt(status));
     }
 
     public List<String> getImages() {
