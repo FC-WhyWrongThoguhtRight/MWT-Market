@@ -23,6 +23,7 @@ import org.mwt.market.domain.product.dto.ProductUpdateRequestDto;
 import org.mwt.market.domain.product.entity.Product;
 import org.mwt.market.domain.product.entity.ProductCategory;
 import org.mwt.market.domain.product.entity.ProductImage;
+import org.mwt.market.domain.product.exception.ImageTypeExcpetion;
 import org.mwt.market.domain.product.exception.ImageUploadErrorException;
 import org.mwt.market.domain.product.exception.NoPermissionException;
 import org.mwt.market.domain.product.exception.NoSuchCategoryException;
@@ -98,7 +99,7 @@ public class ProductService {
     @Transactional
     public void deleteProduct(UserPrincipal userPrincipal, Long productId) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(NoSuchProductException::new);
+            .orElseThrow(NoSuchProductException::new);
         if (!userPrincipal.getEmail().equals(product.getSellerEmail())) {
             throw new NoPermissionException();
         }
@@ -107,16 +108,17 @@ public class ProductService {
     }
 
     @Transactional
-    public void updateProduct(UserPrincipal userPrincipal, Long productId, ProductUpdateRequestDto request) {
+    public void updateProduct(UserPrincipal userPrincipal, Long productId,
+        ProductUpdateRequestDto request) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(NoSuchProductException::new);
+            .orElseThrow(NoSuchProductException::new);
         if (!userPrincipal.getEmail().equals(product.getSellerEmail())) {
             throw new NoPermissionException();
         }
 
         Long categoryId = request.getCategoryId();
         ProductCategory productCategory = productCategoryRepository.findById(categoryId)
-                .orElseThrow(NoSuchCategoryException::new);
+            .orElseThrow(NoSuchCategoryException::new);
 
         for (int order = 0; order < product.getProductAlbum().size(); order++) {
             deleteImage(product, order);
@@ -127,21 +129,23 @@ public class ProductService {
             MultipartFile image = request.getImages().get(order);
             productAlbum.add(uploadImage(product, image, order));
         }
-      
-        product.update(request.getTitle(), request.getContent(), productCategory, request.getPrice(), productAlbum);
+
+        product.update(request.getTitle(), request.getContent(), productCategory,
+            request.getPrice(), productAlbum);
     }
 
     private void deleteImage(Product product, int order) {
         ProductImage image = product.getProductAlbum().get(order);
-      
+
         s3Template.deleteObject("mwtmarketbucket",
-                "products/" + product.getProductId() + "/" + order);
+            "products/" + product.getProductId() + "/" + order);
 
         productImageRepository.deleteById(image.getImgId());
     }
 
     @Transactional
-    public ProductResponseDto changeStatus(UserPrincipal userPrincipal, Long productId, String status) {
+    public ProductResponseDto changeStatus(UserPrincipal userPrincipal, Long productId,
+        String status) {
         Product product = productRepository.findById(productId)
             .orElseThrow(NoSuchProductException::new);
         if (!userPrincipal.getEmail().equals(product.getSellerEmail())) {
@@ -184,7 +188,8 @@ public class ProductService {
     }
 
     @Transactional
-    public ProductResponseDto addProduct(UserPrincipal userPrincipal, ProductRequestDto request) {
+    public ProductResponseDto addProduct(UserPrincipal userPrincipal, ProductRequestDto request)
+        throws ImageTypeExcpetion {
         User user = userRepository.findByEmail(userPrincipal.getEmail())
             .orElseThrow(NoSuchUserException::new);
         ProductCategory category = categoryRepository.findById(request.getCategoryId()).orElseThrow(
@@ -199,14 +204,23 @@ public class ProductService {
             .build();
 
         Product savedProduct = productRepository.save(product);
-
         List<ProductImage> productAlbum = new ArrayList<>();
-        for (int i = 0; i < request.getImages().size(); i++) {
-            MultipartFile image = request.getImages().get(i);
-            productAlbum.add(uploadImage(savedProduct, image, i));
+
+        if (request.getImages() != null) {
+            for (int i = 0; i < request.getImages().size(); i++) {
+                MultipartFile image = request.getImages().get(i);
+
+                if (image == null || image.isEmpty() || !image.getContentType()
+                    .startsWith("image")) {
+                    throw new ImageTypeExcpetion("올바른 이미지 형식이 아닙니다.");
+                }
+
+                productAlbum.add(uploadImage(savedProduct, image, i));
+            }
         }
 
         savedProduct.setProductAlbum(productAlbum);
+
         productRepository.save(savedProduct);
 
         return ProductResponseDto.fromEntity(savedProduct);
