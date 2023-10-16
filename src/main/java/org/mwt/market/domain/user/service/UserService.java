@@ -17,11 +17,13 @@ import org.mwt.market.domain.user.dto.UserResponses.ChatRoomDto;
 import org.mwt.market.domain.user.dto.UserResponses.ProductDto;
 import org.mwt.market.domain.user.entity.ProfileImage;
 import org.mwt.market.domain.user.entity.User;
+import org.mwt.market.domain.user.exception.DuplicateEmailException;
+import org.mwt.market.domain.user.exception.DuplicateNicknameException;
+import org.mwt.market.domain.user.exception.DuplicatePhoneException;
 import org.mwt.market.domain.user.exception.NoSuchUserException;
 import org.mwt.market.domain.user.exception.UserRegisterException;
 import org.mwt.market.domain.user.exception.UserUpdateException;
 import org.mwt.market.domain.user.repository.UserRepository;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -55,13 +57,30 @@ public class UserService {
     public User registerUser(SignupRequestDto signupRequestDto)
         throws UserRegisterException {
         ProfileImage defaultProfile = ProfileImage.createDefault();
-        User newUser = User.createNewUser(signupRequestDto, passwordEncoder, defaultProfile);
-        try {
-            userRepository.save(newUser);
-        } catch (DataIntegrityViolationException ex) {
-            throw new UserRegisterException("이미 가입된 이메일 입니다.", ex);
+        String requestEmail = signupRequestDto.getEmail();
+        String requestNickname = signupRequestDto.getNickname();
+        String requestTel = signupRequestDto.getPhone();
+
+        List<User> byEmailOrNicknameOrTel = userRepository.findByEmailOrNicknameOrTel(
+            requestEmail, requestNickname, requestTel);
+        if (!byEmailOrNicknameOrTel.isEmpty()) {
+            if (byEmailOrNicknameOrTel.stream()
+                .anyMatch(user -> user.getEmail().equals(requestEmail))) {
+                throw new DuplicateEmailException();
+            }
+            if (byEmailOrNicknameOrTel.stream()
+                .anyMatch(user -> user.getTel().equals(requestTel))) {
+                throw new DuplicatePhoneException();
+            }
+            if (byEmailOrNicknameOrTel.stream()
+                .anyMatch(user -> user.getNickname().equals(requestNickname))) {
+                throw new DuplicateNicknameException();
+            }
         }
-        return newUser;
+
+        User newUser = User.createNewUser(signupRequestDto, passwordEncoder, defaultProfile);
+        User savedUser = userRepository.save(newUser);
+        return savedUser;
     }
 
     public User readUser(UserPrincipal userPrincipal) throws NoSuchUserException {

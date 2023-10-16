@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.NonTransientDataAccessException;
 import org.springframework.dao.TransientDataAccessException;
 import org.springframework.http.ResponseEntity;
@@ -22,13 +21,22 @@ public class UserControllerAdvisor {
 
     @ExceptionHandler(UserRegisterException.class)
     public ResponseEntity<ErrorResponseBody> handleUserRegisterException(UserRegisterException ex) {
+        if (ex instanceof DuplicateValueException) {
+            Integer statusCode = 400;
+            if (ex instanceof DuplicateEmailException) {
+                statusCode = 401;
+            } else if (ex instanceof DuplicatePhoneException) {
+                statusCode = 402;
+            } else if (ex instanceof DuplicateNicknameException) {
+                statusCode = 403;
+            }
+            return ResponseEntity
+                .badRequest()
+                .body(ErrorResponseBody.unsuccessful(statusCode, ex.getMessage(), ex));
+        }
         Throwable cause = ex.getCause();
         if (cause instanceof NonTransientDataAccessException) {
-            if (cause instanceof DataIntegrityViolationException) {
-                logger.warn(ex.getMessage(), ex);
-            } else {
-                logger.error(ex.getMessage(), ex);
-            }
+            logger.error(ex.getMessage(), ex);
             return ResponseEntity
                 .badRequest()
                 .body(ErrorResponseBody.unsuccessful(ex.getMessage(), ex));
