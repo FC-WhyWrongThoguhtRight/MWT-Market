@@ -1,4 +1,4 @@
-package org.mwt.market.domain.refreshtoken.entity;
+package org.mwt.market.domain.user.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
