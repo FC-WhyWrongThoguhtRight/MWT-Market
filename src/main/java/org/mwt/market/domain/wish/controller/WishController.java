@@ -12,15 +12,14 @@ import org.mwt.market.common.response.BaseResponseBody;
 import org.mwt.market.common.response.DataResponseBody;
 import org.mwt.market.common.response.ErrorResponseBody;
 import org.mwt.market.config.security.token.UserPrincipal;
-import org.mwt.market.domain.wish.dto.WishReqeuestDto;
 import org.mwt.market.domain.wish.dto.WishResponseDto;
 import org.mwt.market.domain.wish.service.WishService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -49,7 +48,7 @@ public class WishController {
             .body(DataResponseBody.success(data));
     }
 
-    @PostMapping
+    @PostMapping("/{productId}")
     @Operation(summary = "내 관심목록 등록")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200"),
@@ -58,16 +57,16 @@ public class WishController {
     })
     public ResponseEntity<? extends BaseResponseBody> addWish(
         @AuthenticationPrincipal UserPrincipal userPrincipal,
-        @RequestBody WishReqeuestDto wishReqeuestDto
+        @PathVariable Long productId
     ) {
-        wishService.addWish(userPrincipal, wishReqeuestDto.getProductId());
+        wishService.addWish(userPrincipal, productId);
 
         return ResponseEntity
             .status(200)
             .body(BaseResponseBody.success());
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{productId}")
     @Operation(summary = "내 관심목록 삭제")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200"),
@@ -76,9 +75,9 @@ public class WishController {
     })
     public ResponseEntity<? extends BaseResponseBody> removeWish(
         @AuthenticationPrincipal UserPrincipal userPrincipal,
-        @RequestBody WishReqeuestDto wishReqeuestDto
+        @PathVariable Long productId
     ) {
-        wishService.removeWish(userPrincipal, wishReqeuestDto.getProductId());
+        wishService.removeWish(userPrincipal, productId);
 
         return ResponseEntity
             .status(200)

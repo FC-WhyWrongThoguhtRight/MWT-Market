@@ -1,9 +1,7 @@
 package org.mwt.market.domain.wish.exception;
 
+import org.mwt.market.common.exception.BaseException;
 import org.mwt.market.common.response.ErrorResponseBody;
-import org.mwt.market.domain.product.controller.ProductController;
-import org.mwt.market.domain.product.exception.NoSuchProductException;
-import org.mwt.market.domain.user.exception.NoSuchUserException;
 import org.mwt.market.domain.wish.controller.WishController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +18,7 @@ public class WishControllerAdvisor {
     private final Logger logger = LoggerFactory.getLogger(WishControllerAdvisor.class);
 
     @ExceptionHandler(value = { AlreadyExistWishException.class, NoSuchWishException.class } )
-    public ResponseEntity<ErrorResponseBody> handleUserInfoException(AlreadyExistWishException ex) {
+    public ResponseEntity<ErrorResponseBody> handleUserInfoException(BaseException ex) {
         logger.error(ex.getMessage(), ex);
         return ResponseEntity
             .badRequest()
