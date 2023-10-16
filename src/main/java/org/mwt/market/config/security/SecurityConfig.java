@@ -136,9 +136,10 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
 
-        corsConfiguration.addAllowedOrigin(frontUrl);
-        corsConfiguration.addAllowedOrigin(gatewayUrl);
-        corsConfiguration.addAllowedOrigin(frontUrlLocal);
+        corsConfiguration.addAllowedOriginPattern("*");
+//        corsConfiguration.addAllowedOrigin(frontUrl);
+//        corsConfiguration.addAllowedOrigin(gatewayUrl);
+//        corsConfiguration.addAllowedOrigin(frontUrlLocal);
         corsConfiguration.addAllowedHeader("*");
         corsConfiguration.addAllowedMethod("*");
         corsConfiguration.setAllowCredentials(true);
