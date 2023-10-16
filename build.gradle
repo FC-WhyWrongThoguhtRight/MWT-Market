@@ -39,10 +39,7 @@ dependencies {
 
 	//webSockey dependencies
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
-
-
-
-
+	implementation 'org.webjars:stomp-websocket:2.3.3'
 }
 
 tasks.named('test') {
