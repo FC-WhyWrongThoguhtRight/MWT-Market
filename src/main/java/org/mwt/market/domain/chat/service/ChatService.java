@@ -1,10 +1,15 @@
 package org.mwt.market.domain.chat.service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.mwt.market.config.security.token.UserPrincipal;
 import org.mwt.market.domain.chat.dto.ChatRoomDto;
+import org.mwt.market.domain.chat.dto.ChatWsDto.MessageRequest;
+import org.mwt.market.domain.chat.dto.ChatWsDto.MessageResponse;
+import org.mwt.market.domain.chat.entity.ChatContent;
 import org.mwt.market.domain.chat.entity.ChatRoom;
+import org.mwt.market.domain.chat.repository.ChatContentRepository;
 import org.mwt.market.domain.chat.repository.ChatRoomRepository;
 import org.mwt.market.domain.product.entity.Product;
 import org.mwt.market.domain.product.exception.NoSuchProductException;
@@ -24,11 +29,14 @@ public class ChatService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
 
+    private final ChatContentRepository chatContentRepository;
+
     public ChatService(ChatRoomRepository chatRoomRepository, UserRepository userRepository,
-        ProductRepository productRepository) {
+        ProductRepository productRepository, ChatContentRepository chatContentRepository) {
         this.chatRoomRepository = chatRoomRepository;
         this.userRepository = userRepository;
         this.productRepository = productRepository;
+        this.chatContentRepository = chatContentRepository;
     }
 
     @Transactional
@@ -57,4 +65,25 @@ public class ChatService {
             .lasteCreatedAt(null)
             .build();
     }
+
+    public MessageResponse saveMessage(String roomId, MessageRequest messageRequest) {
+
+        ChatContent chatContent = ChatContent.builder()
+            .chatRoomId(Long.parseLong(roomId))
+            .userId(1L)
+            .content(messageRequest.getContent())
+            .createAt(LocalDateTime.now())
+            .build();
+
+        ChatContent result = chatContentRepository.save(chatContent);
+
+
+        return MessageResponse.builder()
+            .name(String.valueOf(result.getUserId()))
+            .content(result.getContent())
+            .dateTime(result.getCreateAt())
+            .build();
+    }
+
+
 }

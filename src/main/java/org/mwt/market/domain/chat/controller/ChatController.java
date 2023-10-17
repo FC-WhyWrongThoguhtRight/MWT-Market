@@ -44,7 +44,8 @@ public class ChatController {
     @MessageMapping("/room/{roomId}")
     @SendTo("/sub/room/{roomId}")
     @Operation(summary = "상품 판매자와 1:1 채팅 메시지 전송 및 내역 저장")
+    @ApiResponses()
     public MessageResponse chat(@DestinationVariable String roomId, MessageRequest message) {
-        return new MessageResponse(message.getName(), message.getContent(), LocalDateTime.now());
+        return chatService.saveMessage(roomId, message);
     }
 }
