@@ -19,19 +19,19 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Page<Product> findAllByOrderByProductIdDesc(Pageable pageable);
 
     @Query("SELECT p FROM Product p "
-            + "WHERE p.category.categoryId IN :categoryIds "
-            + "AND p.title like %:searchWord% "
-            + "ORDER BY p.productId DESC")
+        + "WHERE p.category.categoryId IN :categoryIds "
+        + "AND p.title like %:searchWord% "
+        + "ORDER BY p.productId DESC")
     Page<Product> findAllByCategory_CategoryIdInTitleContainingOrderByProductIdDesc(
-            Pageable pageable, List<Long> categoryIds,
-            String searchWord);
+        Pageable pageable, List<Long> categoryIds,
+        String searchWord);
 
     Page<Product> findBySeller_UserId(Pageable pageable, Long userId);
 
     @Query("SELECT p FROM Product p "
-            + "WHERE p.seller.userId = :sellerId "
-            + "AND p.productId <> :productId "
-            + "AND p.isDeleted = false "
-            + "ORDER BY p.createdAt DESC")
+        + "WHERE p.seller.userId = :sellerId "
+        + "AND p.productId <> :productId "
+        + "AND p.isDeleted = false "
+        + "ORDER BY p.createdAt DESC")
     List<Product> findProductsBySeller_UserId(@Param("sellerId") Long sellerId, @Param("productId") Long productId);
 }

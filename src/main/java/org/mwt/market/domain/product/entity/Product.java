@@ -64,7 +64,7 @@ public class Product {
 
     @Builder
     public Product(String title, String content, Integer price, List<ProductImage> productAlbum,
-                   User seller, ProductCategory category) {
+        User seller, ProductCategory category) {
         this.title = title;
         this.content = content;
         this.price = price;
