@@ -11,7 +11,7 @@ INSERT INTO PROFILEIMAGE VALUES (2, NOW(), 'https://mwtmarketbucket.s3.ap-northe
 INSERT INTO PROFILEIMAGE VALUES (3, NOW(), 'https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/user/default.png');
 INSERT INTO PROFILEIMAGE VALUES (4, NOW(), 'https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/user/default.png');
 
---USER
+--USER (USER 비밀번호 : zxcv )
 INSERT INTO USERS VALUES (1, NOW(), 'donghar@naver.com', 'drkoko', '{bcrypt}$2a$10$4vqaqfeWWepTBMftJPo3E.42uESauw2Nl9SEMGyurm5erSkKD1fI2', '010-1234-1234', 1);
 INSERT INTO USERS VALUES (2, NOW(), 'deepred.kim@gmail.com', 'deepred', '{bcrypt}$2a$10$4vqaqfeWWepTBMftJPo3E.42uESauw2Nl9SEMGyurm5erSkKD1fI2', '010-1234-1234', 2);
 INSERT INTO USERS VALUES (3, NOW(), 'wwscan3@gmail.com', 'wonbin', '{bcrypt}$2a$10$4vqaqfeWWepTBMftJPo3E.42uESauw2Nl9SEMGyurm5erSkKD1fI2', '010-1234-1234', 3);
