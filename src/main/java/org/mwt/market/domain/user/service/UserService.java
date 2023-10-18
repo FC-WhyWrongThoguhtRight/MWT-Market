@@ -20,8 +20,8 @@ import org.mwt.market.domain.user.entity.User;
 import org.mwt.market.domain.user.exception.DuplicateEmailException;
 import org.mwt.market.domain.user.exception.DuplicateNicknameException;
 import org.mwt.market.domain.user.exception.DuplicatePhoneException;
+import org.mwt.market.domain.user.exception.DuplicateValueException;
 import org.mwt.market.domain.user.exception.NoSuchUserException;
-import org.mwt.market.domain.user.exception.UserRegisterException;
 import org.mwt.market.domain.user.exception.UserUpdateException;
 import org.mwt.market.domain.user.repository.UserRepository;
 import org.springframework.data.domain.Page;
@@ -54,9 +54,14 @@ public class UserService {
     }
 
     @Transactional
-    public User registerUser(SignupRequestDto signupRequestDto)
-        throws UserRegisterException {
+    public User registerUser(SignupRequestDto signupRequestDto) {
         ProfileImage defaultProfile = ProfileImage.createDefault();
+        User newUser = User.createNewUser(signupRequestDto, passwordEncoder, defaultProfile);
+        User savedUser = userRepository.save(newUser);
+        return savedUser;
+    }
+
+    public boolean isDuplicated(SignupRequestDto signupRequestDto) throws DuplicateValueException {
         String requestEmail = signupRequestDto.getEmail();
         String requestNickname = signupRequestDto.getNickname();
         String requestTel = signupRequestDto.getPhone();
@@ -77,10 +82,7 @@ public class UserService {
                 throw new DuplicateNicknameException();
             }
         }
-
-        User newUser = User.createNewUser(signupRequestDto, passwordEncoder, defaultProfile);
-        User savedUser = userRepository.save(newUser);
-        return savedUser;
+        return false;
     }
 
     public User readUser(UserPrincipal userPrincipal) throws NoSuchUserException {
