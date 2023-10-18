@@ -23,8 +23,8 @@ public class ProductResponseDto {
 
     @Builder
     public ProductResponseDto(Long id, String title,
-                              Integer price, Long categoryId, String content, List<String> images, String status,
-                              Integer likes, Seller seller, List<ProductSimpleInfo> sellerProductInfos, boolean isMyProduct) {
+        Integer price, Long categoryId, String content, List<String> images, String status,
+        Integer likes, Seller seller, List<ProductSimpleInfo> sellerProductInfos, boolean isMyProduct) {
         this.id = id;
         this.title = title;
         this.price = price;
@@ -40,34 +40,34 @@ public class ProductResponseDto {
 
     public static ProductResponseDto fromEntity(Product product) {
         return ProductResponseDto.builder()
-                .categoryId(product.getCategoryId())
-                .content(product.getContent())
-                .id(product.getProductId())
-                .likes(product.getLikes())
-                .images(product.getImages())
-                .price(product.getPrice())
-                .seller(Seller.fromEntity(product.getSeller()))
-                .status(product.getStatus().getValue())
-                .title(product.getTitle())
-                .isMyProduct(true)
-                .build();
+            .categoryId(product.getCategoryId())
+            .content(product.getContent())
+            .id(product.getProductId())
+            .likes(product.getLikes())
+            .images(product.getImages())
+            .price(product.getPrice())
+            .seller(Seller.fromEntity(product.getSeller()))
+            .status(product.getStatus().getValue())
+            .title(product.getTitle())
+            .isMyProduct(true)
+            .build();
     }
 
     public static ProductResponseDto fromEntity(Product product, List<Product> sellerProductInfos) {
         return ProductResponseDto.builder()
-                .categoryId(product.getCategoryId())
-                .content(product.getContent())
-                .id(product.getProductId())
-                .likes(product.getLikes())
-                .images(product.getImages())
-                .price(product.getPrice())
-                .seller(Seller.fromEntity(product.getSeller()))
-                .sellerProductInfos(sellerProductInfos.stream()
-                        .map(ProductSimpleInfo::toDto)
-                        .toList())
-                .status(product.getStatus().getValue())
-                .title(product.getTitle())
-                .build();
+            .categoryId(product.getCategoryId())
+            .content(product.getContent())
+            .id(product.getProductId())
+            .likes(product.getLikes())
+            .images(product.getImages())
+            .price(product.getPrice())
+            .seller(Seller.fromEntity(product.getSeller()))
+            .sellerProductInfos(sellerProductInfos.stream()
+                .map(ProductSimpleInfo::toDto)
+                .toList())
+            .status(product.getStatus().getValue())
+            .title(product.getTitle())
+            .build();
     }
 
     @Getter
@@ -107,11 +107,11 @@ public class ProductResponseDto {
 
         public static ProductSimpleInfo toDto(Product product) {
             return ProductSimpleInfo.builder()
-                    .id(product.getProductId())
-                    .title(product.getTitle())
-                    .price(product.getPrice())
-                    .thumbnail(product.getThumbnail())
-                    .build();
+                .id(product.getProductId())
+                .title(product.getTitle())
+                .price(product.getPrice())
+                .thumbnail(product.getThumbnail())
+                .build();
 
         }
     }
