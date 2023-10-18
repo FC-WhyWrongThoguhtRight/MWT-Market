@@ -70,7 +70,7 @@ public class ChatService {
 
         ChatContent chatContent = ChatContent.builder()
             .chatRoomId(Long.parseLong(roomId))
-            .userId(1L)
+            .userId(messageRequest.getUserId())
             .content(messageRequest.getContent())
             .createAt(LocalDateTime.now())
             .build();
@@ -79,7 +79,7 @@ public class ChatService {
 
 
         return MessageResponse.builder()
-            .name(String.valueOf(result.getUserId()))
+            .userId(result.getUserId())
             .content(result.getContent())
             .dateTime(result.getCreateAt())
             .build();

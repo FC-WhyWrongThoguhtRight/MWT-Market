@@ -10,15 +10,15 @@ public class ChatWsDto {
     @Builder
     public static class MessageResponse {
 
-        private String name;
+        private Long userId;
         private String content;
         private LocalDateTime dateTime;
 
         public MessageResponse() {
         }
 
-        public MessageResponse(String name, String content, LocalDateTime dateTime) {
-            this.name = name;
+        public MessageResponse(Long userId, String content, LocalDateTime dateTime) {
+            this.userId = userId;
             this.content = content;
             this.dateTime = dateTime;
         }
@@ -27,7 +27,7 @@ public class ChatWsDto {
     @Getter
     public static class MessageRequest {
 
-        private String name;
+        private Long userId;
         private String content;
     }
 }
