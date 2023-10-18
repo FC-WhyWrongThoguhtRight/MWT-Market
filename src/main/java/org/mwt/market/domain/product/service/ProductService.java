@@ -4,22 +4,14 @@ import io.awspring.cloud.s3.ObjectMetadata;
 import io.awspring.cloud.s3.S3Resource;
 import io.awspring.cloud.s3.S3Template;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mwt.market.config.security.token.UserPrincipal;
 import org.mwt.market.domain.chat.entity.ChatRoom;
 import org.mwt.market.domain.chat.repository.ChatRoomRepository;
-import org.mwt.market.domain.product.dto.ProductChatResponseDto;
-import org.mwt.market.domain.product.dto.ProductInfoDto;
-import org.mwt.market.domain.product.dto.ProductRequestDto;
-import org.mwt.market.domain.product.dto.ProductResponseDto;
-import org.mwt.market.domain.product.dto.ProductUpdateRequestDto;
+import org.mwt.market.domain.product.dto.*;
 import org.mwt.market.domain.product.entity.Product;
 import org.mwt.market.domain.product.entity.ProductCategory;
 import org.mwt.market.domain.product.entity.ProductImage;
@@ -43,6 +35,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.swing.*;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -59,37 +53,37 @@ public class ProductService {
     private final ProductImageRepository productImageRepository;
 
     public List<ProductInfoDto> findAllProducts(List<Long> categoryIds, String searchWord,
-        Integer page, Integer pageSize, UserPrincipal userPrincipal) {
+                                                Integer page, Integer pageSize, UserPrincipal userPrincipal) {
 
         Page<Product> products;
         if (categoryIds.size() != 0 && StringUtils.hasText(searchWord)) {
             products = productRepository.findAllByCategory_CategoryIdInTitleContainingOrderByProductIdDesc(
-                PageRequest.of(page, pageSize),
-                categoryIds, searchWord);
+                    PageRequest.of(page, pageSize),
+                    categoryIds, searchWord);
         } else if (categoryIds.size() != 0) {
             products = productRepository.findAllByCategory_CategoryIdIn(
-                PageRequest.of(page, pageSize), categoryIds);
+                    PageRequest.of(page, pageSize), categoryIds);
         } else if (StringUtils.hasText(searchWord)) {
             products = productRepository.findAllByTitleContaining(PageRequest.of(page, pageSize),
-                searchWord);
+                    searchWord);
         } else {
             products = productRepository.findAllByOrderByProductIdDesc(
-                PageRequest.of(page, pageSize));
+                    PageRequest.of(page, pageSize));
         }
 
         Set<Long> wishProductIds = Collections.emptySet();
         if (!"anonymous".equals(userPrincipal.getName())) {
             User currUser = userRepository.findById(userPrincipal.getId())
-                .orElseThrow(() -> new NoSuchUserException());
+                    .orElseThrow(() -> new NoSuchUserException());
             List<Wish> findWishProducts = wishRepository.findAllByUser(currUser);
             wishProductIds = findWishProducts.stream()
-                .map(wish -> wish.getProduct().getProductId())
-                .collect(Collectors.toSet());
+                    .map(wish -> wish.getProduct().getProductId())
+                    .collect(Collectors.toSet());
         }
 
         List<ProductInfoDto> result = products.stream()
-            .map(ProductInfoDto::toDto)
-            .collect(Collectors.toList());
+                .map(ProductInfoDto::toDto)
+                .collect(Collectors.toList());
         for (ProductInfoDto productInfoDto : result) {
             productInfoDto.setLike(wishProductIds.contains(productInfoDto.getId()));
         }
@@ -99,7 +93,7 @@ public class ProductService {
     @Transactional
     public void deleteProduct(UserPrincipal userPrincipal, Long productId) {
         Product product = productRepository.findById(productId)
-            .orElseThrow(NoSuchProductException::new);
+                .orElseThrow(NoSuchProductException::new);
         if (!userPrincipal.getEmail().equals(product.getSellerEmail())) {
             throw new NoPermissionException();
         }
@@ -109,16 +103,16 @@ public class ProductService {
 
     @Transactional
     public void updateProduct(UserPrincipal userPrincipal, Long productId,
-        ProductUpdateRequestDto request) {
+                              ProductUpdateRequestDto request) {
         Product product = productRepository.findById(productId)
-            .orElseThrow(NoSuchProductException::new);
+                .orElseThrow(NoSuchProductException::new);
         if (!userPrincipal.getEmail().equals(product.getSellerEmail())) {
             throw new NoPermissionException();
         }
 
         Long categoryId = request.getCategoryId();
         ProductCategory productCategory = productCategoryRepository.findById(categoryId)
-            .orElseThrow(NoSuchCategoryException::new);
+                .orElseThrow(NoSuchCategoryException::new);
 
         for (int order = 0; order < product.getProductAlbum().size(); order++) {
             deleteImage(product, order);
@@ -131,14 +125,14 @@ public class ProductService {
         }
 
         product.update(request.getTitle(), request.getContent(), productCategory,
-            request.getPrice(), productAlbum);
+                request.getPrice(), productAlbum);
     }
 
     private void deleteImage(Product product, int order) {
         ProductImage image = product.getProductAlbum().get(order);
 
         s3Template.deleteObject("mwtmarketbucket",
-            "products/" + product.getProductId() + "/" + order);
+                "products/" + product.getProductId() + "/" + order);
 
         productImageRepository.deleteById(image.getImgId());
     }
@@ -146,7 +140,7 @@ public class ProductService {
     @Transactional
     public ProductResponseDto changeStatus(UserPrincipal userPrincipal, Long productId, Integer status) {
         Product product = productRepository.findById(productId)
-            .orElseThrow(NoSuchProductException::new);
+                .orElseThrow(NoSuchProductException::new);
         if (!userPrincipal.getEmail().equals(product.getSellerEmail())) {
             throw new NoPermissionException();
         }
@@ -159,7 +153,7 @@ public class ProductService {
 
     public List<ProductChatResponseDto> findChats(UserPrincipal userPrincipal, Long productId) {
         Product product = productRepository.findById(productId)
-            .orElseThrow(NoSuchProductException::new);
+                .orElseThrow(NoSuchProductException::new);
 
         List<ChatRoom> chatRooms = chatRoomRepository.findAllByProduct(product);
         List<ProductChatResponseDto> dtos = new ArrayList<>();
@@ -173,13 +167,13 @@ public class ProductService {
             }
 
             ProductChatResponseDto dto = ProductChatResponseDto.builder()
-                .chatRoomId(chatRoom.getChatRoomId())
-                .productThumbnail(product.getThumbnail())
-                .youId(you.getUserId())
-                .youNickname(you.getNickname())
-                .youProfileImage(you.getProfileImageUrl())
-                .lastChatMessage("미구현") // TODO 종훈님 구현완료 후 수정
-                .build();
+                    .chatRoomId(chatRoom.getChatRoomId())
+                    .productThumbnail(product.getThumbnail())
+                    .youId(you.getUserId())
+                    .youNickname(you.getNickname())
+                    .youProfileImage(you.getProfileImageUrl())
+                    .lastChatMessage("미구현") // TODO 종훈님 구현완료 후 수정
+                    .build();
             dtos.add(dto);
         }
 
@@ -188,19 +182,19 @@ public class ProductService {
 
     @Transactional
     public ProductResponseDto addProduct(UserPrincipal userPrincipal, ProductRequestDto request)
-        throws ImageTypeExcpetion {
+            throws ImageTypeExcpetion {
         User user = userRepository.findByEmail(userPrincipal.getEmail())
-            .orElseThrow(NoSuchUserException::new);
+                .orElseThrow(NoSuchUserException::new);
         ProductCategory category = categoryRepository.findById(request.getCategoryId()).orElseThrow(
-            NoSuchElementException::new);
+                NoSuchElementException::new);
 
         Product product = Product.builder()
-            .title(request.getTitle())
-            .content(request.getContent())
-            .price(request.getPrice())
-            .seller(user)
-            .category(category)
-            .build();
+                .title(request.getTitle())
+                .content(request.getContent())
+                .price(request.getPrice())
+                .seller(user)
+                .category(category)
+                .build();
 
         Product savedProduct = productRepository.save(product);
         List<ProductImage> productAlbum = new ArrayList<>();
@@ -210,7 +204,7 @@ public class ProductService {
                 MultipartFile image = request.getImages().get(i);
 
                 if (image == null || image.isEmpty() || !image.getContentType()
-                    .startsWith("image")) {
+                        .startsWith("image")) {
                     throw new ImageTypeExcpetion("올바른 이미지 형식이 아닙니다.");
                 }
 
@@ -230,21 +224,35 @@ public class ProductService {
 
         try {
             S3Resource resource = s3Template.upload("mwtmarketbucket",
-                "products/" + product.getProductId() + "/" + order,
-                image.getInputStream(),
-                ObjectMetadata.builder().contentType(extension).build());
+                    "products/" + product.getProductId() + "/" + order,
+                    image.getInputStream(),
+                    ObjectMetadata.builder().contentType(extension).build());
 
             return productImageRepository.save(
-                new ProductImage(product, resource.getURL().toString(), order)
+                    new ProductImage(product, resource.getURL().toString(), order)
             );
         } catch (IOException ex) {
             throw new ImageUploadErrorException();
         }
     }
 
-    public ProductResponseDto findProduct(Long productId) {
-        Product product = productRepository.findById(productId)
-            .orElseThrow(NoSuchProductException::new);
-        return ProductResponseDto.fromEntity(product);
+    public ProductResponseDto findProduct(UserPrincipal userPrincipal, Long productId) {
+        Product product = validateIsDeleted(productRepository.findById(productId)
+                .orElseThrow(NoSuchProductException::new));
+
+        List<Product> sellerProducts = productRepository
+                .findProductsBySeller_UserId(product.getSeller().getUserId(), productId);
+
+        ProductResponseDto productResponseDto = ProductResponseDto.fromEntity(product, sellerProducts);
+        productResponseDto.setIsMyProduct(Objects.equals(userPrincipal.getId(), product.getSeller().getUserId()));
+
+        return productResponseDto;
+    }
+
+    private Product validateIsDeleted(Product product) {
+        if(product.isDeleted()) {
+            throw new NoSuchProductException();
+        }
+        return product;
     }
 }
