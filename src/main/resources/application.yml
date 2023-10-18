@@ -15,8 +15,6 @@ spring:
       ddl-auto: create
     defer-datasource-initialization: true
 
-
-
   data:
     mongodb:
       uri: mongodb://localhost:27019/admin
