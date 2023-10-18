@@ -41,6 +41,7 @@ public class Product {
     private List<ProductImage> productAlbum;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sellerId", referencedColumnName = "userId")
     private User seller;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -63,7 +64,7 @@ public class Product {
 
     @Builder
     public Product(String title, String content, Integer price, List<ProductImage> productAlbum,
-        User seller, ProductCategory category) {
+                   User seller, ProductCategory category) {
         this.title = title;
         this.content = content;
         this.price = price;

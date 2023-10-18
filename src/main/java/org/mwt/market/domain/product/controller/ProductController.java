@@ -48,17 +48,17 @@ public class ProductController {
     @ApiResponses(value = {@ApiResponse(responseCode = "200")}
     )
     public DataResponseBody<List<ProductInfoDto>> showAllProducts(
-        @RequestParam(required = false) List<Long> categoryIds,
-        @RequestParam(required = false, defaultValue = "") String searchWord,
-        @RequestParam(required = false, defaultValue = "1") Integer page,
-        @RequestParam(required = false, defaultValue = "10") Integer pageSize,
-        @AuthenticationPrincipal UserPrincipal userPrincipal
+            @RequestParam(required = false) List<Long> categoryIds,
+            @RequestParam(required = false, defaultValue = "") String searchWord,
+            @RequestParam(required = false, defaultValue = "1") Integer page,
+            @RequestParam(required = false, defaultValue = "10") Integer pageSize,
+            @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
         if (categoryIds == null) {
             categoryIds = Collections.emptyList();
         }
         List<ProductInfoDto> ProductInfos = productService.findAllProducts(categoryIds, searchWord,
-            page - 1, pageSize, userPrincipal);
+                page - 1, pageSize, userPrincipal);
         return DataResponseBody.success(ProductInfos);
     }
 
@@ -67,8 +67,8 @@ public class ProductController {
     @ApiResponses(value = {@ApiResponse(responseCode = "200")}
     )
     public DataResponseBody<ProductResponseDto> registerProduct(
-        @AuthenticationPrincipal UserPrincipal userPrincipal,
-        @Valid @ModelAttribute ProductRequestDto request
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @Valid @ModelAttribute ProductRequestDto request
     ) throws ImageTypeExcpetion {
         ProductResponseDto data = productService.addProduct(userPrincipal, request);
 
@@ -80,9 +80,10 @@ public class ProductController {
     @ApiResponses(value = {@ApiResponse(responseCode = "200")}
     )
     public DataResponseBody<ProductResponseDto> showProductDetails(
-        @PathVariable Long productId
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable Long productId
     ) {
-        ProductResponseDto data = productService.findProduct(productId);
+        ProductResponseDto data = productService.findProduct(userPrincipal, productId);
 
         return DataResponseBody.success(data);
     }
@@ -91,8 +92,8 @@ public class ProductController {
     @Operation(summary = "상품 삭제")
     @ApiResponses(value = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400")})
     public BaseResponseBody deleteProduct(
-        @AuthenticationPrincipal UserPrincipal userPrincipal,
-        @PathVariable Long productId
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable Long productId
     ) {
         productService.deleteProduct(userPrincipal, productId);
 
@@ -103,24 +104,24 @@ public class ProductController {
     @Operation(summary = "상품 상태 변경", description = "상품상태 코드 1: 판매중, 2:예약중, 3:거래완료")
     @ApiResponses(value = {@ApiResponse(responseCode = "200")})
     public DataResponseBody<ProductResponseDto> updateProductStatus(
-        @AuthenticationPrincipal UserPrincipal userPrincipal,
-        @PathVariable Long productId,
-        @RequestBody ProductStatusUpdateRequestDto request
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable Long productId,
+            @RequestBody ProductStatusUpdateRequestDto request
     ) {
         ProductResponseDto data = productService.changeStatus(userPrincipal, productId,
-            request.getStatus());
+                request.getStatus());
         return DataResponseBody.success(data);
     }
 
     @PutMapping(value = "/{productId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "상품 수정")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200"),
-        @ApiResponse(responseCode = "400")})
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400")})
     public BaseResponseBody updateProduct(
-        @AuthenticationPrincipal UserPrincipal userPrincipal,
-        @PathVariable Long productId,
-        @Valid @ModelAttribute ProductUpdateRequestDto request
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable Long productId,
+            @Valid @ModelAttribute ProductUpdateRequestDto request
     ) {
 
         productService.updateProduct(userPrincipal, productId, request);
@@ -131,17 +132,17 @@ public class ProductController {
     @GetMapping("/{productId}/chats")
     @Operation(summary = "상품 관련 채팅방 목록 조회")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200"),
-        @ApiResponse(responseCode = "400", content = {
-            @Content(schema = @Schema(implementation = BaseResponseBody.class))})})
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400", content = {
+                    @Content(schema = @Schema(implementation = BaseResponseBody.class))})})
     public ResponseEntity<? extends DataResponseBody<List<ProductChatResponseDto>>> productChatList(
-        @AuthenticationPrincipal UserPrincipal userPrincipal,
-        @PathVariable Long productId
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable Long productId
     ) {
         List<ProductChatResponseDto> data = productService.findChats(userPrincipal, productId);
 
         return ResponseEntity
-            .status(200)
-            .body(DataResponseBody.success(data));
+                .status(200)
+                .body(DataResponseBody.success(data));
     }
 }
