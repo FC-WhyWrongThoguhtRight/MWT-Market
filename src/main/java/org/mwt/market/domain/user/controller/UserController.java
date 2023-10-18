@@ -52,6 +52,7 @@ public class UserController {
     })
     public BaseResponseBody signup(
         @RequestBody SignupRequestDto signupRequestDto) throws UserRegisterException {
+        userService.isDuplicated(signupRequestDto);
         userService.registerUser(signupRequestDto);
         return BaseResponseBody.success("회원가입 성공");
     }
