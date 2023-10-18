@@ -49,9 +49,9 @@ public class ChatService {
 
         ChatRoom chatRoom = optChatRoom.orElseGet(() -> {
             User buyer = userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchUserException());
+                .orElseThrow(NoSuchUserException::new);
             Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new NoSuchProductException());
+                .orElseThrow(NoSuchProductException::new);
             return chatRoomRepository.save(ChatRoom.createChatRoom(buyer, product));
         });
 
