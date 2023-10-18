@@ -55,14 +55,18 @@ public class ChatService {
             return chatRoomRepository.save(ChatRoom.createChatRoom(buyer, product));
         });
 
+        ChatContent lastMessage = chatContentRepository.findFirstByChatRoomIdOrderByCreateAtDesc(
+            optChatRoom
+                .get()
+                .getChatRoomId());
+
         return ChatRoomDto.builder()
             .chatRoomId(chatRoom.getChatRoomId())
             .buyerId(chatRoom.getBuyer().getUserId())
             .nickName(chatRoom.getBuyer().getNickname())
             .buyerProfileImg(chatRoom.getBuyer().getProfileImageUrl())
-            //TODO: MongoDB로부터 마지막 메시지 받아오기
-            .lastMessage(null)
-            .lasteCreatedAt(null)
+            .lastMessage(lastMessage == null ? null : lastMessage.getContent())
+            .lastCreatedAt(lastMessage == null ? null : lastMessage.getCreateAt())
             .build();
     }
 
@@ -76,7 +80,6 @@ public class ChatService {
             .build();
 
         ChatContent result = chatContentRepository.save(chatContent);
-
 
         return MessageResponse.builder()
             .userId(result.getUserId())

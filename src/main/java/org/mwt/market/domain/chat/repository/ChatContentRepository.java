@@ -10,4 +10,6 @@ public interface ChatContentRepository extends MongoRepository<ChatContent, Stri
 
     List<ChatContent> findAllByChatRoomIdOrderByCreateAtAsc(Long chatRoomId);
 
+    ChatContent findFirstByChatRoomIdOrderByCreateAtDesc(Long chatRoomId);
+
 }
