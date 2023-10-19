@@ -5,6 +5,6 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class WishReqeuestDto {
+public class WishRequestDto {
     private Long productId;
 }

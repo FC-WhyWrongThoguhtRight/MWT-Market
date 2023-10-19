@@ -19,6 +19,7 @@ import org.mwt.market.domain.product.dto.ProductRequestDto;
 import org.mwt.market.domain.product.dto.ProductResponseDto;
 import org.mwt.market.domain.product.dto.ProductStatusUpdateRequestDto;
 import org.mwt.market.domain.product.dto.ProductUpdateRequestDto;
+import org.mwt.market.domain.product.exception.ImageTypeExcpetion;
 import org.mwt.market.domain.product.service.ProductService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -68,7 +69,7 @@ public class ProductController {
     public DataResponseBody<ProductResponseDto> registerProduct(
         @AuthenticationPrincipal UserPrincipal userPrincipal,
         @Valid @ModelAttribute ProductRequestDto request
-    ) {
+    ) throws ImageTypeExcpetion {
         ProductResponseDto data = productService.addProduct(userPrincipal, request);
 
         return DataResponseBody.success(data);

@@ -2,6 +2,7 @@ package org.mwt.market.config.security;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
+import org.mwt.market.config.security.exception.AjaxAuthenticationEntryPoint;
 import org.mwt.market.config.security.filter.AjaxAuthenticationFilter;
 import org.mwt.market.config.security.filter.AjaxAuthenticationFilterConfigurer;
 import org.mwt.market.config.security.filter.JwtAuthenticationFilter;
@@ -63,12 +64,21 @@ public class SecurityConfig {
     @Autowired
     private UserRepository userRepository;
 
-    private static final String[] AUTH_WHITELIST = {
+    private static final String[] SWAGGER_PAGE = {
         "/swagger-ui/**", "/api-docs", "/swagger-ui-custom.html",
-        "/v3/api-docs/**", "/api-docs/**", "/swagger-ui.html", "/h2-console/**"
+        "/v3/api-docs/**", "/api-docs/**", "/swagger-ui.html"
+    };
+    private static final String[] H2_PAGE = {
+        "/h2-console/**"
     };
     private static final String[] MY_PAGE = {
-        "/myInfo", "/myPage", "/myPage/**"
+        "/myPage", "/myPage/**", "/myInfo"
+    };
+    private static final String[] PRODUCT_PAGE = {
+        "/products", "/products/**"
+    };
+    private static final String[] WISH_PAGE = {
+        "/wish"
     };
 
     @Bean
@@ -91,16 +101,31 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests((authorizeHttpRequests) ->
                 authorizeHttpRequests
-//                    .requestMatchers(
-//                        Arrays.stream(AUTH_WHITELIST)
-//                            .map(AntPathRequestMatcher::new)
-//                            .toArray(AntPathRequestMatcher[]::new)
-//                    ).permitAll()
-//                    .requestMatchers(
-//                        Arrays.stream(MY_PAGE)
-//                            .map(AntPathRequestMatcher::new)
-//                            .toArray(AntPathRequestMatcher[]::new)
-//                    ).authenticated()
+                    .requestMatchers(
+                        Arrays.stream(SWAGGER_PAGE)
+                            .map(AntPathRequestMatcher::new)
+                            .toArray(AntPathRequestMatcher[]::new)
+                    ).permitAll()
+                    .requestMatchers(
+                        Arrays.stream(H2_PAGE)
+                            .map(AntPathRequestMatcher::new)
+                            .toArray(AntPathRequestMatcher[]::new)
+                    ).permitAll()
+                    .requestMatchers(
+                        Arrays.stream(MY_PAGE)
+                            .map(AntPathRequestMatcher::new)
+                            .toArray(AntPathRequestMatcher[]::new)
+                    ).authenticated()
+                    .requestMatchers(
+                        Arrays.stream(PRODUCT_PAGE)
+                            .map(AntPathRequestMatcher::new)
+                            .toArray(AntPathRequestMatcher[]::new)
+                    ).authenticated()
+                    .requestMatchers(
+                        Arrays.stream(WISH_PAGE)
+                            .map(AntPathRequestMatcher::new)
+                            .toArray(AntPathRequestMatcher[]::new)
+                    ).authenticated()
                     .anyRequest().permitAll());
 
         http
@@ -115,14 +140,20 @@ public class SecurityConfig {
             .loginProcessingUrl(loginProcUrl);
 
         http
+            .addFilterBefore(
+                new JwtAuthenticationFilter(authenticationManager(), authenticationDetailsSource()),
+                AnonymousAuthenticationFilter.class);
+
+        http
             .anonymous((anonymous) ->
                 anonymous
                     .principal(new UserPrincipal(null, "anonymous")));
 
         http
-            .addFilterBefore(
-                new JwtAuthenticationFilter(authenticationManager(), authenticationDetailsSource()),
-                AnonymousAuthenticationFilter.class);
+            .exceptionHandling((exceptionHandling) ->
+                exceptionHandling
+                    .authenticationEntryPoint(new AjaxAuthenticationEntryPoint())
+            );
 
         http
             .headers(

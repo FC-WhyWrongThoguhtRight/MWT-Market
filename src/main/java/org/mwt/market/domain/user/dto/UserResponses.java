@@ -72,7 +72,7 @@ public class UserResponses {
                 .price(product.getPrice())
                 .status(product.getStatus().getValue())
                 .likes(product.getLikes())
-                .thumbnail(product.getProductAlbum().get(0).getUrl())
+                .thumbnail(product.getThumbnail())
                 .build();
         }
     }

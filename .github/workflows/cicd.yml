@@ -33,6 +33,7 @@ jobs:
         cat ./src/main/resources/application.yml
         echo "${{ secrets.APPLICATION_DEV }}" > ./src/main/resources/application-dev.yml
         cat ./src/main/resources/application-dev.yml
+        rm ./src/main/resources/data.sql
     - name: Run chmod to make gradlew executable
       run: chmod +x ./gradlew
     - name: Build with Gradle
