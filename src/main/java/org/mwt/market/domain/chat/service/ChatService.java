@@ -1,10 +1,15 @@
 package org.mwt.market.domain.chat.service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.mwt.market.config.security.token.UserPrincipal;
 import org.mwt.market.domain.chat.dto.ChatRoomDto;
+import org.mwt.market.domain.chat.dto.ChatWsDto.MessageRequest;
+import org.mwt.market.domain.chat.dto.ChatWsDto.MessageResponse;
+import org.mwt.market.domain.chat.entity.ChatContent;
 import org.mwt.market.domain.chat.entity.ChatRoom;
+import org.mwt.market.domain.chat.repository.ChatContentRepository;
 import org.mwt.market.domain.chat.repository.ChatRoomRepository;
 import org.mwt.market.domain.product.entity.Product;
 import org.mwt.market.domain.product.exception.NoSuchProductException;
@@ -24,11 +29,14 @@ public class ChatService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
 
+    private final ChatContentRepository chatContentRepository;
+
     public ChatService(ChatRoomRepository chatRoomRepository, UserRepository userRepository,
-        ProductRepository productRepository) {
+        ProductRepository productRepository, ChatContentRepository chatContentRepository) {
         this.chatRoomRepository = chatRoomRepository;
         this.userRepository = userRepository;
         this.productRepository = productRepository;
+        this.chatContentRepository = chatContentRepository;
     }
 
     @Transactional
@@ -41,20 +49,44 @@ public class ChatService {
 
         ChatRoom chatRoom = optChatRoom.orElseGet(() -> {
             User buyer = userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchUserException());
+                .orElseThrow(NoSuchUserException::new);
             Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new NoSuchProductException());
+                .orElseThrow(NoSuchProductException::new);
             return chatRoomRepository.save(ChatRoom.createChatRoom(buyer, product));
         });
+
+        ChatContent lastMessage = chatContentRepository.findFirstByChatRoomIdOrderByCreateAtDesc(
+            optChatRoom
+                .get()
+                .getChatRoomId());
 
         return ChatRoomDto.builder()
             .chatRoomId(chatRoom.getChatRoomId())
             .buyerId(chatRoom.getBuyer().getUserId())
             .nickName(chatRoom.getBuyer().getNickname())
             .buyerProfileImg(chatRoom.getBuyer().getProfileImageUrl())
-            //TODO: MongoDB로부터 마지막 메시지 받아오기
-            .lastMessage(null)
-            .lasteCreatedAt(null)
+            .lastMessage(lastMessage == null ? null : lastMessage.getContent())
+            .lastCreatedAt(lastMessage == null ? null : lastMessage.getCreateAt())
             .build();
     }
+
+    public MessageResponse saveMessage(String roomId, MessageRequest messageRequest) {
+
+        ChatContent chatContent = ChatContent.builder()
+            .chatRoomId(Long.parseLong(roomId))
+            .userId(messageRequest.getUserId())
+            .content(messageRequest.getContent())
+            .createAt(LocalDateTime.now())
+            .build();
+
+        ChatContent result = chatContentRepository.save(chatContent);
+
+        return MessageResponse.builder()
+            .userId(result.getUserId())
+            .content(result.getContent())
+            .dateTime(result.getCreateAt())
+            .build();
+    }
+
+
 }
