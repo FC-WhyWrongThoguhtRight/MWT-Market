@@ -80,9 +80,10 @@ public class ProductController {
     @ApiResponses(value = {@ApiResponse(responseCode = "200")}
     )
     public DataResponseBody<ProductResponseDto> showProductDetails(
+        @AuthenticationPrincipal UserPrincipal userPrincipal,
         @PathVariable Long productId
     ) {
-        ProductResponseDto data = productService.findProduct(productId);
+        ProductResponseDto data = productService.findProduct(userPrincipal, productId);
 
         return DataResponseBody.success(data);
     }

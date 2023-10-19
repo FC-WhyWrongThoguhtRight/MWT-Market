@@ -4,22 +4,14 @@ import io.awspring.cloud.s3.ObjectMetadata;
 import io.awspring.cloud.s3.S3Resource;
 import io.awspring.cloud.s3.S3Template;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mwt.market.config.security.token.UserPrincipal;
 import org.mwt.market.domain.chat.entity.ChatRoom;
 import org.mwt.market.domain.chat.repository.ChatRoomRepository;
-import org.mwt.market.domain.product.dto.ProductChatResponseDto;
-import org.mwt.market.domain.product.dto.ProductInfoDto;
-import org.mwt.market.domain.product.dto.ProductRequestDto;
-import org.mwt.market.domain.product.dto.ProductResponseDto;
-import org.mwt.market.domain.product.dto.ProductUpdateRequestDto;
+import org.mwt.market.domain.product.dto.*;
 import org.mwt.market.domain.product.entity.Product;
 import org.mwt.market.domain.product.entity.ProductCategory;
 import org.mwt.market.domain.product.entity.ProductImage;
@@ -242,9 +234,23 @@ public class ProductService {
         }
     }
 
-    public ProductResponseDto findProduct(Long productId) {
-        Product product = productRepository.findById(productId)
-            .orElseThrow(NoSuchProductException::new);
-        return ProductResponseDto.fromEntity(product);
+    public ProductResponseDto findProduct(UserPrincipal userPrincipal, Long productId) {
+        Product product = validateIsDeleted(productRepository.findById(productId)
+            .orElseThrow(NoSuchProductException::new));
+
+        List<Product> sellerProducts = productRepository
+            .findProductsBySeller_UserId(product.getSeller().getUserId(), productId);
+
+        ProductResponseDto productResponseDto = ProductResponseDto.fromEntity(product, sellerProducts);
+        productResponseDto.setIsMyProduct(Objects.equals(userPrincipal.getId(), product.getSeller().getUserId()));
+
+        return productResponseDto;
+    }
+
+    private Product validateIsDeleted(Product product) {
+        if (product.isDeleted()) {
+            throw new NoSuchProductException();
+        }
+        return product;
     }
 }

@@ -41,6 +41,7 @@ public class Product {
     private List<ProductImage> productAlbum;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sellerId", referencedColumnName = "userId")
     private User seller;
 
     @ManyToOne(fetch = FetchType.LAZY)
