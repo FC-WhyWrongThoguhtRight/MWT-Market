@@ -13,7 +13,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ProductSearchRequestDto {
 
-    private List<Long> categoryIds = Collections.emptyList();
+    private List<String> categoryNames = Collections.emptyList();
     private String searchWord = "";
     private Integer page;
     private Integer pageSize;
