@@ -12,7 +12,7 @@ public enum ErrorCode {
     NoPermission(401, "noPermission"),
     ImageUploadError(400, "이미지 업로드 중 오류 발생"),
     ImageDeleteError(400, "이미지 삭제 중 오류 발생"),
-    ;
+    InvalidNumberOfImages(400, "이미지는 1~5개만 첨부 가능");
 
     private final Integer code;
     private final String msg;
