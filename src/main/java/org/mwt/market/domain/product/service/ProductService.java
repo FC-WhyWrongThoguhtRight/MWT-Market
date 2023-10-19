@@ -50,17 +50,17 @@ public class ProductService {
     private final ProductCategoryRepository categoryRepository;
     private final ProductImageRepository productImageRepository;
 
-    public List<ProductInfoDto> findAllProducts(List<Long> categoryIds, String searchWord,
+    public List<ProductInfoDto> findAllProducts(List<String> categoryNames, String searchWord,
         Integer page, Integer pageSize, UserPrincipal userPrincipal) {
 
         Page<Product> products;
-        if (categoryIds.size() != 0 && StringUtils.hasText(searchWord)) {
-            products = productRepository.findAllByCategory_CategoryIdInTitleContainingOrderByProductIdDesc(
+        if (categoryNames.size() != 0 && StringUtils.hasText(searchWord)) {
+            products = productRepository.findAllByCategory_CategoryNameInTitleContainingOrderByProductIdDesc(
                 PageRequest.of(page, pageSize),
-                categoryIds, searchWord);
-        } else if (categoryIds.size() != 0) {
-            products = productRepository.findAllByCategory_CategoryIdIn(
-                PageRequest.of(page, pageSize), categoryIds);
+                categoryNames, searchWord);
+        } else if (categoryNames.size() != 0) {
+            products = productRepository.findAllByCategory_CategoryNameIn(
+                PageRequest.of(page, pageSize), categoryNames);
         } else if (StringUtils.hasText(searchWord)) {
             products = productRepository.findAllByTitleContaining(PageRequest.of(page, pageSize),
                 searchWord);
@@ -108,8 +108,8 @@ public class ProductService {
             throw new NoPermissionException();
         }
 
-        Long categoryId = request.getCategoryId();
-        ProductCategory productCategory = productCategoryRepository.findById(categoryId)
+        String categoryName = request.getCategoryName();
+        ProductCategory productCategory = productCategoryRepository.findByCategoryName(categoryName)
             .orElseThrow(NoSuchCategoryException::new);
 
         for (int order = 0; order < product.getProductAlbum().size(); order++) {
@@ -183,7 +183,7 @@ public class ProductService {
         throws ImageTypeExcpetion {
         User user = userRepository.findByEmail(userPrincipal.getEmail())
             .orElseThrow(NoSuchUserException::new);
-        ProductCategory category = categoryRepository.findById(request.getCategoryId()).orElseThrow(
+        ProductCategory category = categoryRepository.findByCategoryName(request.getCategoryName()).orElseThrow(
             NoSuchElementException::new);
 
         Product product = Product.builder()
