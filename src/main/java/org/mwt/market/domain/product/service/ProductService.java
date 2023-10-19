@@ -30,7 +30,6 @@ import org.mwt.market.domain.wish.entity.Wish;
 import org.mwt.market.domain.wish.repository.WishRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -74,7 +73,7 @@ public class ProductService {
         if (!"anonymous".equals(userPrincipal.getName())) {
             User currUser = userRepository.findById(userPrincipal.getId())
                 .orElseThrow(() -> new NoSuchUserException());
-            List<Wish> findWishProducts = wishRepository.findAllByUser(currUser);
+            List<Wish> findWishProducts = wishRepository.findAllByUserOrderByCreatedAtDesc(currUser);
             wishProductIds = findWishProducts.stream()
                 .map(wish -> wish.getProduct().getProductId())
                 .collect(Collectors.toSet());
@@ -271,7 +270,7 @@ public class ProductService {
         Set<Long> wishProductIds = Collections.emptySet();
         if (!"anonymous".equals(userPrincipal.getName())) {
             User currUser = userRepository.findById(userPrincipal.getId()).orElseThrow(NoSuchUserException::new);
-            List<Wish> findWishProducts = wishRepository.findAllByUser(currUser);
+            List<Wish> findWishProducts = wishRepository.findAllByUserOrderByCreatedAtDesc(currUser);
             wishProductIds = findWishProducts.stream()
                 .map(wish -> wish.getProduct().getProductId())
                 .collect(Collectors.toSet());
