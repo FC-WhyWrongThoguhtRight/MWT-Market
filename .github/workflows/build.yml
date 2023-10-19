@@ -18,6 +18,7 @@ jobs:
           touch ./src/main/resources/application.yml
           echo "${{ secrets.APPLICATION_LOCAL }}" > ./src/main/resources/application.yml
           cat ./src/main/resources/application.yml
+          rm ./src/main/resources/data.sql
       - name: Run chmod to make gradlew executable
         run: chmod +x ./gradlew
       - name: Build with Gradle
