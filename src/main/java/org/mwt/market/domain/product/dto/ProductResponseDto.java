@@ -64,6 +64,7 @@ public class ProductResponseDto {
             .seller(Seller.fromEntity(product.getSeller()))
             .sellerProductInfos(sellerProductInfos.stream()
                 .map(ProductSimpleInfo::toDto)
+                .limit(4)
                 .toList())
             .status(product.getStatus().getValue())
             .title(product.getTitle())
