@@ -30,7 +30,7 @@ public class ProductUpdateRequestDto {
 
     @NotNull(message = "상품 카테고리는 필수 항목입니다.")
     @Schema(description = "상품 카테고리", example = "test_category")
-    private Long categoryId;
+    private String categoryName;
 
     @Schema(description = "상품 관련 이미지")
     private List<MultipartFile> images;

@@ -15,5 +15,5 @@ public class ProductCategory {
     private Long categoryId;
 
     @Column(name = "category_name")
-    private String name;
+    private String categoryName;
 }

@@ -50,22 +50,22 @@ public class ProductService {
     private final ProductCategoryRepository categoryRepository;
     private final ProductImageRepository productImageRepository;
 
-    public List<ProductInfoDto> findAllProducts(List<Long> categoryIds, String searchWord,
+    public List<ProductInfoDto> findAllProducts(List<String> categoryNames, String searchWord,
         Integer page, Integer pageSize, UserPrincipal userPrincipal) {
 
         Page<Product> products;
-        if (categoryIds.size() != 0 && StringUtils.hasText(searchWord)) {
-            products = productRepository.findAllByCategory_CategoryIdInTitleContainingOrderByProductIdDesc(
+        if (categoryNames.size() != 0 && StringUtils.hasText(searchWord)) {
+            products = productRepository.findAllByCategory_CategoryNameInTitleContainingOrderByProductIdDesc(
                 PageRequest.of(page, pageSize),
-                categoryIds, searchWord);
-        } else if (categoryIds.size() != 0) {
-            products = productRepository.findAllByCategory_CategoryIdIn(
-                PageRequest.of(page, pageSize), categoryIds);
+                categoryNames, searchWord);
+        } else if (categoryNames.size() != 0) {
+            products = productRepository.findAllByCategory_CategoryNameInAndIsDeletedFalse(
+                PageRequest.of(page, pageSize), categoryNames);
         } else if (StringUtils.hasText(searchWord)) {
-            products = productRepository.findAllByTitleContaining(PageRequest.of(page, pageSize),
+            products = productRepository.findAllByTitleContainingAndIsDeletedFalse(PageRequest.of(page, pageSize),
                 searchWord);
         } else {
-            products = productRepository.findAllByOrderByProductIdDesc(
+            products = productRepository.findAllByIsDeletedFalseOrderByProductIdDesc(
                 PageRequest.of(page, pageSize));
         }
 
@@ -73,7 +73,7 @@ public class ProductService {
         if (!"anonymous".equals(userPrincipal.getName())) {
             User currUser = userRepository.findById(userPrincipal.getId())
                 .orElseThrow(() -> new NoSuchUserException());
-            List<Wish> findWishProducts = wishRepository.findAllByUser(currUser);
+            List<Wish> findWishProducts = wishRepository.findAllByUserOrderByCreatedAtDesc(currUser);
             wishProductIds = findWishProducts.stream()
                 .map(wish -> wish.getProduct().getProductId())
                 .collect(Collectors.toSet());
@@ -90,8 +90,8 @@ public class ProductService {
 
     @Transactional
     public void deleteProduct(UserPrincipal userPrincipal, Long productId) {
-        Product product = productRepository.findById(productId)
-            .orElseThrow(NoSuchProductException::new);
+        Product product = validateIsDeleted(productRepository.findById(productId)
+            .orElseThrow(NoSuchProductException::new));
         if (!userPrincipal.getEmail().equals(product.getSellerEmail())) {
             throw new NoPermissionException();
         }
@@ -102,14 +102,14 @@ public class ProductService {
     @Transactional
     public void updateProduct(UserPrincipal userPrincipal, Long productId,
         ProductUpdateRequestDto request) {
-        Product product = productRepository.findById(productId)
-            .orElseThrow(NoSuchProductException::new);
+        Product product = validateIsDeleted(productRepository.findById(productId)
+            .orElseThrow(NoSuchProductException::new));
         if (!userPrincipal.getEmail().equals(product.getSellerEmail())) {
             throw new NoPermissionException();
         }
 
-        Long categoryId = request.getCategoryId();
-        ProductCategory productCategory = productCategoryRepository.findById(categoryId)
+        String categoryName = request.getCategoryName();
+        ProductCategory productCategory = productCategoryRepository.findByCategoryName(categoryName)
             .orElseThrow(NoSuchCategoryException::new);
 
         for (int order = 0; order < product.getProductAlbum().size(); order++) {
@@ -137,8 +137,8 @@ public class ProductService {
 
     @Transactional
     public ProductResponseDto changeStatus(UserPrincipal userPrincipal, Long productId, Integer status) {
-        Product product = productRepository.findById(productId)
-            .orElseThrow(NoSuchProductException::new);
+        Product product = validateIsDeleted(productRepository.findById(productId)
+            .orElseThrow(NoSuchProductException::new));
         if (!userPrincipal.getEmail().equals(product.getSellerEmail())) {
             throw new NoPermissionException();
         }
@@ -150,8 +150,8 @@ public class ProductService {
     }
 
     public List<ProductChatResponseDto> findChats(UserPrincipal userPrincipal, Long productId) {
-        Product product = productRepository.findById(productId)
-            .orElseThrow(NoSuchProductException::new);
+        Product product = validateIsDeleted(productRepository.findById(productId)
+            .orElseThrow(NoSuchProductException::new));
 
         List<ChatRoom> chatRooms = chatRoomRepository.findAllByProduct(product);
         List<ProductChatResponseDto> dtos = new ArrayList<>();
@@ -183,7 +183,7 @@ public class ProductService {
         throws ImageTypeExcpetion {
         User user = userRepository.findByEmail(userPrincipal.getEmail())
             .orElseThrow(NoSuchUserException::new);
-        ProductCategory category = categoryRepository.findById(request.getCategoryId()).orElseThrow(
+        ProductCategory category = categoryRepository.findByCategoryName(request.getCategoryName()).orElseThrow(
             NoSuchElementException::new);
 
         Product product = Product.builder()
@@ -237,12 +237,21 @@ public class ProductService {
     public ProductResponseDto findProduct(UserPrincipal userPrincipal, Long productId) {
         Product product = validateIsDeleted(productRepository.findById(productId)
             .orElseThrow(NoSuchProductException::new));
+        User user = userRepository.findByEmail(userPrincipal.getEmail())
+            .orElseThrow(NoSuchUserException::new);
 
         List<Product> sellerProducts = productRepository
             .findProductsBySeller_UserId(product.getSeller().getUserId(), productId);
 
         ProductResponseDto productResponseDto = ProductResponseDto.fromEntity(product, sellerProducts);
         productResponseDto.setIsMyProduct(Objects.equals(userPrincipal.getId(), product.getSeller().getUserId()));
+
+        List<Wish> findWishProducts = wishRepository.findAllByUserOrderByCreatedAtDesc(user);
+        Set<Long> wishProductIds = findWishProducts.stream()
+            .map(wish -> wish.getProduct().getProductId())
+            .collect(Collectors.toSet());
+
+        productResponseDto.setLike(wishProductIds.contains(productId));
 
         return productResponseDto;
     }
@@ -252,5 +261,36 @@ public class ProductService {
             throw new NoSuchProductException();
         }
         return product;
+    }
+
+    public List<ProductInfoDto> findProductsBySellerId(Integer page, Integer pageSize,
+        UserPrincipal userPrincipal, Long productId) {
+
+        Product product = validateIsDeleted(productRepository.findById(productId)
+            .orElseThrow(NoSuchProductException::new));
+
+        if (!userRepository.existsById(product.getSeller().getUserId())) {
+            throw new NoSuchUserException();
+        }
+
+        Page<Product> products = productRepository.findProductsBySeller_UserIdAndDeletedFalse(
+            PageRequest.of(page-1, pageSize), product.getSeller().getUserId());
+
+        Set<Long> wishProductIds = Collections.emptySet();
+        if (!"anonymous".equals(userPrincipal.getName())) {
+            User currUser = userRepository.findById(userPrincipal.getId()).orElseThrow(NoSuchUserException::new);
+            List<Wish> findWishProducts = wishRepository.findAllByUserOrderByCreatedAtDesc(currUser);
+            wishProductIds = findWishProducts.stream()
+                .map(wish -> wish.getProduct().getProductId())
+                .collect(Collectors.toSet());
+        }
+
+        List<ProductInfoDto> result = products.stream()
+            .map(ProductInfoDto::toDto)
+            .collect(Collectors.toList());
+        for (ProductInfoDto productInfoDto : result) {
+            productInfoDto.setLike(wishProductIds.contains(productInfoDto.getId()));
+        }
+        return result;
     }
 }
