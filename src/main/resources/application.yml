@@ -38,8 +38,8 @@ server:
 
 jwt:
   secret-key: 나는야시크릿키
-  access-token-expire-time: 111
-  refresh-token-expire-time: 111
+  access-token-expire-time: 9999999
+  refresh-token-expire-time: 99999999
   issuer: 나는야발급자
 
 remote-server:
