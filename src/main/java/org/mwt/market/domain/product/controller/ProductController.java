@@ -145,4 +145,19 @@ public class ProductController {
             .status(200)
             .body(DataResponseBody.success(data));
     }
+
+    @GetMapping("/{productId}/list")
+    @Operation(summary = "판매자의 판매상품목록 조회")
+    @ApiResponses(value = {@ApiResponse(responseCode = "200")}
+    )
+    public DataResponseBody<List<ProductInfoDto>> showSellerProducts(
+        @RequestParam(required = false, defaultValue = "1") Integer page,
+        @RequestParam(required = false, defaultValue = "10") Integer pageSize,
+        @AuthenticationPrincipal UserPrincipal userPrincipal,
+        @PathVariable Long productId
+    ) {
+        List<ProductInfoDto> ProductInfos = productService.findProductsBySellerId(page, pageSize, userPrincipal, productId);
+
+        return DataResponseBody.success(ProductInfos);
+    }
 }

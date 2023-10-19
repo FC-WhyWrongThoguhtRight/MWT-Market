@@ -30,6 +30,7 @@ import org.mwt.market.domain.wish.entity.Wish;
 import org.mwt.market.domain.wish.repository.WishRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -59,13 +60,13 @@ public class ProductService {
                 PageRequest.of(page, pageSize),
                 categoryNames, searchWord);
         } else if (categoryNames.size() != 0) {
-            products = productRepository.findAllByCategory_CategoryNameIn(
+            products = productRepository.findAllByCategory_CategoryNameInAndIsDeletedFalse(
                 PageRequest.of(page, pageSize), categoryNames);
         } else if (StringUtils.hasText(searchWord)) {
-            products = productRepository.findAllByTitleContaining(PageRequest.of(page, pageSize),
+            products = productRepository.findAllByTitleContainingAndIsDeletedFalse(PageRequest.of(page, pageSize),
                 searchWord);
         } else {
-            products = productRepository.findAllByOrderByProductIdDesc(
+            products = productRepository.findAllByIsDeletedFalseOrderByProductIdDesc(
                 PageRequest.of(page, pageSize));
         }
 
@@ -90,8 +91,8 @@ public class ProductService {
 
     @Transactional
     public void deleteProduct(UserPrincipal userPrincipal, Long productId) {
-        Product product = productRepository.findById(productId)
-            .orElseThrow(NoSuchProductException::new);
+        Product product = validateIsDeleted(productRepository.findById(productId)
+            .orElseThrow(NoSuchProductException::new));
         if (!userPrincipal.getEmail().equals(product.getSellerEmail())) {
             throw new NoPermissionException();
         }
@@ -102,8 +103,8 @@ public class ProductService {
     @Transactional
     public void updateProduct(UserPrincipal userPrincipal, Long productId,
         ProductUpdateRequestDto request) {
-        Product product = productRepository.findById(productId)
-            .orElseThrow(NoSuchProductException::new);
+        Product product = validateIsDeleted(productRepository.findById(productId)
+            .orElseThrow(NoSuchProductException::new));
         if (!userPrincipal.getEmail().equals(product.getSellerEmail())) {
             throw new NoPermissionException();
         }
@@ -137,8 +138,8 @@ public class ProductService {
 
     @Transactional
     public ProductResponseDto changeStatus(UserPrincipal userPrincipal, Long productId, Integer status) {
-        Product product = productRepository.findById(productId)
-            .orElseThrow(NoSuchProductException::new);
+        Product product = validateIsDeleted(productRepository.findById(productId)
+            .orElseThrow(NoSuchProductException::new));
         if (!userPrincipal.getEmail().equals(product.getSellerEmail())) {
             throw new NoPermissionException();
         }
@@ -150,8 +151,8 @@ public class ProductService {
     }
 
     public List<ProductChatResponseDto> findChats(UserPrincipal userPrincipal, Long productId) {
-        Product product = productRepository.findById(productId)
-            .orElseThrow(NoSuchProductException::new);
+        Product product = validateIsDeleted(productRepository.findById(productId)
+            .orElseThrow(NoSuchProductException::new));
 
         List<ChatRoom> chatRooms = chatRoomRepository.findAllByProduct(product);
         List<ProductChatResponseDto> dtos = new ArrayList<>();
@@ -252,5 +253,36 @@ public class ProductService {
             throw new NoSuchProductException();
         }
         return product;
+    }
+
+    public List<ProductInfoDto> findProductsBySellerId(Integer page, Integer pageSize,
+        UserPrincipal userPrincipal, Long productId) {
+
+        Product product = validateIsDeleted(productRepository.findById(productId)
+            .orElseThrow(NoSuchProductException::new));
+
+        if (!userRepository.existsById(product.getSeller().getUserId())) {
+            throw new NoSuchUserException();
+        }
+
+        Page<Product> products = productRepository.findProductsBySeller_UserIdAndDeletedFalse(
+            PageRequest.of(page-1, pageSize), product.getSeller().getUserId());
+
+        Set<Long> wishProductIds = Collections.emptySet();
+        if (!"anonymous".equals(userPrincipal.getName())) {
+            User currUser = userRepository.findById(userPrincipal.getId()).orElseThrow(NoSuchUserException::new);
+            List<Wish> findWishProducts = wishRepository.findAllByUser(currUser);
+            wishProductIds = findWishProducts.stream()
+                .map(wish -> wish.getProduct().getProductId())
+                .collect(Collectors.toSet());
+        }
+
+        List<ProductInfoDto> result = products.stream()
+            .map(ProductInfoDto::toDto)
+            .collect(Collectors.toList());
+        for (ProductInfoDto productInfoDto : result) {
+            productInfoDto.setLike(wishProductIds.contains(productInfoDto.getId()));
+        }
+        return result;
     }
 }
