@@ -4,18 +4,21 @@
 INSERT INTO PRODUCTCATEGORY VALUES (1, '식품');
 INSERT INTO PRODUCTCATEGORY VALUES (2, '의류');
 INSERT INTO PRODUCTCATEGORY VALUES (3, '음료');
+ALTER TABLE PRODUCTCATEGORY ALTER COLUMN categoryid RESTART WITH 4;
 
 --PROFILE IMAGE
 INSERT INTO PROFILEIMAGE VALUES (1, NOW(), 'https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/user/default.png');
 INSERT INTO PROFILEIMAGE VALUES (2, NOW(), 'https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/user/default.png');
 INSERT INTO PROFILEIMAGE VALUES (3, NOW(), 'https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/user/default.png');
 INSERT INTO PROFILEIMAGE VALUES (4, NOW(), 'https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/user/default.png');
+ALTER TABLE PROFILEIMAGE ALTER COLUMN profileid RESTART WITH 5;
 
 --USER (USER 비밀번호 : zxcv )
 INSERT INTO USERS VALUES (1, NOW(), 'donghar@naver.com', 'drkoko', '{bcrypt}$2a$10$4vqaqfeWWepTBMftJPo3E.42uESauw2Nl9SEMGyurm5erSkKD1fI2', '010-1234-1234', 1);
 INSERT INTO USERS VALUES (2, NOW(), 'deepred.kim@gmail.com', 'deepred', '{bcrypt}$2a$10$4vqaqfeWWepTBMftJPo3E.42uESauw2Nl9SEMGyurm5erSkKD1fI2', '010-1234-1234', 2);
 INSERT INTO USERS VALUES (3, NOW(), 'wwscan3@gmail.com', 'wonbin', '{bcrypt}$2a$10$4vqaqfeWWepTBMftJPo3E.42uESauw2Nl9SEMGyurm5erSkKD1fI2', '010-1234-1234', 3);
 INSERT INTO USERS VALUES (4, NOW(), 'whdgns5059@gmail.com', 'jonghoon', '{bcrypt}$2a$10$4vqaqfeWWepTBMftJPo3E.42uESauw2Nl9SEMGyurm5erSkKD1fI2', '010-1234-1234', 4);
+ALTER TABLE USERS ALTER COLUMN userid RESTART WITH 5;
 
 --PRODUCT
 INSERT INTO PRODUCT VALUES (1, '테스트프로덕트콘텐츠1', NOW(), NULL, 0, 0, 1000, 1200, 1, '프로덕트1', 1, 1);
@@ -38,6 +41,7 @@ INSERT INTO PRODUCT VALUES (17, '테스트프로덕트콘텐츠17', NOW(), NOW()
 INSERT INTO PRODUCT VALUES (18, '테스트프로덕트콘텐츠18', NOW(), NULL, 0, 0, 9000, 9200, 2, '프로덕트18', 2, 1);
 INSERT INTO PRODUCT VALUES (19, '테스트프로덕트콘텐츠19', NOW(), NULL, 0, 0, 10000, 10200, 1, '프로덕트19', 1, 3);
 INSERT INTO PRODUCT VALUES (20, '테스트프로덕트콘텐츠20', NOW(), NULL, 0, 0, 10000, 10200, 3, '프로덕트20', 2, 2);
+ALTER TABLE PRODUCT ALTER COLUMN productid RESTART WITH 21;
 
 --PRODUCTIMAGE
 INSERT INTO PRODUCTIMAGE VALUES (1, NOW(), 1, 'https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png', 1);
@@ -62,6 +66,7 @@ INSERT INTO PRODUCTIMAGE VALUES (19, NOW(), 1, 'https://mwtmarketbucket.s3.ap-no
 INSERT INTO PRODUCTIMAGE VALUES (21, NOW(), 1, 'https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png', 18);
 INSERT INTO PRODUCTIMAGE VALUES (22, NOW(), 1, 'https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png', 19);
 INSERT INTO PRODUCTIMAGE VALUES (23, NOW(), 1, 'https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png', 20);
+ALTER TABLE PRODUCTIMAGE ALTER COLUMN imgid RESTART WITH 24;
 
 --WISH
 INSERT INTO WISH VALUES (1, NOW(), 1, 1);
@@ -76,6 +81,7 @@ INSERT INTO WISH VALUES (9, NOW(), 10, 1);
 INSERT INTO WISH VALUES (10, NOW(), 10, 2);
 INSERT INTO WISH VALUES (11, NOW(), 11, 3);
 INSERT INTO WISH VALUES (12, NOW(), 11, 4);
+ALTER TABLE WISH ALTER COLUMN wishid RESTART WITH 13;
 
 --CHATROOM
 INSERT INTO CHATROOM VALUES (1, NOW(), 1, 1);
@@ -84,3 +90,4 @@ INSERT INTO CHATROOM VALUES (3, NOW(), 3, 3);
 INSERT INTO CHATROOM VALUES (4, NOW(), 4, 4);
 INSERT INTO CHATROOM VALUES (5, NOW(), 2, 1);
 INSERT INTO CHATROOM VALUES (6, NOW(), 3, 2);
+ALTER TABLE CHATROOM ALTER COLUMN chatroomid RESTART WITH 7;
