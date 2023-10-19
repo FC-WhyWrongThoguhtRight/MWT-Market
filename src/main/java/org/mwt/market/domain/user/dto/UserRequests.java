@@ -12,7 +12,6 @@ public class UserRequests {
 
     @Getter
     @NoArgsConstructor
-    @AllArgsConstructor
     public static class SignupRequestDto {
 
         @NotBlank
@@ -31,7 +30,6 @@ public class UserRequests {
 
     @Getter
     @NoArgsConstructor
-    @AllArgsConstructor
     public static class LoginRequestDto {
 
         @NotBlank
