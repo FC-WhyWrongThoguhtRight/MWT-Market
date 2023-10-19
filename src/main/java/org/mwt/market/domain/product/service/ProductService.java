@@ -237,12 +237,21 @@ public class ProductService {
     public ProductResponseDto findProduct(UserPrincipal userPrincipal, Long productId) {
         Product product = validateIsDeleted(productRepository.findById(productId)
             .orElseThrow(NoSuchProductException::new));
+        User user = userRepository.findByEmail(userPrincipal.getEmail())
+            .orElseThrow(NoSuchUserException::new);
 
         List<Product> sellerProducts = productRepository
             .findProductsBySeller_UserId(product.getSeller().getUserId(), productId);
 
         ProductResponseDto productResponseDto = ProductResponseDto.fromEntity(product, sellerProducts);
         productResponseDto.setIsMyProduct(Objects.equals(userPrincipal.getId(), product.getSeller().getUserId()));
+
+        List<Wish> findWishProducts = wishRepository.findAllByUserOrderByCreatedAtDesc(user);
+        Set<Long> wishProductIds = findWishProducts.stream()
+            .map(wish -> wish.getProduct().getProductId())
+            .collect(Collectors.toSet());
+
+        productResponseDto.setLike(wishProductIds.contains(productId));
 
         return productResponseDto;
     }

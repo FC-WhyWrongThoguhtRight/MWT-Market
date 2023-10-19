@@ -20,11 +20,13 @@ public class ProductResponseDto {
     private final Seller seller;
     private final List<ProductSimpleInfo> sellerProductInfos;
     private boolean isMyProduct;
+    private boolean like;
 
     @Builder
     public ProductResponseDto(Long id, String title,
         Integer price, String categoryName, String content, List<String> images, String status,
-        Integer likes, Seller seller, List<ProductSimpleInfo> sellerProductInfos, boolean isMyProduct) {
+        Integer likes, Seller seller, List<ProductSimpleInfo> sellerProductInfos,
+        boolean isMyProduct, boolean like) {
         this.id = id;
         this.title = title;
         this.price = price;
@@ -50,6 +52,7 @@ public class ProductResponseDto {
             .status(product.getStatus().getValue())
             .title(product.getTitle())
             .isMyProduct(true)
+            .like(false)
             .build();
     }
 
@@ -118,5 +121,9 @@ public class ProductResponseDto {
 
     public void setIsMyProduct(boolean isMyProduct) {
         this.isMyProduct = isMyProduct;
+    }
+
+    public void setLike(boolean like) {
+        this.like = like;
     }
 }
