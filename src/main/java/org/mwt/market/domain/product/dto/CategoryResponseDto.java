@@ -17,7 +17,7 @@ public class CategoryResponseDto {
     }
 
     public static CategoryResponseDto fromEntity(ProductCategory productCategory) {
-        return new CategoryResponseDto(productCategory.getCategoryId(), productCategory.getName());
+        return new CategoryResponseDto(productCategory.getCategoryId(), productCategory.getCategoryName());
     }
 }
 

@@ -12,13 +12,6 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-      - name: application.yml
-        run: |
-          mkdir -p src/main/resources
-          touch ./src/main/resources/application.yml
-          echo "${{ secrets.APPLICATION_LOCAL }}" > ./src/main/resources/application.yml
-          cat ./src/main/resources/application.yml
-          rm ./src/main/resources/data.sql
       - name: Run chmod to make gradlew executable
         run: chmod +x ./gradlew
       - name: Build with Gradle

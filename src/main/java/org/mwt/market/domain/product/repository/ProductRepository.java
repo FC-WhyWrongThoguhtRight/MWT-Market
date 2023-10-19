@@ -12,19 +12,19 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
-    Page<Product> findAllByCategory_CategoryIdInAndIsDeletedFalse(Pageable pageable, List<Long> categoryIds);
+    Page<Product> findAllByCategory_CategoryNameInAndIsDeletedFalse(Pageable pageable, List<String> categoryNames);
 
     Page<Product> findAllByTitleContainingAndIsDeletedFalse(Pageable pageable, String searchWord);
 
     Page<Product> findAllByIsDeletedFalseOrderByProductIdDesc(Pageable pageable);
 
     @Query("SELECT p FROM Product p "
-        + "WHERE p.category.categoryId IN :categoryIds "
+        + "WHERE p.category.categoryName IN :categoryNames "
         + "AND p.title like %:searchWord% "
         + "AND p.isDeleted = false "
         + "ORDER BY p.productId DESC")
-    Page<Product> findAllByCategory_CategoryIdInTitleContainingOrderByProductIdDesc(
-        Pageable pageable, List<Long> categoryIds,
+    Page<Product> findAllByCategory_CategoryNameInTitleContainingOrderByProductIdDesc(
+        Pageable pageable, List<String> categoryNames,
         String searchWord);
 
     Page<Product> findBySeller_UserId(Pageable pageable, Long userId);

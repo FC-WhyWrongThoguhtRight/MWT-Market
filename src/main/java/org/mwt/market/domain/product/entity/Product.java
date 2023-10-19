@@ -105,10 +105,6 @@ public class Product {
         return productAlbum.stream().map(ProductImage::getUrl).toList();
     }
 
-    public Long getCategoryId() {
-        return this.category.getCategoryId();
-    }
-
     public String getSellerEmail() {
         return seller.getEmail();
     }
@@ -122,5 +118,9 @@ public class Product {
 
     public void setProductAlbum(List<ProductImage> productAlbum) {
         this.productAlbum = productAlbum;
+    }
+
+    public String getCategoryName() {
+        return category.getCategoryName();
     }
 }
