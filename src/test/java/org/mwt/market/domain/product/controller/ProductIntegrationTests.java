@@ -1,71 +1,75 @@
 package org.mwt.market.domain.product.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mwt.market.domain.user.dto.UserRequests.LoginRequestDto;
+import org.mwt.market.domain.user.dto.UserRequests.SignupRequestDto;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@SpringBootTest
+@AutoConfigureMockMvc
 public class ProductIntegrationTests {
 
-    private int port = 8080;
-    private TestRestTemplate restTemplate = new TestRestTemplate();
-    private HttpHeaders headers = new HttpHeaders();
-    private final String baseUrl = "http://localhost:" + port;
+    @Autowired
+    private MockMvc mockMvc;
+    @Autowired
+    private ObjectMapper objectMapper;
+    private Cookie[] cookies;
 
     @BeforeEach
-    void setUp() throws JsonProcessingException {
+    void setUp() throws Exception {
         // 회원가입
-        String signupUrl = baseUrl + "/api/v1/signup";
-        ObjectMapper objectMapper = new ObjectMapper();
-        String signupRequestBody = objectMapper.writeValueAsString(Map.of(
-                "email", "test@test.com",
-                "password", "password",
-                "phone", "010-0000-0000",
-                "nickname", "testNick"
-        ));
-        headers.setContentType(MediaType.APPLICATION_JSON);
+        SignupRequestDto signupRequestDto = new SignupRequestDto(
+                "test@test.com",
+                "password",
+                "010-0000-0000",
+                "awef"
+        );
+        String content = objectMapper.writeValueAsString(signupRequestDto);
 
-        HttpEntity<String> signupEntity = new HttpEntity<>(signupRequestBody, headers);
-        ResponseEntity<String> signupResponse = restTemplate.postForEntity(signupUrl, signupEntity, String.class);
-        assertEquals(HttpStatus.OK, signupResponse.getStatusCode());
+        mockMvc.perform(
+                MockMvcRequestBuilders.post("/signup")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(content)
+        );
 
         // 로그인
-        String loginUrl = baseUrl + "/api/v1/login";
-        MultiValueMap<String, String> loginRequest = new LinkedMultiValueMap<>();
-        String loginRequestBody = objectMapper.writeValueAsString(Map.of(
-                "email", "test@test.com",
-                "password", "password"
-        ));
+        LoginRequestDto loginRequestDto = new LoginRequestDto("test@test.com", "password");
+        content = objectMapper.writeValueAsString(loginRequestDto);
 
-        HttpEntity<String> loginEntity = new HttpEntity<>(loginRequestBody, headers);
-        ResponseEntity<String> loginResponse = restTemplate.postForEntity(loginUrl, loginEntity, String.class);
-        assertEquals(HttpStatus.OK, loginResponse.getStatusCode());
+        ResultActions actions = mockMvc.perform(
+                MockMvcRequestBuilders.post("/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(content)
+        );
 
-        // 쿠키 담아두기
-        String setCookieHeader = loginResponse.getHeaders().getFirst("Set-Cookie");
-        headers.add("Cookie", setCookieHeader);
+        MockHttpServletResponse response = actions.andReturn().getResponse();
+
+        // 쿠키 받아두기
+        this.cookies = response.getCookies();
     }
 
     @Test
-    public void 단건_상품_조회() {
-        String productUrl = baseUrl + "/api/v1/products/1";
-        ResponseEntity<String> response = restTemplate.exchange(productUrl, HttpMethod.GET, new HttpEntity<>(headers), String.class);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+    public void 단건_상품_조회() throws Exception {
+        ResultActions actions = mockMvc.perform(
+            MockMvcRequestBuilders.get("/products/1")
+                .cookie(cookies)
+        );
 
-        String responseBody = "{\"statusCode\":200,\"message\":\"success\",\"data\":{\"id\":1,\"title\":\"프로덕트1\",\"price\":1000,\"categoryName\":\"식품\",\"content\":\"테스트프로덕트콘텐츠1\",\"images\":[\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\",\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\"],\"status\":\"판매중\",\"likes\":0,\"seller\":{\"sellerId\":1,\"profileImage\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/user/default.png\",\"nickname\":\"drkoko\"},\"sellerProductInfos\":[{\"id\":18,\"title\":\"프로덕트18\",\"price\":9000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\"},{\"id\":10,\"title\":\"프로덕트10\",\"price\":1000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\"},{\"id\":5,\"title\":\"프로덕트5\",\"price\":5000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\"},{\"id\":2,\"title\":\"프로덕트2\",\"price\":2000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\"}],\"myProduct\":false}}";
-        System.out.println("@@@" + response.getBody());
-        assertEquals(responseBody, response.getBody());
+        String jsonContent = "{\"statusCode\":200,\"message\":\"success\",\"data\":{\"id\":1,\"title\":\"프로덕트1\",\"price\":1000,\"categoryName\":\"식품\",\"content\":\"테스트프로덕트콘텐츠1\",\"images\":[\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\",\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\"],\"status\":\"판매중\",\"likes\":0,\"seller\":{\"sellerId\":1,\"profileImage\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/user/default.png\",\"nickname\":\"drkoko\"},\"sellerProductInfos\":[{\"id\":18,\"title\":\"프로덕트18\",\"price\":9000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\"},{\"id\":10,\"title\":\"프로덕트10\",\"price\":1000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\"},{\"id\":5,\"title\":\"프로덕트5\",\"price\":5000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\"},{\"id\":2,\"title\":\"프로덕트2\",\"price\":2000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\"}],\"myProduct\":false}}";
+        actions.andExpect(status().isOk())
+                .andExpect(content().json(jsonContent));
     }
 }
