@@ -9,6 +9,7 @@ public class UserRequests {
 
     @Getter
     @NoArgsConstructor
+    @AllArgsConstructor
     public static class SignupRequestDto {
 
         @NotBlank
@@ -23,17 +24,11 @@ public class UserRequests {
         @NotBlank
         @Schema(description = "사용자 닉네임", example = "myNickname")
         private String nickname;
-
-        public SignupRequestDto(String email, String password, String phone, String nickname) {
-            this.email = email;
-            this.password = password;
-            this.phone = phone;
-            this.nickname = nickname;
-        }
     }
 
     @Getter
     @NoArgsConstructor
+    @AllArgsConstructor
     public static class LoginRequestDto {
 
         @NotBlank
@@ -42,11 +37,6 @@ public class UserRequests {
         @NotBlank
         @Schema(description = "사용자 비밀번호", example = "1q2w3e")
         private String password;
-
-        public LoginRequestDto(String email, String password) {
-            this.email = email;
-            this.password = password;
-        }
     }
 
     @Getter
