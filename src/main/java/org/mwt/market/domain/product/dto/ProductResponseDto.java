@@ -12,7 +12,7 @@ public class ProductResponseDto {
     private final Long id;
     private final String title;
     private final Integer price;
-    private final Long categoryId;
+    private final String categoryName;
     private final String content;
     private final List<String> images;
     private final String status;
@@ -20,15 +20,17 @@ public class ProductResponseDto {
     private final Seller seller;
     private final List<ProductSimpleInfo> sellerProductInfos;
     private boolean isMyProduct;
+    private boolean like;
 
     @Builder
     public ProductResponseDto(Long id, String title,
-        Integer price, Long categoryId, String content, List<String> images, String status,
-        Integer likes, Seller seller, List<ProductSimpleInfo> sellerProductInfos, boolean isMyProduct) {
+        Integer price, String categoryName, String content, List<String> images, String status,
+        Integer likes, Seller seller, List<ProductSimpleInfo> sellerProductInfos,
+        boolean isMyProduct, boolean like) {
         this.id = id;
         this.title = title;
         this.price = price;
-        this.categoryId = categoryId;
+        this.categoryName = categoryName;
         this.content = content;
         this.images = images;
         this.status = status;
@@ -40,7 +42,7 @@ public class ProductResponseDto {
 
     public static ProductResponseDto fromEntity(Product product) {
         return ProductResponseDto.builder()
-            .categoryId(product.getCategoryId())
+            .categoryName(product.getCategoryName())
             .content(product.getContent())
             .id(product.getProductId())
             .likes(product.getLikes())
@@ -50,12 +52,13 @@ public class ProductResponseDto {
             .status(product.getStatus().getValue())
             .title(product.getTitle())
             .isMyProduct(true)
+            .like(false)
             .build();
     }
 
     public static ProductResponseDto fromEntity(Product product, List<Product> sellerProductInfos) {
         return ProductResponseDto.builder()
-            .categoryId(product.getCategoryId())
+            .categoryName(product.getCategoryName())
             .content(product.getContent())
             .id(product.getProductId())
             .likes(product.getLikes())
@@ -64,7 +67,6 @@ public class ProductResponseDto {
             .seller(Seller.fromEntity(product.getSeller()))
             .sellerProductInfos(sellerProductInfos.stream()
                 .map(ProductSimpleInfo::toDto)
-                .limit(4)
                 .toList())
             .status(product.getStatus().getValue())
             .title(product.getTitle())
@@ -119,5 +121,9 @@ public class ProductResponseDto {
 
     public void setIsMyProduct(boolean isMyProduct) {
         this.isMyProduct = isMyProduct;
+    }
+
+    public void setLike(boolean like) {
+        this.like = like;
     }
 }

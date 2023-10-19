@@ -48,16 +48,16 @@ public class ProductController {
     @ApiResponses(value = {@ApiResponse(responseCode = "200")}
     )
     public DataResponseBody<List<ProductInfoDto>> showAllProducts(
-        @RequestParam(required = false) List<Long> categoryIds,
+        @RequestParam(required = false) List<String> categoryNames,
         @RequestParam(required = false, defaultValue = "") String searchWord,
         @RequestParam(required = false, defaultValue = "1") Integer page,
         @RequestParam(required = false, defaultValue = "10") Integer pageSize,
         @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
-        if (categoryIds == null) {
-            categoryIds = Collections.emptyList();
+        if (categoryNames == null) {
+            categoryNames = Collections.emptyList();
         }
-        List<ProductInfoDto> ProductInfos = productService.findAllProducts(categoryIds, searchWord,
+        List<ProductInfoDto> ProductInfos = productService.findAllProducts(categoryNames, searchWord,
             page - 1, pageSize, userPrincipal);
         return DataResponseBody.success(ProductInfos);
     }
@@ -144,5 +144,20 @@ public class ProductController {
         return ResponseEntity
             .status(200)
             .body(DataResponseBody.success(data));
+    }
+
+    @GetMapping("/{productId}/list")
+    @Operation(summary = "판매자의 판매상품목록 조회")
+    @ApiResponses(value = {@ApiResponse(responseCode = "200")}
+    )
+    public DataResponseBody<List<ProductInfoDto>> showSellerProducts(
+        @RequestParam(required = false, defaultValue = "1") Integer page,
+        @RequestParam(required = false, defaultValue = "10") Integer pageSize,
+        @AuthenticationPrincipal UserPrincipal userPrincipal,
+        @PathVariable Long productId
+    ) {
+        List<ProductInfoDto> ProductInfos = productService.findProductsBySellerId(page, pageSize, userPrincipal, productId);
+
+        return DataResponseBody.success(ProductInfos);
     }
 }
