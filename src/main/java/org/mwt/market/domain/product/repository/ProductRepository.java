@@ -12,15 +12,16 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
-    Page<Product> findAllByCategory_CategoryIdIn(Pageable pageable, List<Long> categoryIds);
+    Page<Product> findAllByCategory_CategoryIdInAndIsDeletedFalse(Pageable pageable, List<Long> categoryIds);
 
-    Page<Product> findAllByTitleContaining(Pageable pageable, String searchWord);
+    Page<Product> findAllByTitleContainingAndIsDeletedFalse(Pageable pageable, String searchWord);
 
-    Page<Product> findAllByOrderByProductIdDesc(Pageable pageable);
+    Page<Product> findAllByIsDeletedFalseOrderByProductIdDesc(Pageable pageable);
 
     @Query("SELECT p FROM Product p "
         + "WHERE p.category.categoryId IN :categoryIds "
         + "AND p.title like %:searchWord% "
+        + "AND p.isDeleted = false "
         + "ORDER BY p.productId DESC")
     Page<Product> findAllByCategory_CategoryIdInTitleContainingOrderByProductIdDesc(
         Pageable pageable, List<Long> categoryIds,
@@ -34,4 +35,11 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
         + "AND p.isDeleted = false "
         + "ORDER BY p.createdAt DESC")
     List<Product> findProductsBySeller_UserId(@Param("sellerId") Long sellerId, @Param("productId") Long productId);
+
+    @Query("SELECT p FROM Product p "
+        + "WHERE p.seller.userId = :sellerId "
+        + "AND p.isDeleted = false "
+        + "ORDER BY p.createdAt DESC")
+    Page<Product> findProductsBySeller_UserIdAndDeletedFalse(Pageable pageable, @Param("sellerId") Long sellerId);
+
 }
