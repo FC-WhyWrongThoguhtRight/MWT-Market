@@ -184,7 +184,7 @@ public class ProductService {
         User user = userRepository.findByEmail(userPrincipal.getEmail())
             .orElseThrow(NoSuchUserException::new);
         ProductCategory category = categoryRepository.findByCategoryName(request.getCategoryName()).orElseThrow(
-            NoSuchElementException::new);
+            NoSuchCategoryException::new);
 
         Product product = Product.builder()
             .title(request.getTitle())
