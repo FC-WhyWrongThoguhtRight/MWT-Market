@@ -44,7 +44,7 @@ public class WishService {
 
     public List<WishResponseDto> getWishes(UserPrincipal userPrincipal) {
         User user = userRepository.findByEmail(userPrincipal.getEmail()).orElseThrow(NoSuchUserException::new);
-        List<Wish> wishes = wishRepository.findAllByUser(user).stream()
+        List<Wish> wishes = wishRepository.findAllByUserOrderByCreatedAtDesc(user).stream()
             .filter(wish -> filteringIsDeleted(wish.getProduct()))
             .toList();
 
