@@ -71,6 +71,9 @@ public class SecurityConfig {
     private static final String[] H2_PAGE = {
         "/h2-console/**"
     };
+    private static final String[] SIGNUP_LOGIN = {
+        "/signup", "/login"
+    };
     private static final String[] MY_PAGE = {
         "/myPage", "/myPage/**", "/myInfo"
     };
@@ -108,6 +111,11 @@ public class SecurityConfig {
                     ).permitAll()
                     .requestMatchers(
                         Arrays.stream(H2_PAGE)
+                            .map(AntPathRequestMatcher::new)
+                            .toArray(AntPathRequestMatcher[]::new)
+                    ).permitAll()
+                    .requestMatchers(
+                        Arrays.stream(SIGNUP_LOGIN)
                             .map(AntPathRequestMatcher::new)
                             .toArray(AntPathRequestMatcher[]::new)
                     ).permitAll()
