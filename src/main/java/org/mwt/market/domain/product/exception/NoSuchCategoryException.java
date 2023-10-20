@@ -5,7 +5,7 @@ import org.mwt.market.common.exception.ErrorCode;
 
 public class NoSuchCategoryException extends BaseException {
     public NoSuchCategoryException() {
-        super(ErrorCode.NoSuchCategory);
+        super(ErrorCode.NoSuchCategory.getMsg(), ErrorCode.NoSuchCategory);
     }
 
     public NoSuchCategoryException(String message) {
