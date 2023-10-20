@@ -51,6 +51,9 @@ public class ProductIntegrationTests {
     private ObjectMapper objectMapper;
     private Cookie[] cookies;
 
+    @Autowired
+    private ProductRepository productRepository;
+
     @BeforeEach
     void setUp() throws Exception {
         // 회원가입
@@ -142,6 +145,27 @@ public class ProductIntegrationTests {
 
     @Test
     public void 상품_등록() throws Exception {
+        // given, when
+        ResultActions actions = mockMvc.perform(MockMvcRequestBuilders
+                .multipart("/products")
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .param("title", "상품 제목")
+                .param("categoryName", "식품")
+                .param("content", "내용")
+                .param("price", "1000")
+                .cookie(cookies)
+            );
+
+        // then
+        actions.andExpect(status().isOk());
+    }
+
+    @Test
+    // 다른 테스트 케이스에서 추가/삭제한 항목 자체에는 영향받지 않지만
+    // 추가/삭제 할 때 PK의 시퀀스가 바뀌는 부분에는 영향받는 부분 때문에 추가하였음
+    @DirtiesContext(methodMode = MethodMode.BEFORE_METHOD)
+    public void 상품_삭제() throws Exception {
+        // given
         mockMvc.perform(MockMvcRequestBuilders
                 .multipart("/products")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
@@ -150,7 +174,21 @@ public class ProductIntegrationTests {
                 .param("content", "내용")
                 .param("price", "1000")
                 .cookie(cookies)
-            )
-            .andExpect(status().isOk());
+        );
+        assertThat(productRepository.existsById(21L)).isEqualTo(true);
+
+        // when
+        ResultActions actions = mockMvc.perform(
+            MockMvcRequestBuilders.delete("/products/21")
+                .cookie(cookies)
+        );
+
+
+        // then
+        actions.andExpect(status().isOk());
+
+        Product product = productRepository.findById(21L).orElseThrow();
+        assertThat(product.getDeletedAt()).isNotNull();
+        assertThat(product.isDeleted()).isEqualTo(true);
     }
 }
