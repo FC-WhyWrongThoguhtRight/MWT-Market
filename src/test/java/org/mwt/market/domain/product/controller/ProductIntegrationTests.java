@@ -12,9 +12,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mwt.market.domain.product.dto.ProductRequestDto;
+import org.mwt.market.domain.product.dto.ProductStatusUpdateRequestDto;
 import org.mwt.market.domain.product.entity.Product;
 import org.mwt.market.domain.product.repository.ProductRepository;
 import org.mwt.market.domain.product.service.ProductService;
+import org.mwt.market.domain.product.vo.ProductStatus;
 import org.mwt.market.domain.user.dto.UserRequests.LoginRequestDto;
 import org.mwt.market.domain.user.dto.UserRequests.SignupRequestDto;
 import org.mwt.market.domain.user.entity.User;
@@ -54,6 +56,9 @@ public class ProductIntegrationTests {
     @Autowired
     private ProductRepository productRepository;
 
+    private Product product;
+    private Long productId;
+
     @BeforeEach
     void setUp() throws Exception {
         // 회원가입
@@ -85,6 +90,25 @@ public class ProductIntegrationTests {
 
         // 쿠키 받아두기
         this.cookies = response.getCookies();
+
+        // 상품 등록해두기
+        ResultActions productAction = mockMvc.perform(MockMvcRequestBuilders
+            .multipart("/products")
+            .contentType(MediaType.MULTIPART_FORM_DATA)
+            .param("title", "상품 제목")
+            .param("categoryName", "식품")
+            .param("content", "내용")
+            .param("price", "1000")
+            .cookie(cookies)
+        );
+
+        this.productId = Long.parseLong(
+            productAction.andReturn().getResponse().getContentAsString(Charset.defaultCharset())
+                .split("id\":")[1]
+                .split(",")[0]
+        );
+
+        this.product = productRepository.findById(productId).orElseThrow();
     }
 
     @Test
@@ -110,7 +134,7 @@ public class ProductIntegrationTests {
         );
 
         // then
-        String jsonContent = "{\"statusCode\":200,\"message\":\"success\",\"data\":[{\"id\":20,\"title\":\"프로덕트20\",\"price\":10000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\",\"status\":\"거래완료\",\"likes\":0,\"like\":false},{\"id\":19,\"title\":\"프로덕트19\",\"price\":10000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\",\"status\":\"판매중\",\"likes\":0,\"like\":false},{\"id\":18,\"title\":\"프로덕트18\",\"price\":9000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\",\"status\":\"예약중\",\"likes\":0,\"like\":false},{\"id\":16,\"title\":\"프로덕트16\",\"price\":7000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\",\"status\":\"판매중\",\"likes\":0,\"like\":false},{\"id\":15,\"title\":\"프로덕트15\",\"price\":6000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\",\"status\":\"거래완료\",\"likes\":0,\"like\":false},{\"id\":14,\"title\":\"프로덕트14\",\"price\":5000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\",\"status\":\"예약중\",\"likes\":0,\"like\":false},{\"id\":13,\"title\":\"프로덕트13\",\"price\":4000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\",\"status\":\"판매중\",\"likes\":0,\"like\":false},{\"id\":12,\"title\":\"프로덕트12\",\"price\":3000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\",\"status\":\"판매중\",\"likes\":0,\"like\":false},{\"id\":11,\"title\":\"프로덕트11\",\"price\":2000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\",\"status\":\"거래완료\",\"likes\":0,\"like\":false},{\"id\":10,\"title\":\"프로덕트10\",\"price\":1000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\",\"status\":\"예약중\",\"likes\":0,\"like\":false}]}";
+        String jsonContent = "{\"statusCode\":200,\"message\":\"success\",\"data\":[{\"id\":22,\"title\":\"상품 제목\",\"price\":1000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\",\"status\":\"판매중\",\"likes\":0,\"like\":false},{\"id\":20,\"title\":\"프로덕트20\",\"price\":10000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\",\"status\":\"거래완료\",\"likes\":0,\"like\":false},{\"id\":19,\"title\":\"프로덕트19\",\"price\":10000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\",\"status\":\"판매중\",\"likes\":0,\"like\":false},{\"id\":18,\"title\":\"프로덕트18\",\"price\":9000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\",\"status\":\"예약중\",\"likes\":0,\"like\":false},{\"id\":16,\"title\":\"프로덕트16\",\"price\":7000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\",\"status\":\"판매중\",\"likes\":0,\"like\":false},{\"id\":15,\"title\":\"프로덕트15\",\"price\":6000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\",\"status\":\"거래완료\",\"likes\":0,\"like\":false},{\"id\":14,\"title\":\"프로덕트14\",\"price\":5000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\",\"status\":\"예약중\",\"likes\":0,\"like\":false},{\"id\":13,\"title\":\"프로덕트13\",\"price\":4000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\",\"status\":\"판매중\",\"likes\":0,\"like\":false},{\"id\":12,\"title\":\"프로덕트12\",\"price\":3000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\",\"status\":\"판매중\",\"likes\":0,\"like\":false},{\"id\":11,\"title\":\"프로덕트11\",\"price\":2000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\",\"status\":\"거래완료\",\"likes\":0,\"like\":false}]}";
         actions.andExpect(status().isOk())
             .andExpect(content().json(jsonContent));
     }
@@ -144,6 +168,9 @@ public class ProductIntegrationTests {
     }
 
     @Test
+    // 다른 테스트 케이스에서 추가/삭제한 항목 자체에는 영향받지 않지만
+    // 추가/삭제 할 때 PK의 시퀀스가 바뀌는 부분에는 영향받는 부분 때문에 추가하였음
+    @DirtiesContext(methodMode = MethodMode.AFTER_METHOD)
     public void 상품_등록() throws Exception {
         // given, when
         ResultActions actions = mockMvc.perform(MockMvcRequestBuilders
@@ -163,23 +190,11 @@ public class ProductIntegrationTests {
     @Test
     // 다른 테스트 케이스에서 추가/삭제한 항목 자체에는 영향받지 않지만
     // 추가/삭제 할 때 PK의 시퀀스가 바뀌는 부분에는 영향받는 부분 때문에 추가하였음
-    @DirtiesContext(methodMode = MethodMode.BEFORE_METHOD)
+    @DirtiesContext(methodMode = MethodMode.AFTER_METHOD)
     public void 상품_삭제() throws Exception {
-        // given
-        mockMvc.perform(MockMvcRequestBuilders
-                .multipart("/products")
-                .contentType(MediaType.MULTIPART_FORM_DATA)
-                .param("title", "상품 제목")
-                .param("categoryName", "식품")
-                .param("content", "내용")
-                .param("price", "1000")
-                .cookie(cookies)
-        );
-        assertThat(productRepository.existsById(21L)).isEqualTo(true);
-
-        // when
+        // when, then
         ResultActions actions = mockMvc.perform(
-            MockMvcRequestBuilders.delete("/products/21")
+            MockMvcRequestBuilders.delete("/products/" + productId)
                 .cookie(cookies)
         );
 
@@ -187,8 +202,27 @@ public class ProductIntegrationTests {
         // then
         actions.andExpect(status().isOk());
 
-        Product product = productRepository.findById(21L).orElseThrow();
         assertThat(product.getDeletedAt()).isNotNull();
         assertThat(product.isDeleted()).isEqualTo(true);
+    }
+
+    @Test
+    public void 상품_상태_변경() throws Exception {
+        // when, then
+        ProductStatusUpdateRequestDto requestDto = new ProductStatusUpdateRequestDto(2);
+        String content = objectMapper.writeValueAsString(requestDto);
+
+        ResultActions actions = mockMvc.perform(
+            MockMvcRequestBuilders.put("/products/" + productId + "/status")
+                .contentType(MediaType.APPLICATION_JSON)
+                .cookie(cookies)
+                .content(content)
+        );
+
+
+        // then
+        actions.andExpect(status().isOk());
+
+        assertThat(product.getStatus()).isEqualTo(ProductStatus.RESERVATION);
     }
 }
