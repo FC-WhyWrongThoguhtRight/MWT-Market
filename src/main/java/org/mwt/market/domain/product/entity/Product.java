@@ -44,7 +44,7 @@ public class Product {
     @JoinColumn(name = "sellerId", referencedColumnName = "userId")
     private User seller;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "category_id")
     private ProductCategory category;
 
@@ -81,7 +81,8 @@ public class Product {
         this.deletedAt = LocalDateTime.now();
     }
 
-    public void update(String title, String content, ProductCategory category, Integer price, List<ProductImage> productAlbum) {
+    public void update(String title, String content, ProductCategory category, Integer price,
+        List<ProductImage> productAlbum) {
         this.title = title;
         this.content = content;
         this.price = price;
