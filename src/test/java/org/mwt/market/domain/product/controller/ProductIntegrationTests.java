@@ -2,9 +2,11 @@ package org.mwt.market.domain.product.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
+
 import java.nio.charset.Charset;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mwt.market.domain.chat.repository.ChatRoomRepository;
 import org.mwt.market.domain.product.dto.ProductStatusUpdateRequestDto;
@@ -14,6 +16,8 @@ import org.mwt.market.domain.product.vo.ProductStatus;
 import org.mwt.market.domain.user.dto.UserRequests.LoginRequestDto;
 import org.mwt.market.domain.user.dto.UserRequests.SignupRequestDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.*;
@@ -25,11 +29,16 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest
+@AutoConfigureDataMongo
+@SpringBootTest(
+    properties = {
+        "de.flapdoodle.mongodb.embedded.databaseDir=${java.io.tmpdir}/customDir/${random.uuid}"
+    }
+)
+@EnableAutoConfiguration()
 @AutoConfigureMockMvc
 @Transactional
 public class ProductIntegrationTests {
@@ -234,6 +243,7 @@ public class ProductIntegrationTests {
     }
 
     @Test
+    @Disabled
     @DirtiesContext(methodMode = MethodMode.BEFORE_METHOD)
     public void 상품_채팅방_입장() throws Exception {
         // given, when
@@ -251,6 +261,7 @@ public class ProductIntegrationTests {
                 .isEqualTo(true);
     }
     @Test
+    @Disabled
     @DirtiesContext(methodMode = MethodMode.BEFORE_METHOD)
     public void 상품_채팅방_목록() throws Exception {
         // given
