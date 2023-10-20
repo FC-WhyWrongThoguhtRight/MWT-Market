@@ -27,7 +27,7 @@ public class WishResponseDto {
 
     public static WishResponseDto fromEntity(Wish wish) {
         return new WishResponseDto(
-            wish.getWishId(),
+            wish.getProductId(),
             wish.getProductTitle(),
             wish.getProductPrice(),
             wish.getProductThumbnail(),

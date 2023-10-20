@@ -60,4 +60,8 @@ public class Wish {
     public Integer getProductLikes() {
         return product.getLikes();
     }
+
+    public Long getProductId() {
+        return product.getProductId();
+    }
 }
