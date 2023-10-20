@@ -1,6 +1,8 @@
 package org.mwt.market.domain.product.exception;
 
-public class ImageTypeExcpetion extends RuntimeException{
+import org.mwt.market.common.exception.BaseException;
+
+public class ImageTypeExcpetion extends BaseException  {
 
     public ImageTypeExcpetion() {
     }
