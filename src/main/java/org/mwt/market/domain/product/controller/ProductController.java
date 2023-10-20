@@ -163,7 +163,7 @@ public class ProductController {
     }
 
 
-    @GetMapping("/{productId}/joinChat")
+    @PostMapping("/{productId}/chats")
     @Operation(summary = "상품의 채팅창에 접속",
             description = "상품채팅창의 정보를 리턴합니다. 기존채팅방이 없으면 새로 생성된 채팅 방을 리턴합니다.")
     @ApiResponses(value = {
