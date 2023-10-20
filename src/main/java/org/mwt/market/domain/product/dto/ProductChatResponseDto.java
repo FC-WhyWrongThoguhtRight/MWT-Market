@@ -2,7 +2,6 @@ package org.mwt.market.domain.product.dto;
 
 import lombok.Builder;
 import lombok.Getter;
-import org.mwt.market.common.response.BaseResponseBody;
 
 @Getter
 public class ProductChatResponseDto {
@@ -10,18 +9,18 @@ public class ProductChatResponseDto {
     private final Long chatRoomId;
     private final String productThumbnail;
     private final String lastChatMessage;
-    private final Long youId;
-    private final String youNickname;
-    private final String youProfileImage;
+    private final Long partnerId;
+    private final String partnerNickname;
+    private final String partnerProfileImage;
 
     @Builder
     public ProductChatResponseDto(Long chatRoomId, String productThumbnail, String lastChatMessage,
-        Long youId, String youNickname, String youProfileImage) {
+                                  Long partnerId, String partnerNickname, String partnerProfileImage) {
         this.chatRoomId = chatRoomId;
         this.productThumbnail = productThumbnail;
         this.lastChatMessage = lastChatMessage;
-        this.youId = youId;
-        this.youNickname = youNickname;
-        this.youProfileImage = youProfileImage;
+        this.partnerId = partnerId;
+        this.partnerNickname = partnerNickname;
+        this.partnerProfileImage = partnerProfileImage;
     }
 }

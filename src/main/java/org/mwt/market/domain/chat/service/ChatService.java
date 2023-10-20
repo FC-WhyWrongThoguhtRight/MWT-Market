@@ -55,18 +55,21 @@ public class ChatService {
             return chatRoomRepository.save(ChatRoom.createChatRoom(buyer, product));
         });
 
-        ChatContent lastMessage = chatContentRepository.findFirstByChatRoomIdOrderByCreateAtDesc(
-            optChatRoom
-                .get()
-                .getChatRoomId());
+        ChatContent lastChatContent = chatContentRepository
+                .findFirstByChatRoomIdOrderByCreateAtDesc(chatRoom.getChatRoomId());
+
+        String lastMessage = "";
+        if (lastChatContent != null) {
+            lastMessage = lastChatContent.getContent();
+        }
 
         return ChatRoomDto.builder()
             .chatRoomId(chatRoom.getChatRoomId())
             .buyerId(chatRoom.getBuyer().getUserId())
             .nickName(chatRoom.getBuyer().getNickname())
             .buyerProfileImg(chatRoom.getBuyer().getProfileImageUrl())
-            .lastMessage(lastMessage == null ? null : lastMessage.getContent())
-            .lastCreatedAt(lastMessage == null ? null : lastMessage.getCreateAt())
+            .lastMessage(lastMessage)
+            .lastCreatedAt(chatRoom.getCreatedAt())
             .build();
     }
 

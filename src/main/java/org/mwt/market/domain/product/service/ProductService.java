@@ -9,7 +9,9 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mwt.market.config.security.token.UserPrincipal;
+import org.mwt.market.domain.chat.entity.ChatContent;
 import org.mwt.market.domain.chat.entity.ChatRoom;
+import org.mwt.market.domain.chat.repository.ChatContentRepository;
 import org.mwt.market.domain.chat.repository.ChatRoomRepository;
 import org.mwt.market.domain.product.dto.*;
 import org.mwt.market.domain.product.entity.Product;
@@ -42,13 +44,13 @@ import org.springframework.web.multipart.MultipartFile;
 public class ProductService {
 
     private final ProductRepository productRepository;
-    private final ProductCategoryRepository productCategoryRepository;
     private final WishRepository wishRepository;
     private final UserRepository userRepository;
     private final S3Template s3Template;
     private final ChatRoomRepository chatRoomRepository;
     private final ProductCategoryRepository categoryRepository;
     private final ProductImageRepository productImageRepository;
+    private final ChatContentRepository chatContentRepository;
 
     public List<ProductInfoDto> findAllProducts(List<String> categoryNames, String searchWord,
         Integer page, Integer pageSize, UserPrincipal userPrincipal) {
@@ -166,13 +168,20 @@ public class ProductService {
                 you = buyer;
             }
 
+            ChatContent lastChatContent = chatContentRepository.findFirstByChatRoomIdOrderByCreateAtDesc(
+                    chatRoom.getChatRoomId());
+            String lastMessage = "";
+            if (lastChatContent != null) {
+                lastMessage = lastChatContent.getContent();
+            }
+
             ProductChatResponseDto dto = ProductChatResponseDto.builder()
                 .chatRoomId(chatRoom.getChatRoomId())
                 .productThumbnail(product.getThumbnail())
-                .youId(you.getUserId())
-                .youNickname(you.getNickname())
-                .youProfileImage(you.getProfileImageUrl())
-                .lastChatMessage("미구현") // TODO 종훈님 구현완료 후 수정
+                .partnerId(you.getUserId())
+                .partnerNickname(you.getNickname())
+                .partnerProfileImage(you.getProfileImageUrl())
+                .lastChatMessage(lastMessage)
                 .build();
             dtos.add(dto);
         }
