@@ -109,8 +109,8 @@ public class ProductService {
         }
 
         String categoryName = request.getCategoryName();
-        ProductCategory productCategory = productCategoryRepository.findByCategoryName(categoryName)
-            .orElseThrow(NoSuchCategoryException::new);
+        ProductCategory productCategory = categoryRepository.findByCategoryName(categoryName)
+            .orElseThrow(() -> new NoSuchCategoryException("'" + request.getCategoryName() + "'은 카테고리로 존재하지 않습니다"));
 
         for (int order = 0; order < product.getProductAlbum().size(); order++) {
             deleteImage(product, order);
@@ -180,11 +180,11 @@ public class ProductService {
 
     @Transactional
     public ProductResponseDto addProduct(UserPrincipal userPrincipal, ProductRequestDto request)
-        throws ImageTypeExcpetion {
+        throws ImageTypeException {
         User user = userRepository.findByEmail(userPrincipal.getEmail())
             .orElseThrow(NoSuchUserException::new);
         ProductCategory category = categoryRepository.findByCategoryName(request.getCategoryName()).orElseThrow(
-            NoSuchElementException::new);
+            () -> new NoSuchCategoryException("'" + request.getCategoryName() + "'은 카테고리로 존재하지 않습니다"));
 
         Product product = Product.builder()
             .title(request.getTitle())
