@@ -39,10 +39,12 @@ class UserControllerTest {
     void signup() throws Exception {
         // given
         SignupRequestDto signupRequestDto = signupRequestDto();
+        String content = new ObjectMapper().writeValueAsString(signupRequestDto);
+
         Mockito.doReturn(false)
             .when(userService)
             .isDuplicated(ArgumentMatchers.any(SignupRequestDto.class));
-        Mockito.doReturn(new User("email", "password", "tel", "nickname", null))
+        Mockito.doReturn(new User("someEmail@mail.com", "somePassword", "010-4708-3628", "someNick", null))
             .when(userService)
             .registerUser(ArgumentMatchers.any(SignupRequestDto.class));
 
@@ -50,7 +52,7 @@ class UserControllerTest {
         ResultActions actions = mockMvc.perform(
             MockMvcRequestBuilders.post("/signup")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(signupRequestDto))
+                .content(content)
         );
 
         // then
@@ -60,8 +62,8 @@ class UserControllerTest {
     }
 
     private SignupRequestDto signupRequestDto() {
-        SignupRequestDto signupRequestDto = new SignupRequestDto();
-
+        SignupRequestDto signupRequestDto = new SignupRequestDto("someEmail@mail.com",
+            "somePassword", "010-4708-3628", "someNick");
         return signupRequestDto;
     }
 

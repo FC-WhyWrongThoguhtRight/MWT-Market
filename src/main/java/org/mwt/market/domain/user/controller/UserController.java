@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.Positive;
 import java.util.List;
 import org.mwt.market.common.response.BaseResponseBody;
 import org.mwt.market.common.response.DataResponseBody;
@@ -24,6 +25,7 @@ import org.mwt.market.domain.user.exception.UserRegisterException;
 import org.mwt.market.domain.user.service.UserService;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -51,7 +53,7 @@ public class UserController {
             content = {@Content(schema = @Schema(implementation = ErrorResponseBody.class))})
     })
     public BaseResponseBody signup(
-        @RequestBody SignupRequestDto signupRequestDto) throws UserRegisterException {
+        @Validated @RequestBody SignupRequestDto signupRequestDto) throws UserRegisterException {
         userService.isDuplicated(signupRequestDto);
         userService.registerUser(signupRequestDto);
         return BaseResponseBody.success("회원가입 성공");
@@ -65,7 +67,7 @@ public class UserController {
             content = {@Content(schema = @Schema(implementation = ErrorResponseBody.class))})
     })
     public BaseResponseBody login(
-        @RequestBody LoginRequestDto loginRequestDto) {
+        @Validated @RequestBody LoginRequestDto loginRequestDto) {
         throw new RuntimeException("로그인 기능은 필터에서 처리되어야 합니다.");
     }
 
@@ -97,7 +99,7 @@ public class UserController {
             content = {@Content(schema = @Schema(implementation = ErrorResponseBody.class))})
     })
     public DataResponseBody<ProfileUpdateResponseDto> updateProfile(
-        @ModelAttribute ProfileUpdateRequestDto profileUpdateRequestDto,
+        @Validated @ModelAttribute ProfileUpdateRequestDto profileUpdateRequestDto,
         @AuthenticationPrincipal UserPrincipal userPrincipal) {
         User updatedUser = userService.updateUser(userPrincipal, profileUpdateRequestDto);
         return DataResponseBody.success(
@@ -119,8 +121,8 @@ public class UserController {
             content = {@Content(schema = @Schema(implementation = ErrorResponseBody.class))})
     })
     public DataResponseBody<List<ProductDto>> getMyProduct(
-        @RequestParam(required = false, defaultValue = "1") Integer page,
-        @RequestParam(required = false, defaultValue = "10") Integer pageSize,
+        @Positive @RequestParam(defaultValue = "1") Integer page,
+        @Positive @RequestParam(defaultValue = "10") Integer pageSize,
         @AuthenticationPrincipal UserPrincipal userPrincipal) {
         List<ProductDto> myProductList = userService.getMyProduct(page - 1, pageSize,
             userPrincipal);
@@ -135,8 +137,8 @@ public class UserController {
             content = {@Content(schema = @Schema(implementation = ErrorResponseBody.class))})
     })
     public DataResponseBody<List<ChatRoomDto>> getMyChatRoom(
-        @RequestParam(required = false, defaultValue = "1") Integer page,
-        @RequestParam(required = false, defaultValue = "10") Integer pageSize,
+        @Positive @RequestParam(defaultValue = "1") Integer page,
+        @Positive @RequestParam(defaultValue = "10") Integer pageSize,
         @AuthenticationPrincipal UserPrincipal userPrincipal) {
         List<ChatRoomDto> myChatRoomDto = userService.getMyChatRoom(page - 1, pageSize,
             userPrincipal);

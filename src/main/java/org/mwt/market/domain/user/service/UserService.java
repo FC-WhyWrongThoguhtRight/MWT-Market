@@ -5,6 +5,7 @@ import io.awspring.cloud.s3.S3Resource;
 import io.awspring.cloud.s3.S3Template;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.mwt.market.config.security.token.UserPrincipal;
 import org.mwt.market.domain.chat.entity.ChatRoom;
@@ -98,8 +99,14 @@ public class UserService {
         String newNickname = profileUpdateRequestDto.getNickname();
         MultipartFile newProfileImage = profileUpdateRequestDto.getProfileImg();
         String extension = StringUtils.getFilenameExtension(newProfileImage.getOriginalFilename());
+
+        Optional<User> byNickname = userRepository.findByNickname(newNickname);
+        if (byNickname.isPresent()) {
+            throw new UserUpdateException("닉네임 중복", new DuplicateNicknameException());
+        }
         User currUser = userRepository.findById(userPrincipal.getId())
-            .orElseThrow(() -> new UserUpdateException("수정하고자 하는 유저가 존재하지 않습니다."));
+            .orElseThrow(() -> new UserUpdateException("수정하고자 하는 유저가 존재하지 않습니다.",
+                new NoSuchUserException()));
         currUser.updateNickname(newNickname);
         try {
             S3Resource resource = s3Template.upload("mwtmarketbucket",

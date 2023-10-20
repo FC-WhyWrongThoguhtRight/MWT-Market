@@ -9,6 +9,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.dao.NonTransientDataAccessException;
 import org.springframework.dao.TransientDataAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -32,46 +33,46 @@ public class UserControllerAdvisor {
             }
             return ResponseEntity
                 .badRequest()
-                .body(ErrorResponseBody.unsuccessful(statusCode, ex.getMessage(), ex));
+                .body(ErrorResponseBody.unsuccessful(statusCode, ex.getMessage()));
         }
         Throwable cause = ex.getCause();
         if (cause instanceof NonTransientDataAccessException) {
             logger.error(ex.getMessage(), ex);
             return ResponseEntity
                 .badRequest()
-                .body(ErrorResponseBody.unsuccessful(ex.getMessage(), ex));
+                .body(ErrorResponseBody.unsuccessful(ex.getMessage()));
         } else if (cause instanceof TransientDataAccessException) {
             logger.warn(ex.getMessage(), ex);
             return ResponseEntity
                 .internalServerError()
-                .body(ErrorResponseBody.unsuccessful(ex.getMessage(), ex));
+                .body(ErrorResponseBody.unsuccessful(ex.getMessage()));
         }
         logger.error(ex.getMessage(), ex);
         return ResponseEntity
             .internalServerError()
-            .body(ErrorResponseBody.unsuccessful(ex.getMessage(), ex));
+            .body(ErrorResponseBody.unsuccessful(ex.getMessage()));
+    }
+
+    @ExceptionHandler(UserUpdateException.class)
+    public ResponseEntity<ErrorResponseBody> handleUserUpdateException(UserUpdateException ex) {
+        Throwable cause = ex.getCause();
+        if (cause instanceof IOException || cause instanceof DuplicateNicknameException) {
+            logger.warn(ex.getMessage(), ex);
+            return ResponseEntity
+                .badRequest()
+                .body(ErrorResponseBody.unsuccessful(ex.getMessage()));
+        }
+        logger.error(ex.getMessage(), ex);
+        return ResponseEntity
+            .internalServerError()
+            .body(ErrorResponseBody.unsuccessful(ex.getMessage()));
     }
 
     @ExceptionHandler(NoSuchUserException.class)
     public ResponseEntity<ErrorResponseBody> handleUserInfoException(NoSuchUserException ex) {
         logger.error(ex.getMessage(), ex);
         return ResponseEntity
-            .badRequest()
-            .body(ErrorResponseBody.unsuccessful(ex.getMessage(), ex));
-    }
-
-    @ExceptionHandler(UserUpdateException.class)
-    public ResponseEntity<ErrorResponseBody> handleUserUpdateException(UserUpdateException ex) {
-        Throwable cause = ex.getCause();
-        if (cause instanceof IOException) {
-            logger.warn(ex.getMessage(), ex);
-            return ResponseEntity
-                .badRequest()
-                .body(ErrorResponseBody.unsuccessful(ex.getMessage(), ex));
-        }
-        logger.error(ex.getMessage(), ex);
-        return ResponseEntity
-            .internalServerError()
-            .body(ErrorResponseBody.unsuccessful(ex.getMessage(), ex));
+            .status(HttpStatus.UNAUTHORIZED)
+            .body(ErrorResponseBody.unsuccessful(ex.getMessage()));
     }
 }
