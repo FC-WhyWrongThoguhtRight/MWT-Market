@@ -117,9 +117,11 @@ public class ProductService {
         }
 
         List<ProductImage> productAlbum = new ArrayList<>();
-        for (int order = 0; order < request.getImages().size(); order++) {
-            MultipartFile image = request.getImages().get(order);
-            productAlbum.add(uploadImage(product, image, order));
+        if (request.getImages() != null) {
+            for (int order = 0; order < request.getImages().size(); order++) {
+                MultipartFile image = request.getImages().get(order);
+                productAlbum.add(uploadImage(product, image, order));
+            }
         }
 
         product.update(request.getTitle(), request.getContent(), productCategory,
@@ -200,12 +202,6 @@ public class ProductService {
         if (request.getImages() != null) {
             for (int i = 0; i < request.getImages().size(); i++) {
                 MultipartFile image = request.getImages().get(i);
-
-                if (image == null || image.isEmpty() || !image.getContentType()
-                    .startsWith("image")) {
-                    throw new ImageTypeException("올바른 이미지 형식이 아닙니다.");
-                }
-
                 productAlbum.add(uploadImage(savedProduct, image, i));
             }
         }
@@ -218,6 +214,11 @@ public class ProductService {
     }
 
     private ProductImage uploadImage(Product product, MultipartFile image, int order) {
+        if (image == null || image.isEmpty() || !Objects.requireNonNull(image.getContentType())
+            .startsWith("image")) {
+            throw new ImageTypeException("올바른 이미지 형식이 아닙니다.");
+        }
+
         String extension = StringUtils.getFilenameExtension(image.getOriginalFilename());
 
         try {

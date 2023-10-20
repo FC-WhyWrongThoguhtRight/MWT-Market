@@ -6,6 +6,7 @@ import io.awspring.cloud.s3.S3Template;
 import jakarta.servlet.http.Cookie;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -224,5 +225,28 @@ public class ProductIntegrationTests {
         actions.andExpect(status().isOk());
 
         assertThat(product.getStatus()).isEqualTo(ProductStatus.RESERVATION);
+    }
+
+    @Test
+    // 다른 테스트 케이스에서 추가/삭제한 항목 자체에는 영향받지 않지만
+    // 추가/삭제 할 때 PK의 시퀀스가 바뀌는 부분에는 영향받는 부분 때문에 추가하였음
+    @DirtiesContext(methodMode = MethodMode.AFTER_METHOD)
+    public void 상품_수정() throws Exception {
+        // given, when
+        ResultActions actions = mockMvc.perform(MockMvcRequestBuilders
+            .put("/products/21")
+            .contentType(MediaType.MULTIPART_FORM_DATA)
+            .param("title", "수정된 상품 제목")
+            .param("categoryName", "식품")
+            .param("content", "내용")
+            .param("price", "1000")
+            .cookie(cookies)
+        );
+
+        // then
+        actions.andExpect(status().isOk());
+
+        Product product = productRepository.findById(productId).orElseThrow();
+        assertThat(product.getTitle()).isEqualTo("수정된 상품 제목");
     }
 }
