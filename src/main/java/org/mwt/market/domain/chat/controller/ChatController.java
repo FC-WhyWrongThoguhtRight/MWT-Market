@@ -28,19 +28,6 @@ public class ChatController {
         this.chatService = chatService;
     }
 
-    @GetMapping("/seller/{productId}/joinChat")
-    @Operation(summary = "상품의 채팅창에 접속",
-        description = "상품채팅창의 정보를 리턴합니다. 기존채팅방이 없으면 새로 생성된 채팅 방을 리턴합니다.")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200"),
-        @ApiResponse(responseCode = "400")})
-    public DataResponseBody<ChatRoomDto> joinChat(
-        @AuthenticationPrincipal UserPrincipal userPrincipal,
-        @PathVariable("productId") Long productId) {
-        ChatRoomDto chatRoomDto = chatService.joinChatRoom(userPrincipal, productId);
-        return DataResponseBody.success(chatRoomDto);
-    }
-
     @MessageMapping("/room/{roomId}")
     @SendTo("/sub/room/{roomId}")
     @Operation(summary = "상품 판매자와 1:1 채팅 메시지 전송 및 내역 저장")

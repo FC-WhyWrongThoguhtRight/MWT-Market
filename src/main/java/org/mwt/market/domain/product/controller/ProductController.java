@@ -13,13 +13,14 @@ import lombok.RequiredArgsConstructor;
 import org.mwt.market.common.response.BaseResponseBody;
 import org.mwt.market.common.response.DataResponseBody;
 import org.mwt.market.config.security.token.UserPrincipal;
+import org.mwt.market.domain.chat.dto.ChatRoomDto;
 import org.mwt.market.domain.product.dto.ProductChatResponseDto;
 import org.mwt.market.domain.product.dto.ProductInfoDto;
 import org.mwt.market.domain.product.dto.ProductRequestDto;
 import org.mwt.market.domain.product.dto.ProductResponseDto;
 import org.mwt.market.domain.product.dto.ProductStatusUpdateRequestDto;
 import org.mwt.market.domain.product.dto.ProductUpdateRequestDto;
-import org.mwt.market.domain.product.exception.ImageTypeExcpetion;
+import org.mwt.market.domain.product.exception.ImageTypeException;
 import org.mwt.market.domain.product.service.ProductService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -69,7 +70,7 @@ public class ProductController {
     public DataResponseBody<ProductResponseDto> registerProduct(
         @AuthenticationPrincipal UserPrincipal userPrincipal,
         @Valid @ModelAttribute ProductRequestDto request
-    ) throws ImageTypeExcpetion {
+    ) throws ImageTypeException {
         ProductResponseDto data = productService.addProduct(userPrincipal, request);
 
         return DataResponseBody.success(data);
@@ -159,5 +160,19 @@ public class ProductController {
         List<ProductInfoDto> ProductInfos = productService.findProductsBySellerId(page, pageSize, userPrincipal, productId);
 
         return DataResponseBody.success(ProductInfos);
+    }
+
+
+    @PostMapping("/{productId}/chats")
+    @Operation(summary = "상품의 채팅창에 접속",
+            description = "상품채팅창의 정보를 리턴합니다. 기존채팅방이 없으면 새로 생성된 채팅 방을 리턴합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400")})
+    public DataResponseBody<ChatRoomDto> joinChat(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable("productId") Long productId) {
+        ChatRoomDto chatRoomDto = productService.joinChatRoom(userPrincipal, productId);
+        return DataResponseBody.success(chatRoomDto);
     }
 }
