@@ -29,8 +29,4 @@ public class ErrorResponseBody {
     public static ErrorResponseBody unsuccessful(Integer statusCode, String message) {
         return new ErrorResponseBody(false, statusCode, message, null);
     }
-
-    public static ErrorResponseBody unsuccessful(Integer statusCode, String message, Throwable ex) {
-        return new ErrorResponseBody(false, statusCode, message, ex);
-    }
 }

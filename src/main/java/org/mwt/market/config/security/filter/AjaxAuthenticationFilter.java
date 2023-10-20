@@ -10,6 +10,7 @@ import java.io.IOException;
 import org.mwt.market.config.security.token.AjaxAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.util.StringUtils;
 
@@ -34,7 +35,7 @@ public class AjaxAuthenticationFilter extends AbstractAuthenticationProcessingFi
             LoginRequestDto.class);
         if (!StringUtils.hasText(loginRequestDto.getEmail()) || !StringUtils.hasText(
             loginRequestDto.getPassword())) {
-            throw new IllegalArgumentException("Username Or Password is Empty");
+            throw new UsernameNotFoundException("Username Or Password is Empty");
         }
         AjaxAuthenticationToken authRequest = AjaxAuthenticationToken.unauthenticated(
             loginRequestDto.getEmail(), loginRequestDto.getPassword());
