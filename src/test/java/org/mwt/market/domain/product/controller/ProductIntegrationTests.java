@@ -1,12 +1,20 @@
 package org.mwt.market.domain.product.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.awspring.cloud.s3.S3Resource;
+import io.awspring.cloud.s3.S3Template;
 import jakarta.servlet.http.Cookie;
+import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mwt.market.domain.product.dto.ProductRequestDto;
 import org.mwt.market.domain.product.entity.Product;
 import org.mwt.market.domain.product.repository.ProductRepository;
+import org.mwt.market.domain.product.service.ProductService;
 import org.mwt.market.domain.user.dto.UserRequests.LoginRequestDto;
 import org.mwt.market.domain.user.dto.UserRequests.SignupRequestDto;
 import org.mwt.market.domain.user.entity.User;
@@ -15,17 +23,21 @@ import org.mwt.market.domain.wish.repository.WishRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.*;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.MethodMode;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -126,5 +138,19 @@ public class ProductIntegrationTests {
         String jsonContent = "{\"statusCode\":200,\"message\":\"success\",\"data\":[{\"id\":18,\"title\":\"프로덕트18\",\"price\":9000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\",\"status\":\"예약중\",\"likes\":0,\"like\":false},{\"id\":10,\"title\":\"프로덕트10\",\"price\":1000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\",\"status\":\"예약중\",\"likes\":0,\"like\":false},{\"id\":5,\"title\":\"프로덕트5\",\"price\":5000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\",\"status\":\"판매중\",\"likes\":0,\"like\":false},{\"id\":2,\"title\":\"프로덕트2\",\"price\":2000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\",\"status\":\"예약중\",\"likes\":0,\"like\":false},{\"id\":1,\"title\":\"프로덕트1\",\"price\":1000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\",\"status\":\"판매중\",\"likes\":0,\"like\":false}]}";
         actions.andExpect(status().isOk())
             .andExpect(content().json(jsonContent));
+    }
+
+    @Test
+    public void 상품_등록() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders
+                .multipart("/products")
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .param("title", "상품 제목")
+                .param("categoryName", "식품")
+                .param("content", "내용")
+                .param("price", "1000")
+                .cookie(cookies)
+            )
+            .andExpect(status().isOk());
     }
 }

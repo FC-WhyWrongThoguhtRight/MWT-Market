@@ -1,5 +1,6 @@
 package org.mwt.market.domain.product.exception;
 
+import org.mwt.market.common.exception.BaseException;
 import org.mwt.market.common.response.ErrorResponseBody;
 import org.mwt.market.domain.product.controller.ProductController;
 import org.mwt.market.domain.user.exception.NoSuchUserException;
@@ -18,22 +19,11 @@ public class ProductControllerAdvisor {
 
     private final Logger logger = LoggerFactory.getLogger(ProductControllerAdvisor.class);
 
-    @ExceptionHandler(value = {
-        NoSuchProductException.class, NoSuchStatusException.class, NoPermissionException.class,
-        ImageUploadErrorException.class, NoSuchUserException.class
-    })
-    public ResponseEntity<ErrorResponseBody> handleUserInfoException(NoSuchProductException ex) {
+    @ExceptionHandler(value = BaseException.class)
+    public ResponseEntity<ErrorResponseBody> handleBaseException(BaseException ex) {
         logger.error(ex.getMessage(), ex);
         return ResponseEntity
             .badRequest()
             .body(ErrorResponseBody.unsuccessful(ex.getMessage(), ex));
-    }
-
-    @ExceptionHandler(NoSuchCategoryException.class)
-    public ResponseEntity<ErrorResponseBody> handleUserInfoException(NoSuchCategoryException ex) {
-        logger.error(ex.getMessage(), ex);
-        return ResponseEntity
-                .badRequest()
-                .body(ErrorResponseBody.unsuccessful(ex.getMessage(), ex));
     }
 }
