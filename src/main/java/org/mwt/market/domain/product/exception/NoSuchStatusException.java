@@ -6,7 +6,7 @@ import org.mwt.market.common.exception.ErrorCode;
 public class NoSuchStatusException extends BaseException {
 
     public NoSuchStatusException(ErrorCode errorCode) {
-        super(errorCode);
+        super("상태는 1(판매중), 2(예약중), 3(판매완료) 중 하나로만 변경이 가능합니다", errorCode);
     }
 
     public NoSuchStatusException(String message, ErrorCode errorCode) {
