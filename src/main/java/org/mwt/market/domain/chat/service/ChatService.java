@@ -43,37 +43,6 @@ public class ChatService {
         this.chatContentRepository = chatContentRepository;
     }
 
-    @Transactional
-    public ChatRoomDto joinChatRoom(UserPrincipal userPrincipal, Long productId) {
-        Long userId = userPrincipal.getId();
-
-        Optional<ChatRoom> optChatRoom = chatRoomRepository
-            .findByBuyer_UserIdAndProduct_ProductId(userId,
-                productId);
-
-        ChatRoom chatRoom = optChatRoom.orElseGet(() -> {
-            User buyer = userRepository.findById(userId)
-                .orElseThrow(NoSuchUserException::new);
-            Product product = productRepository.findById(productId)
-                .orElseThrow(NoSuchProductException::new);
-            return chatRoomRepository.save(ChatRoom.createChatRoom(buyer, product));
-        });
-
-        ChatContent lastMessage = chatContentRepository.findFirstByChatRoomIdOrderByCreateAtDesc(
-            optChatRoom
-                .get()
-                .getChatRoomId());
-
-        return ChatRoomDto.builder()
-            .chatRoomId(chatRoom.getChatRoomId())
-            .buyerId(chatRoom.getBuyer().getUserId())
-            .nickName(chatRoom.getBuyer().getNickname())
-            .buyerProfileImg(chatRoom.getBuyer().getProfileImageUrl())
-            .lastMessage(lastMessage == null ? null : lastMessage.getContent())
-            .lastCreatedAt(lastMessage == null ? null : lastMessage.getCreateAt())
-            .build();
-    }
-
     public MessageResponse saveMessage(String roomId, MessageRequest messageRequest) {
 
         ChatContent chatContent = ChatContent.builder()

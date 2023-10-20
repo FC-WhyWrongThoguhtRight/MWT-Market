@@ -1,48 +1,44 @@
 package org.mwt.market.domain.product.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.awspring.cloud.s3.S3Resource;
-import io.awspring.cloud.s3.S3Template;
 import jakarta.servlet.http.Cookie;
-import java.net.URL;
+
 import java.nio.charset.Charset;
-import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mwt.market.domain.product.dto.ProductRequestDto;
+import org.mwt.market.domain.chat.repository.ChatRoomRepository;
 import org.mwt.market.domain.product.dto.ProductStatusUpdateRequestDto;
 import org.mwt.market.domain.product.entity.Product;
 import org.mwt.market.domain.product.repository.ProductRepository;
-import org.mwt.market.domain.product.service.ProductService;
 import org.mwt.market.domain.product.vo.ProductStatus;
 import org.mwt.market.domain.user.dto.UserRequests.LoginRequestDto;
 import org.mwt.market.domain.user.dto.UserRequests.SignupRequestDto;
-import org.mwt.market.domain.user.entity.User;
-import org.mwt.market.domain.user.repository.UserRepository;
-import org.mwt.market.domain.wish.repository.WishRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.*;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.MethodMode;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
-
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest
+@AutoConfigureDataMongo
+@SpringBootTest(
+    properties = {
+        "de.flapdoodle.mongodb.embedded.databaseDir=${java.io.tmpdir}/customDir/${random.uuid}"
+    }
+)
+@EnableAutoConfiguration()
 @AutoConfigureMockMvc
 @Transactional
 public class ProductIntegrationTests {
@@ -55,6 +51,8 @@ public class ProductIntegrationTests {
 
     @Autowired
     private ProductRepository productRepository;
+    @Autowired
+    private ChatRoomRepository chatRoomRepository;
 
     private Product product;
     private Long productId;
@@ -126,6 +124,7 @@ public class ProductIntegrationTests {
     }
 
     @Test
+    @DirtiesContext(methodMode = MethodMode.BEFORE_METHOD)
     public void 상품_목록_조회() throws Exception {
         // given, when
         ResultActions actions = mockMvc.perform(
@@ -134,7 +133,7 @@ public class ProductIntegrationTests {
         );
 
         // then
-        String jsonContent = "{\"statusCode\":200,\"message\":\"success\",\"data\":[{\"id\":22,\"title\":\"상품 제목\",\"price\":1000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\",\"status\":\"판매중\",\"likes\":0,\"like\":false},{\"id\":20,\"title\":\"프로덕트20\",\"price\":10000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\",\"status\":\"거래완료\",\"likes\":0,\"like\":false},{\"id\":19,\"title\":\"프로덕트19\",\"price\":10000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\",\"status\":\"판매중\",\"likes\":0,\"like\":false},{\"id\":18,\"title\":\"프로덕트18\",\"price\":9000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\",\"status\":\"예약중\",\"likes\":0,\"like\":false},{\"id\":16,\"title\":\"프로덕트16\",\"price\":7000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\",\"status\":\"판매중\",\"likes\":0,\"like\":false},{\"id\":15,\"title\":\"프로덕트15\",\"price\":6000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\",\"status\":\"거래완료\",\"likes\":0,\"like\":false},{\"id\":14,\"title\":\"프로덕트14\",\"price\":5000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\",\"status\":\"예약중\",\"likes\":0,\"like\":false},{\"id\":13,\"title\":\"프로덕트13\",\"price\":4000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\",\"status\":\"판매중\",\"likes\":0,\"like\":false},{\"id\":12,\"title\":\"프로덕트12\",\"price\":3000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\",\"status\":\"판매중\",\"likes\":0,\"like\":false},{\"id\":11,\"title\":\"프로덕트11\",\"price\":2000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\",\"status\":\"거래완료\",\"likes\":0,\"like\":false}]}";
+        String jsonContent = "{\"statusCode\":200,\"message\":\"success\",\"data\":[{\"id\":21,\"title\":\"상품 제목\",\"price\":1000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\",\"status\":\"판매중\",\"likes\":0,\"like\":false},{\"id\":20,\"title\":\"프로덕트20\",\"price\":10000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\",\"status\":\"거래완료\",\"likes\":0,\"like\":false},{\"id\":19,\"title\":\"프로덕트19\",\"price\":10000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\",\"status\":\"판매중\",\"likes\":0,\"like\":false},{\"id\":18,\"title\":\"프로덕트18\",\"price\":9000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\",\"status\":\"예약중\",\"likes\":0,\"like\":false},{\"id\":16,\"title\":\"프로덕트16\",\"price\":7000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\",\"status\":\"판매중\",\"likes\":0,\"like\":false},{\"id\":15,\"title\":\"프로덕트15\",\"price\":6000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\",\"status\":\"거래완료\",\"likes\":0,\"like\":false},{\"id\":14,\"title\":\"프로덕트14\",\"price\":5000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\",\"status\":\"예약중\",\"likes\":0,\"like\":false},{\"id\":13,\"title\":\"프로덕트13\",\"price\":4000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\",\"status\":\"판매중\",\"likes\":0,\"like\":false},{\"id\":12,\"title\":\"프로덕트12\",\"price\":3000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\",\"status\":\"판매중\",\"likes\":0,\"like\":false},{\"id\":11,\"title\":\"프로덕트11\",\"price\":2000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\",\"status\":\"거래완료\",\"likes\":0,\"like\":false}]}";
         actions.andExpect(status().isOk())
             .andExpect(content().json(jsonContent));
     }
@@ -168,9 +167,7 @@ public class ProductIntegrationTests {
     }
 
     @Test
-    // 다른 테스트 케이스에서 추가/삭제한 항목 자체에는 영향받지 않지만
-    // 추가/삭제 할 때 PK의 시퀀스가 바뀌는 부분에는 영향받는 부분 때문에 추가하였음
-    @DirtiesContext(methodMode = MethodMode.AFTER_METHOD)
+    @DirtiesContext(methodMode = MethodMode.BEFORE_METHOD)
     public void 상품_등록() throws Exception {
         // given, when
         ResultActions actions = mockMvc.perform(MockMvcRequestBuilders
@@ -188,11 +185,9 @@ public class ProductIntegrationTests {
     }
 
     @Test
-    // 다른 테스트 케이스에서 추가/삭제한 항목 자체에는 영향받지 않지만
-    // 추가/삭제 할 때 PK의 시퀀스가 바뀌는 부분에는 영향받는 부분 때문에 추가하였음
-    @DirtiesContext(methodMode = MethodMode.AFTER_METHOD)
+    @DirtiesContext(methodMode = MethodMode.BEFORE_METHOD)
     public void 상품_삭제() throws Exception {
-        // when, then
+        // given, when
         ResultActions actions = mockMvc.perform(
             MockMvcRequestBuilders.delete("/products/" + productId)
                 .cookie(cookies)
@@ -208,7 +203,7 @@ public class ProductIntegrationTests {
 
     @Test
     public void 상품_상태_변경() throws Exception {
-        // when, then
+        // given, when
         ProductStatusUpdateRequestDto requestDto = new ProductStatusUpdateRequestDto(2);
         String content = objectMapper.writeValueAsString(requestDto);
 
@@ -224,5 +219,68 @@ public class ProductIntegrationTests {
         actions.andExpect(status().isOk());
 
         assertThat(product.getStatus()).isEqualTo(ProductStatus.RESERVATION);
+    }
+
+    @Test
+    @DirtiesContext(methodMode = MethodMode.BEFORE_METHOD)
+    public void 상품_수정() throws Exception {
+        // given, when
+        ResultActions actions = mockMvc.perform(MockMvcRequestBuilders
+            .put("/products/21")
+            .contentType(MediaType.MULTIPART_FORM_DATA)
+            .param("title", "수정된 상품 제목")
+            .param("categoryName", "식품")
+            .param("content", "내용")
+            .param("price", "1000")
+            .cookie(cookies)
+        );
+
+        // then
+        actions.andExpect(status().isOk());
+
+        Product product = productRepository.findById(productId).orElseThrow();
+        assertThat(product.getTitle()).isEqualTo("수정된 상품 제목");
+    }
+
+    @Test
+    @Disabled
+    @DirtiesContext(methodMode = MethodMode.BEFORE_METHOD)
+    public void 상품_채팅방_입장() throws Exception {
+        // given, when
+        assertThat(chatRoomRepository.findByBuyer_UserIdAndProduct_ProductId(5L, productId).isPresent())
+                .isEqualTo(false);
+
+        ResultActions actions = mockMvc.perform(
+                MockMvcRequestBuilders.post("/products/" + productId + "/chats")
+                        .cookie(cookies)
+        );
+
+        // then
+        actions.andExpect(status().isOk());
+        assertThat(chatRoomRepository.findByBuyer_UserIdAndProduct_ProductId(5L, productId).isPresent())
+                .isEqualTo(true);
+    }
+    @Test
+    @Disabled
+    @DirtiesContext(methodMode = MethodMode.BEFORE_METHOD)
+    public void 상품_채팅방_목록() throws Exception {
+        // given
+        mockMvc.perform(
+                MockMvcRequestBuilders.post("/products/" + productId + "/chats")
+                        .cookie(cookies)
+        );
+        assertThat(chatRoomRepository.findByBuyer_UserIdAndProduct_ProductId(5L, productId).isPresent())
+                .isEqualTo(true);
+
+        // when
+        ResultActions actions = mockMvc.perform(
+                MockMvcRequestBuilders.get("/products/" + productId + "/chats")
+                        .cookie(cookies)
+        );
+
+        // then
+        String jsonContent = "{\"statusCode\":200,\"message\":\"success\",\"data\":[{\"chatRoomId\":7,\"productThumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\",\"lastChatMessage\":\"\",\"partnerId\":5,\"partnerNickname\":\"awef\",\"partnerProfileImage\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/user/default.png\"}]}";
+        actions.andExpect(status().isOk())
+                .andExpect(content().json(jsonContent));
     }
 }
