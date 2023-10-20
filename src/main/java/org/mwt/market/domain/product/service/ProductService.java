@@ -15,7 +15,7 @@ import org.mwt.market.domain.product.dto.*;
 import org.mwt.market.domain.product.entity.Product;
 import org.mwt.market.domain.product.entity.ProductCategory;
 import org.mwt.market.domain.product.entity.ProductImage;
-import org.mwt.market.domain.product.exception.ImageTypeExcpetion;
+import org.mwt.market.domain.product.exception.ImageTypeException;
 import org.mwt.market.domain.product.exception.ImageUploadErrorException;
 import org.mwt.market.domain.product.exception.NoPermissionException;
 import org.mwt.market.domain.product.exception.NoSuchCategoryException;
@@ -203,7 +203,7 @@ public class ProductService {
 
                 if (image == null || image.isEmpty() || !image.getContentType()
                     .startsWith("image")) {
-                    throw new ImageTypeExcpetion("올바른 이미지 형식이 아닙니다.");
+                    throw new ImageTypeException("올바른 이미지 형식이 아닙니다.");
                 }
 
                 productAlbum.add(uploadImage(savedProduct, image, i));

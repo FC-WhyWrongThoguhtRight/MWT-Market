@@ -1,17 +1,27 @@
 package org.mwt.market.domain.product.exception;
 
 import org.mwt.market.common.exception.BaseException;
+import org.mwt.market.common.exception.ErrorCode;
 
-public class ImageTypeExcpetion extends BaseException  {
+public class ImageTypeException extends BaseException  {
 
-    public ImageTypeExcpetion() {
+    public ImageTypeException() {
+        super(ErrorCode.InvalidImageType.getMsg(), ErrorCode.InvalidImageType);
     }
 
-    public ImageTypeExcpetion(String message) {
-        super(message);
+    public ImageTypeException(String message) {
+        super(message, ErrorCode.InvalidImageType);
     }
 
-    public ImageTypeExcpetion(String message, Throwable cause) {
-        super(message, cause);
+    public ImageTypeException(String message, Throwable cause) {
+        super(message, cause, ErrorCode.InvalidImageType);
+    }
+
+    public ImageTypeException(Throwable cause) {
+        super(cause, ErrorCode.InvalidImageType);
+    }
+
+    public ImageTypeException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace, ErrorCode.InvalidImageType);
     }
 }
