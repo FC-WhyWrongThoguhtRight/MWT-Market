@@ -10,17 +10,17 @@ public class WishResponseDto {
     private final Long id;
     private final String title;
     private final Integer price;
-    private final String thumbnailImage;
+    private final String thumbnail;
     private final String status;
     private final Integer likes;
 
     @Builder
-    public WishResponseDto(Long id, String title, Integer price, String thumbnailImage,
+    public WishResponseDto(Long id, String title, Integer price, String thumbnail,
         String status, Integer likes) {
         this.id = id;
         this.title = title;
         this.price = price;
-        this.thumbnailImage = thumbnailImage;
+        this.thumbnail = thumbnail;
         this.status = status;
         this.likes = likes;
     }
