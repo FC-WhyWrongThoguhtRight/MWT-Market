@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mwt.market.config.security.token.UserPrincipal;
+import org.mwt.market.domain.chat.dto.ChatRoomDto;
 import org.mwt.market.domain.chat.entity.ChatContent;
 import org.mwt.market.domain.chat.entity.ChatRoom;
 import org.mwt.market.domain.chat.repository.ChatContentRepository;
@@ -302,5 +303,39 @@ public class ProductService {
             productInfoDto.setLike(wishProductIds.contains(productInfoDto.getId()));
         }
         return result;
+    }
+
+    @Transactional
+    public ChatRoomDto joinChatRoom(UserPrincipal userPrincipal, Long productId) {
+        Long userId = userPrincipal.getId();
+
+        Optional<ChatRoom> optChatRoom = chatRoomRepository
+                .findByBuyer_UserIdAndProduct_ProductId(userId,
+                        productId);
+
+        ChatRoom chatRoom = optChatRoom.orElseGet(() -> {
+            User buyer = userRepository.findById(userId)
+                    .orElseThrow(NoSuchUserException::new);
+            Product product = productRepository.findById(productId)
+                    .orElseThrow(NoSuchProductException::new);
+            return chatRoomRepository.save(ChatRoom.createChatRoom(buyer, product));
+        });
+
+        ChatContent lastChatContent = chatContentRepository
+                .findFirstByChatRoomIdOrderByCreateAtDesc(chatRoom.getChatRoomId());
+
+        String lastMessage = "";
+        if (lastChatContent != null) {
+            lastMessage = lastChatContent.getContent();
+        }
+
+        return ChatRoomDto.builder()
+                .chatRoomId(chatRoom.getChatRoomId())
+                .buyerId(chatRoom.getBuyer().getUserId())
+                .nickName(chatRoom.getBuyer().getNickname())
+                .buyerProfileImg(chatRoom.getBuyer().getProfileImageUrl())
+                .lastMessage(lastMessage)
+                .lastCreatedAt(chatRoom.getCreatedAt())
+                .build();
     }
 }
