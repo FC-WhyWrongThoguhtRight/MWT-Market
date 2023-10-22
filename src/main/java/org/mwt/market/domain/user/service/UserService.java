@@ -144,7 +144,7 @@ public class UserService {
     public List<ProductDto> getMyProduct(Integer page, Integer pageSize,
         UserPrincipal userPrincipal) {
 
-        Page<Product> myProductList = productRepository.findBySeller_UserId(
+        Page<Product> myProductList = productRepository.findBySeller_UserIdAndIsDeletedFalse(
             PageRequest.of(page, pageSize), userPrincipal.getId());
 
         return myProductList.stream()

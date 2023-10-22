@@ -28,7 +28,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
         Pageable pageable, List<String> categoryNames,
         String searchWord);
 
-    Page<Product> findBySeller_UserId(Pageable pageable, Long userId);
+    Page<Product> findBySeller_UserIdAndIsDeletedFalse(Pageable pageable, Long userId);
 
     @Query("SELECT p FROM Product p "
         + "WHERE p.seller.userId = :sellerId "
