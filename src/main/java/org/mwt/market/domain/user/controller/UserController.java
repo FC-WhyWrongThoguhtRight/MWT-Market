@@ -22,9 +22,11 @@ import org.mwt.market.domain.user.dto.UserResponses.ProductDto;
 import org.mwt.market.domain.user.dto.UserResponses.UserInfoResponseDto;
 import org.mwt.market.domain.user.entity.User;
 import org.mwt.market.domain.user.exception.UserRegisterException;
+import org.mwt.market.domain.user.exception.UserUpdateException;
 import org.mwt.market.domain.user.service.UserService;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -101,7 +103,19 @@ public class UserController {
     public DataResponseBody<ProfileUpdateResponseDto> updateProfile(
         @Validated @ModelAttribute ProfileUpdateRequestDto profileUpdateRequestDto,
         @AuthenticationPrincipal UserPrincipal userPrincipal) {
-        User updatedUser = userService.updateUser(userPrincipal, profileUpdateRequestDto);
+        User updatedUser;
+        if (StringUtils.hasText(profileUpdateRequestDto.getNickname())
+            && profileUpdateRequestDto.getProfileImg() != null) {
+            updatedUser = userService.updateUser(userPrincipal, profileUpdateRequestDto);
+        } else if (StringUtils.hasText(profileUpdateRequestDto.getNickname())) {
+            updatedUser = userService.updateNickname(userPrincipal,
+                profileUpdateRequestDto.getNickname());
+        } else if (profileUpdateRequestDto.getProfileImg() != null) {
+            updatedUser = userService.updateProfileImg(userPrincipal,
+                profileUpdateRequestDto.getProfileImg());
+        } else {
+            throw new UserUpdateException("값이 입력되지 않았습니다.");
+        }
         return DataResponseBody.success(
             ProfileUpdateResponseDto.builder()
                 .id(updatedUser.getUserId())

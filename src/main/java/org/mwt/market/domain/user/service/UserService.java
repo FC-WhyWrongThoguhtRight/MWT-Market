@@ -98,16 +98,37 @@ public class UserService {
         throws UserUpdateException {
         String newNickname = profileUpdateRequestDto.getNickname();
         MultipartFile newProfileImage = profileUpdateRequestDto.getProfileImg();
-        String extension = StringUtils.getFilenameExtension(newProfileImage.getOriginalFilename());
 
+        updateNickname(userPrincipal, newNickname);
+        updateProfileImg(userPrincipal, newProfileImage);
+
+        return userRepository.findById(userPrincipal.getId())
+            .orElseThrow(() -> new UserUpdateException("수정하고자 하는 유저가 존재하지 않습니다.",
+                new NoSuchUserException()));
+    }
+
+    @Transactional
+    public User updateNickname(UserPrincipal userPrincipal, String newNickname) {
+        User currUser = userRepository.findById(userPrincipal.getId())
+            .orElseThrow(() -> new UserUpdateException("수정하고자 하는 유저가 존재하지 않습니다.",
+                new NoSuchUserException()));
+        if (!StringUtils.hasText(newNickname)) {
+            throw new UserUpdateException("닉네임을 입력하세요");
+        }
         Optional<User> byNickname = userRepository.findByNickname(newNickname);
         if (byNickname.isPresent()) {
             throw new UserUpdateException("닉네임 중복", new DuplicateNicknameException());
         }
+        currUser.updateNickname(newNickname);
+        return currUser;
+    }
+
+    @Transactional
+    public User updateProfileImg(UserPrincipal userPrincipal, MultipartFile newProfileImage) {
         User currUser = userRepository.findById(userPrincipal.getId())
             .orElseThrow(() -> new UserUpdateException("수정하고자 하는 유저가 존재하지 않습니다.",
                 new NoSuchUserException()));
-        currUser.updateNickname(newNickname);
+        String extension = StringUtils.getFilenameExtension(newProfileImage.getOriginalFilename());
         try {
             S3Resource resource = s3Template.upload("mwtmarketbucket",
                 "user" + "/" + userPrincipal.getId(),
