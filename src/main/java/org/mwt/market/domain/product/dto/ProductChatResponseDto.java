@@ -7,20 +7,28 @@ import lombok.Getter;
 public class ProductChatResponseDto {
 
     private final Long chatRoomId;
-    private final String productThumbnail;
-    private final String lastChatMessage;
-    private final Long partnerId;
-    private final String partnerNickname;
-    private final String partnerProfileImage;
+    private final Long productId;
+    private final String productImage;
+    private final String productStatus;
+    private final Long personId;
+    private final String personNickname;
+    private final String personProfileImage;
+    private final String lastMessage;
+    private final String lastCattedAt;
 
     @Builder
-    public ProductChatResponseDto(Long chatRoomId, String productThumbnail, String lastChatMessage,
-                                  Long partnerId, String partnerNickname, String partnerProfileImage) {
+    public ProductChatResponseDto(Long chatRoomId, Long productId, String productImage,
+        String productStatus, String lastChatMessage,
+        Long personId, String personNickname, String personProfileImage,
+        String lastCattedAt) {
         this.chatRoomId = chatRoomId;
-        this.productThumbnail = productThumbnail;
-        this.lastChatMessage = lastChatMessage;
-        this.partnerId = partnerId;
-        this.partnerNickname = partnerNickname;
-        this.partnerProfileImage = partnerProfileImage;
+        this.productId = productId;
+        this.productImage = productImage;
+        this.productStatus = productStatus;
+        this.lastMessage = lastChatMessage;
+        this.personId = personId;
+        this.personNickname = personNickname;
+        this.personProfileImage = personProfileImage;
+        this.lastCattedAt = lastCattedAt;
     }
 }

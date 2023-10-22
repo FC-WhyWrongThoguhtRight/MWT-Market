@@ -4,7 +4,12 @@ import io.awspring.cloud.s3.ObjectMetadata;
 import io.awspring.cloud.s3.S3Resource;
 import io.awspring.cloud.s3.S3Template;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +19,11 @@ import org.mwt.market.domain.chat.entity.ChatContent;
 import org.mwt.market.domain.chat.entity.ChatRoom;
 import org.mwt.market.domain.chat.repository.ChatContentRepository;
 import org.mwt.market.domain.chat.repository.ChatRoomRepository;
-import org.mwt.market.domain.product.dto.*;
+import org.mwt.market.domain.product.dto.ProductChatResponseDto;
+import org.mwt.market.domain.product.dto.ProductInfoDto;
+import org.mwt.market.domain.product.dto.ProductRequestDto;
+import org.mwt.market.domain.product.dto.ProductResponseDto;
+import org.mwt.market.domain.product.dto.ProductUpdateRequestDto;
 import org.mwt.market.domain.product.entity.Product;
 import org.mwt.market.domain.product.entity.ProductCategory;
 import org.mwt.market.domain.product.entity.ProductImage;
@@ -65,7 +74,8 @@ public class ProductService {
             products = productRepository.findAllByCategory_CategoryNameInAndIsDeletedFalse(
                 PageRequest.of(page, pageSize), categoryNames);
         } else if (StringUtils.hasText(searchWord)) {
-            products = productRepository.findAllByTitleContainingAndIsDeletedFalse(PageRequest.of(page, pageSize),
+            products = productRepository.findAllByTitleContainingAndIsDeletedFalse(
+                PageRequest.of(page, pageSize),
                 searchWord);
         } else {
             products = productRepository.findAllByIsDeletedFalseOrderByProductIdDesc(
@@ -76,7 +86,8 @@ public class ProductService {
         if (!"anonymous".equals(userPrincipal.getName())) {
             User currUser = userRepository.findById(userPrincipal.getId())
                 .orElseThrow(() -> new NoSuchUserException());
-            List<Wish> findWishProducts = wishRepository.findAllByUserOrderByCreatedAtDesc(currUser);
+            List<Wish> findWishProducts = wishRepository.findAllByUserOrderByCreatedAtDesc(
+                currUser);
             wishProductIds = findWishProducts.stream()
                 .map(wish -> wish.getProduct().getProductId())
                 .collect(Collectors.toSet());
@@ -113,7 +124,8 @@ public class ProductService {
 
         String categoryName = request.getCategoryName();
         ProductCategory productCategory = categoryRepository.findByCategoryName(categoryName)
-            .orElseThrow(() -> new NoSuchCategoryException("'" + request.getCategoryName() + "'은 카테고리로 존재하지 않습니다"));
+            .orElseThrow(() -> new NoSuchCategoryException(
+                "'" + request.getCategoryName() + "'은 카테고리로 존재하지 않습니다"));
 
         for (int order = 0; order < product.getProductAlbum().size(); order++) {
             deleteImage(product, order);
@@ -141,7 +153,8 @@ public class ProductService {
     }
 
     @Transactional
-    public ProductResponseDto changeStatus(UserPrincipal userPrincipal, Long productId, Integer status) {
+    public ProductResponseDto changeStatus(UserPrincipal userPrincipal, Long productId,
+        Integer status) {
         Product product = validateIsDeleted(productRepository.findById(productId)
             .orElseThrow(NoSuchProductException::new));
         if (!userPrincipal.getEmail().equals(product.getSellerEmail())) {
@@ -170,19 +183,23 @@ public class ProductService {
             }
 
             ChatContent lastChatContent = chatContentRepository.findFirstByChatRoomIdOrderByCreateAtDesc(
-                    chatRoom.getChatRoomId());
+                chatRoom.getChatRoomId());
             String lastMessage = "";
+            String lastChattedAt = "";
             if (lastChatContent != null) {
                 lastMessage = lastChatContent.getContent();
+                lastChattedAt = String.valueOf(lastChatContent.getCreateAt());
             }
-
             ProductChatResponseDto dto = ProductChatResponseDto.builder()
                 .chatRoomId(chatRoom.getChatRoomId())
-                .productThumbnail(product.getThumbnail())
-                .partnerId(you.getUserId())
-                .partnerNickname(you.getNickname())
-                .partnerProfileImage(you.getProfileImageUrl())
+                .productId(productId)
+                .productImage(product.getThumbnail())
+                .productStatus(String.valueOf(product.getStatus()))
+                .personId(you.getUserId())
+                .personNickname(you.getNickname())
+                .personProfileImage(you.getProfileImageUrl())
                 .lastChatMessage(lastMessage)
+                .lastCattedAt(lastChattedAt)
                 .build();
             dtos.add(dto);
         }
@@ -195,8 +212,10 @@ public class ProductService {
         throws ImageTypeException {
         User user = userRepository.findByEmail(userPrincipal.getEmail())
             .orElseThrow(NoSuchUserException::new);
-        ProductCategory category = categoryRepository.findByCategoryName(request.getCategoryName()).orElseThrow(
-            () -> new NoSuchCategoryException("'" + request.getCategoryName() + "'은 카테고리로 존재하지 않습니다"));
+        ProductCategory category = categoryRepository.findByCategoryName(request.getCategoryName())
+            .orElseThrow(
+                () -> new NoSuchCategoryException(
+                    "'" + request.getCategoryName() + "'은 카테고리로 존재하지 않습니다"));
 
         Product product = Product.builder()
             .title(request.getTitle())
@@ -254,8 +273,10 @@ public class ProductService {
         List<Product> sellerProducts = productRepository
             .findProductsBySeller_UserId(product.getSeller().getUserId(), productId);
 
-        ProductResponseDto productResponseDto = ProductResponseDto.fromEntity(product, sellerProducts);
-        productResponseDto.setIsMyProduct(Objects.equals(userPrincipal.getId(), product.getSeller().getUserId()));
+        ProductResponseDto productResponseDto = ProductResponseDto.fromEntity(product,
+            sellerProducts);
+        productResponseDto.setIsMyProduct(
+            Objects.equals(userPrincipal.getId(), product.getSeller().getUserId()));
 
         List<Wish> findWishProducts = wishRepository.findAllByUserOrderByCreatedAtDesc(user);
         Set<Long> wishProductIds = findWishProducts.stream()
@@ -285,12 +306,14 @@ public class ProductService {
         }
 
         Page<Product> products = productRepository.findProductsBySeller_UserIdAndDeletedFalse(
-            PageRequest.of(page-1, pageSize), product.getSeller().getUserId());
+            PageRequest.of(page - 1, pageSize), product.getSeller().getUserId());
 
         Set<Long> wishProductIds = Collections.emptySet();
         if (!"anonymous".equals(userPrincipal.getName())) {
-            User currUser = userRepository.findById(userPrincipal.getId()).orElseThrow(NoSuchUserException::new);
-            List<Wish> findWishProducts = wishRepository.findAllByUserOrderByCreatedAtDesc(currUser);
+            User currUser = userRepository.findById(userPrincipal.getId())
+                .orElseThrow(NoSuchUserException::new);
+            List<Wish> findWishProducts = wishRepository.findAllByUserOrderByCreatedAtDesc(
+                currUser);
             wishProductIds = findWishProducts.stream()
                 .map(wish -> wish.getProduct().getProductId())
                 .collect(Collectors.toSet());
@@ -310,19 +333,19 @@ public class ProductService {
         Long userId = userPrincipal.getId();
 
         Optional<ChatRoom> optChatRoom = chatRoomRepository
-                .findByBuyer_UserIdAndProduct_ProductId(userId,
-                        productId);
+            .findByBuyer_UserIdAndProduct_ProductId(userId,
+                productId);
 
         ChatRoom chatRoom = optChatRoom.orElseGet(() -> {
             User buyer = userRepository.findById(userId)
-                    .orElseThrow(NoSuchUserException::new);
+                .orElseThrow(NoSuchUserException::new);
             Product product = productRepository.findById(productId)
-                    .orElseThrow(NoSuchProductException::new);
+                .orElseThrow(NoSuchProductException::new);
             return chatRoomRepository.save(ChatRoom.createChatRoom(buyer, product));
         });
 
         ChatContent lastChatContent = chatContentRepository
-                .findFirstByChatRoomIdOrderByCreateAtDesc(chatRoom.getChatRoomId());
+            .findFirstByChatRoomIdOrderByCreateAtDesc(chatRoom.getChatRoomId());
 
         String lastMessage = "";
         if (lastChatContent != null) {
@@ -330,12 +353,12 @@ public class ProductService {
         }
 
         return ChatRoomDto.builder()
-                .chatRoomId(chatRoom.getChatRoomId())
-                .buyerId(chatRoom.getBuyer().getUserId())
-                .nickName(chatRoom.getBuyer().getNickname())
-                .buyerProfileImg(chatRoom.getBuyer().getProfileImageUrl())
-                .lastMessage(lastMessage)
-                .lastCreatedAt(chatRoom.getCreatedAt())
-                .build();
+            .chatRoomId(chatRoom.getChatRoomId())
+            .buyerId(chatRoom.getBuyer().getUserId())
+            .nickName(chatRoom.getBuyer().getNickname())
+            .buyerProfileImg(chatRoom.getBuyer().getProfileImageUrl())
+            .lastMessage(lastMessage)
+            .lastCreatedAt(chatRoom.getCreatedAt())
+            .build();
     }
 }
