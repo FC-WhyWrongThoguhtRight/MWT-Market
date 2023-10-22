@@ -105,12 +105,12 @@ public class UserController {
         @AuthenticationPrincipal UserPrincipal userPrincipal) {
         User updatedUser;
         if (StringUtils.hasText(profileUpdateRequestDto.getNickname())
-            && profileUpdateRequestDto.getProfileImg() != null) {
+            && !profileUpdateRequestDto.getProfileImg().isEmpty()) {
             updatedUser = userService.updateUser(userPrincipal, profileUpdateRequestDto);
         } else if (StringUtils.hasText(profileUpdateRequestDto.getNickname())) {
             updatedUser = userService.updateNickname(userPrincipal,
                 profileUpdateRequestDto.getNickname());
-        } else if (profileUpdateRequestDto.getProfileImg() != null) {
+        } else if (!profileUpdateRequestDto.getProfileImg().isEmpty()) {
             updatedUser = userService.updateProfileImg(userPrincipal,
                 profileUpdateRequestDto.getProfileImg());
         } else {
