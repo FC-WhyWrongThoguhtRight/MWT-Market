@@ -1,8 +1,11 @@
 package org.mwt.market.domain.wish.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
-import java.nio.charset.Charset;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mwt.market.domain.product.entity.Product;
@@ -15,7 +18,7 @@ import org.mwt.market.domain.wish.repository.WishRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.*;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.MethodMode;
@@ -23,10 +26,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
-
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -82,6 +81,7 @@ public class WishIntegrationTests {
         // User 객체 초기화해두기
         this.user = userRepository.findByEmail("test@test.com").orElseThrow();
     }
+
     @Test
     // 다른 테스트 케이스에서 추가/삭제한 항목 자체에는 영향받지 않지만
     // 추가/삭제 할 때 PK의 시퀀스가 바뀌는 부분에는 영향받는 부분 때문에 추가하였음
@@ -100,7 +100,7 @@ public class WishIntegrationTests {
         );
 
         // then
-        String jsonContent = "{\"statusCode\":200,\"message\":\"success\",\"data\":[{\"id\":13,\"title\":\"프로덕트1\",\"price\":1000,\"thumbnailImage\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\",\"status\":\"판매중\",\"likes\":1}]}";
+        String jsonContent = "{\"statusCode\":200,\"message\":\"success\",\"data\":[{\"id\":1,\"title\":\"프로덕트1\",\"price\":1000,\"thumbnail\":\"https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/product/product_default.png\",\"status\":\"판매중\",\"likes\":1}]}";
         actions.andExpect(status().isOk())
             .andExpect(content().json(jsonContent));
     }
