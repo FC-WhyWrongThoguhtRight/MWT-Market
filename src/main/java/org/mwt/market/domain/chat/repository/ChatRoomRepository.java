@@ -32,7 +32,7 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
         + "         JOIN users u ON c.buyer_userId = u.userId ) as a "
         + ", (  SELECT p.productId, u.userId, u.nickName "
         + "         FROM Product p "
-        + "         JOIN users u ON p.seller_userId = u.userId ) as b "
+        + "         JOIN users u ON p.sellerId = u.userId ) as b "
         + "WHERE a.product_productId = b.productid "
         + "AND chatroomid = :chatRoomId ", nativeQuery = true)
     ChatUserVo findChatroomUsers(@Param("chatRoomId") Long chatRoomId);
