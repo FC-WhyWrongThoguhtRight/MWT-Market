@@ -85,6 +85,7 @@ public class UserController {
         User findUser = userService.readUser(userPrincipal);
         return DataResponseBody.success(
             UserInfoResponseDto.builder()
+                .id(findUser.getUserId())
                 .email(findUser.getEmail())
                 .nickname(findUser.getNickname())
                 .tel(findUser.getTel())
