@@ -17,7 +17,7 @@ import org.mwt.market.common.response.BaseResponseBody;
 import org.mwt.market.common.response.DataResponseBody;
 import org.mwt.market.common.response.ErrorResponseBody;
 import org.mwt.market.config.security.token.UserPrincipal;
-import org.mwt.market.domain.user.dto.UserResponses.ChatRoomDto;
+import org.mwt.market.domain.user.dto.UserResponses.UserChatRoomDto;
 import org.mwt.market.domain.user.dto.UserResponses.ProductDto;
 import org.mwt.market.domain.user.dto.UserResponses.UserInfoResponseDto;
 import org.mwt.market.domain.user.entity.User;
@@ -150,12 +150,12 @@ public class UserController {
         @ApiResponse(responseCode = "400",
             content = {@Content(schema = @Schema(implementation = ErrorResponseBody.class))})
     })
-    public DataResponseBody<List<ChatRoomDto>> getMyChatRoom(
+    public DataResponseBody<List<UserChatRoomDto>> getMyChatRoom(
         @Positive @RequestParam(defaultValue = "1") Integer page,
         @Positive @RequestParam(defaultValue = "10") Integer pageSize,
         @AuthenticationPrincipal UserPrincipal userPrincipal) {
-        List<ChatRoomDto> myChatRoomDto = userService.getMyChatRoom(page - 1, pageSize,
+        List<UserChatRoomDto> myUserChatRoomDto = userService.getMyChatRoom(page - 1, pageSize,
             userPrincipal);
-        return DataResponseBody.success(myChatRoomDto);
+        return DataResponseBody.success(myUserChatRoomDto);
     }
 }

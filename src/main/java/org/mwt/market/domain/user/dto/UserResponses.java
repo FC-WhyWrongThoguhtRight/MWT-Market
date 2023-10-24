@@ -78,7 +78,7 @@ public class UserResponses {
     }
 
     @Getter
-    public static class ChatRoomDto {
+    public static class UserChatRoomDto {
 
         private final Long chatRoomId;
         private final Long productId;
@@ -91,7 +91,7 @@ public class UserResponses {
         private final String lastChattedAt;
 
         @Builder
-        public ChatRoomDto(Long chatRoomId, Long productId, String productImage,
+        public UserChatRoomDto(Long chatRoomId, Long productId, String productImage,
             String productStatus, Long personId, String personNickname, String personProfileImage,
             String lastMessage, String lastChattedAt) {
             this.chatRoomId = chatRoomId;
@@ -105,8 +105,8 @@ public class UserResponses {
             this.lastChattedAt = lastChattedAt;
         }
 
-        public static ChatRoomDto fromEntity(ChatRoom chatRoom) {
-            return ChatRoomDto.builder()
+        public static UserChatRoomDto fromEntity(ChatRoom chatRoom) {
+            return UserChatRoomDto.builder()
                 .chatRoomId(chatRoom.getChatRoomId())
                 .productId(chatRoom.getProduct().getProductId())
                 .productImage(chatRoom.getProduct().getThumbnail())

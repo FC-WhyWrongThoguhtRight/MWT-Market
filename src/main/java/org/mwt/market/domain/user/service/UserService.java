@@ -17,7 +17,7 @@ import org.mwt.market.domain.product.entity.Product;
 import org.mwt.market.domain.product.repository.ProductRepository;
 import org.mwt.market.domain.user.dto.UserRequests.ProfileUpdateRequestDto;
 import org.mwt.market.domain.user.dto.UserRequests.SignupRequestDto;
-import org.mwt.market.domain.user.dto.UserResponses.ChatRoomDto;
+import org.mwt.market.domain.user.dto.UserResponses.UserChatRoomDto;
 import org.mwt.market.domain.user.dto.UserResponses.ProductDto;
 import org.mwt.market.domain.user.entity.ProfileImage;
 import org.mwt.market.domain.user.entity.User;
@@ -158,9 +158,9 @@ public class UserService {
             .collect(Collectors.toList());
     }
 
-    public List<ChatRoomDto> getMyChatRoom(Integer page, Integer pageSize,
+    public List<UserChatRoomDto> getMyChatRoom(Integer page, Integer pageSize,
         UserPrincipal userPrincipal) {
-        List<ChatRoomDto> result = new ArrayList<>();
+        List<UserChatRoomDto> result = new ArrayList<>();
         List<ChatRoom> myChatRoomList = chatRoomRepository.findByBuyer_UserIdOrProduct_Seller_UserId(
             PageRequest.of(page, pageSize), userPrincipal.getId(), userPrincipal.getId());
         for (ChatRoom chatRoom : myChatRoomList) {
@@ -173,7 +173,7 @@ public class UserService {
             } else {
                 counter = chatRoom.getBuyer();
             }
-            ChatRoomDto dto = ChatRoomDto.builder()
+            UserChatRoomDto dto = UserChatRoomDto.builder()
                 .chatRoomId(chatRoom.getChatRoomId())
                 .productId(chatRoom.getProduct().getProductId())
                 .productImage(chatRoom.getProduct().getThumbnail())
