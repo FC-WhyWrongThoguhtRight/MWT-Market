@@ -174,6 +174,10 @@ public class ProductService {
         List<ChatRoom> chatRooms = chatRoomRepository.findAllByProduct(product);
         List<ChatRoomDto> dtos = new ArrayList<>();
         for (ChatRoom chatRoom : chatRooms) {
+            ChatContent firstContent = chatContentRepository.findFirstByChatRoomIdOrderByCreateAtDesc(
+                chatRoom.getChatRoomId());
+            if(firstContent == null || !StringUtils.hasText(firstContent.getContent())) continue;
+
             User buyer = chatRoom.getBuyer();
             User you;
             if (userPrincipal.getEmail().equals(buyer.getEmail())) {
