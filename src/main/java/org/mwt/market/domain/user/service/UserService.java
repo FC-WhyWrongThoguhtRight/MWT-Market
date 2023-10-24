@@ -167,16 +167,25 @@ public class UserService {
             ChatContent firstContent = chatContentRepository.findFirstByChatRoomIdOrderByCreateAtDesc(
                 chatRoom.getChatRoomId());
             if(firstContent == null) continue;
-            boolean isBuyer = userPrincipal.getId() == chatRoom.getBuyer().getUserId();
+
+
+            User counter;
+            if(userPrincipal.getId() == chatRoom.getBuyer().getUserId()) {
+                counter = chatRoom.getProduct().getSeller();
+            } else {
+                counter = chatRoom.getBuyer();
+            }
             ChatRoomDto dto = ChatRoomDto.builder()
                 .chatRoomId(chatRoom.getChatRoomId())
                 .productId(chatRoom.getProduct().getProductId())
                 .productImage(chatRoom.getProduct().getThumbnail())
                 .productStatus(chatRoom.getProduct().getStatus().getValue())
-                //TODO: 내 채팅방 ResponseDto
-                .personId(isBuyer?chatRoom.getProduct().getSeller().getUserId():chatRoom.getBuyer().getUserId())
-                .personNickname(isBuyer?chatRoom.getProduct().getSeller().getNickname():chatRoom.getBuyer().getNickname())
-                .personProfileImage(isBuyer?chatRoom.getProduct().getSeller().getProfileImageUrl():chatRoom.getBuyer().getProfileImageUrl())
+//                .personId(isBuyer?chatRoom.getProduct().getSeller().getUserId():chatRoom.getBuyer().getUserId())
+//                .personNickname(isBuyer?chatRoom.getProduct().getSeller().getNickname():chatRoom.getBuyer().getNickname())
+//                .personProfileImage(isBuyer?chatRoom.getProduct().getSeller().getProfileImageUrl():chatRoom.getBuyer().getProfileImageUrl())
+                .personId(counter.getUserId())
+                .personNickname(counter.getNickname())
+                .personProfileImage(counter.getProfileImageUrl())
                 .lastMessage(firstContent.getContent())
                 .lastChattedAt(firstContent.getCreateAt().toString())
                 .build();
