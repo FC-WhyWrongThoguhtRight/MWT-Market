@@ -166,7 +166,7 @@ public class UserService {
         for (ChatRoom chatRoom : myChatRoomList) {
             ChatContent firstContent = chatContentRepository.findFirstByChatRoomIdOrderByCreateAtDesc(
                 chatRoom.getChatRoomId());
-            if(firstContent == null) continue;
+            if(firstContent == null || !StringUtils.hasText(firstContent.getContent())) continue;
             User counter;
             if(userPrincipal.getId() == chatRoom.getBuyer().getUserId()) {
                 counter = chatRoom.getProduct().getSeller();
@@ -178,9 +178,6 @@ public class UserService {
                 .productId(chatRoom.getProduct().getProductId())
                 .productImage(chatRoom.getProduct().getThumbnail())
                 .productStatus(chatRoom.getProduct().getStatus().getValue())
-//                .personId(isBuyer?chatRoom.getProduct().getSeller().getUserId():chatRoom.getBuyer().getUserId())
-//                .personNickname(isBuyer?chatRoom.getProduct().getSeller().getNickname():chatRoom.getBuyer().getNickname())
-//                .personProfileImage(isBuyer?chatRoom.getProduct().getSeller().getProfileImageUrl():chatRoom.getBuyer().getProfileImageUrl())
                 .personId(counter.getUserId())
                 .personNickname(counter.getNickname())
                 .personProfileImage(counter.getProfileImageUrl())
