@@ -20,6 +20,7 @@ import org.mwt.market.domain.chat.entity.ChatContent;
 import org.mwt.market.domain.chat.entity.ChatRoom;
 import org.mwt.market.domain.chat.repository.ChatContentRepository;
 import org.mwt.market.domain.chat.repository.ChatRoomRepository;
+import org.mwt.market.domain.product.dto.ProductChatRoomDto;
 import org.mwt.market.domain.product.dto.ProductInfoDto;
 import org.mwt.market.domain.product.dto.ProductRequestDto;
 import org.mwt.market.domain.product.dto.ProductResponseDto;
@@ -167,12 +168,12 @@ public class ProductService {
         return ProductResponseDto.fromEntity(product);
     }
 
-    public List<ChatRoomDto> findChats(UserPrincipal userPrincipal, Long productId) {
+    public List<ProductChatRoomDto> findChats(UserPrincipal userPrincipal, Long productId) {
         Product product = validateIsDeleted(productRepository.findById(productId)
             .orElseThrow(NoSuchProductException::new));
 
         List<ChatRoom> chatRooms = chatRoomRepository.findAllByProduct(product);
-        List<ChatRoomDto> dtos = new ArrayList<>();
+        List<ProductChatRoomDto> dtos = new ArrayList<>();
         for (ChatRoom chatRoom : chatRooms) {
             ChatContent firstContent = chatContentRepository.findFirstByChatRoomIdOrderByCreateAtDesc(
                 chatRoom.getChatRoomId());
@@ -194,9 +195,11 @@ public class ProductService {
                 lastMessage = lastChatContent.getContent();
                 lastCreatedAt = lastChatContent.getCreateAt();
             }
-            ChatRoomDto dto = ChatRoomDto.builder()
+            ProductChatRoomDto dto = ProductChatRoomDto.builder()
                 .chatRoomId(chatRoom.getChatRoomId())
                 .nickName(you.getNickname())
+                .productId(productId)
+                .productImage(product.getThumbnail())
                 .buyerProfileImg(you.getProfileImageUrl())
                 .lastMessage(lastMessage)
                 .lastCreatedAt(lastCreatedAt)

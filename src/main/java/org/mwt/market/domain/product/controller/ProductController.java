@@ -14,6 +14,7 @@ import org.mwt.market.common.response.BaseResponseBody;
 import org.mwt.market.common.response.DataResponseBody;
 import org.mwt.market.config.security.token.UserPrincipal;
 import org.mwt.market.domain.chat.dto.ChatRoomDto;
+import org.mwt.market.domain.product.dto.ProductChatRoomDto;
 import org.mwt.market.domain.product.dto.ProductInfoDto;
 import org.mwt.market.domain.product.dto.ProductRequestDto;
 import org.mwt.market.domain.product.dto.ProductResponseDto;
@@ -135,11 +136,11 @@ public class ProductController {
         @ApiResponse(responseCode = "200"),
         @ApiResponse(responseCode = "400", content = {
             @Content(schema = @Schema(implementation = BaseResponseBody.class))})})
-    public ResponseEntity<? extends DataResponseBody<List<ChatRoomDto>>> productChatList(
+    public ResponseEntity<? extends DataResponseBody<List<ProductChatRoomDto>>> productChatList(
         @AuthenticationPrincipal UserPrincipal userPrincipal,
         @PathVariable Long productId
     ) {
-        List<ChatRoomDto> data = productService.findChats(userPrincipal, productId);
+        List<ProductChatRoomDto> data = productService.findChats(userPrincipal, productId);
 
         return ResponseEntity
             .status(200)
