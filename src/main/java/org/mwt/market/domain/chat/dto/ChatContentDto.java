@@ -15,6 +15,7 @@ public class ChatContentDto {
     private Long roomId;
     private Long userId;
     private String nickName;
+    private String profileImage;
     private String content;
     private LocalDateTime createAt;
 
