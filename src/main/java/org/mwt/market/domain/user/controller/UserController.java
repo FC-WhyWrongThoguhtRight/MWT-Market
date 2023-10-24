@@ -146,7 +146,7 @@ public class UserController {
     @GetMapping("/myPage/chats")
     @Operation(summary = "나의 채팅방 목록 조회")
     @ApiResponses(value = {
-//        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "200"),
         @ApiResponse(responseCode = "400",
             content = {@Content(schema = @Schema(implementation = ErrorResponseBody.class))})
     })
