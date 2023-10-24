@@ -4,11 +4,14 @@ import io.awspring.cloud.s3.ObjectMetadata;
 import io.awspring.cloud.s3.S3Resource;
 import io.awspring.cloud.s3.S3Template;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.mwt.market.config.security.token.UserPrincipal;
+import org.mwt.market.domain.chat.entity.ChatContent;
 import org.mwt.market.domain.chat.entity.ChatRoom;
+import org.mwt.market.domain.chat.repository.ChatContentRepository;
 import org.mwt.market.domain.chat.repository.ChatRoomRepository;
 import org.mwt.market.domain.product.entity.Product;
 import org.mwt.market.domain.product.repository.ProductRepository;
@@ -40,16 +43,19 @@ public class UserService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
     private final ChatRoomRepository chatRoomRepository;
+    private final ChatContentRepository chatContentRepository;
     private final PasswordEncoder passwordEncoder;
     private final S3Template s3Template;
 
 
     public UserService(UserRepository userRepository, ProductRepository productRepository,
-        ChatRoomRepository chatRoomRepository, PasswordEncoder passwordEncoder,
+        ChatRoomRepository chatRoomRepository, ChatContentRepository chatContentRepository,
+        PasswordEncoder passwordEncoder,
         S3Template s3Template) {
         this.userRepository = userRepository;
         this.productRepository = productRepository;
         this.chatRoomRepository = chatRoomRepository;
+        this.chatContentRepository = chatContentRepository;
         this.passwordEncoder = passwordEncoder;
         this.s3Template = s3Template;
     }
@@ -154,12 +160,33 @@ public class UserService {
 
     public List<ChatRoomDto> getMyChatRoom(Integer page, Integer pageSize,
         UserPrincipal userPrincipal) {
-
+        List<ChatRoomDto> result = new ArrayList<>();
         List<ChatRoom> myChatRoomList = chatRoomRepository.findByBuyer_UserIdOrProduct_Seller_UserId(
             PageRequest.of(page, pageSize), userPrincipal.getId(), userPrincipal.getId());
+        for (ChatRoom chatRoom : myChatRoomList) {
+            ChatContent firstContent = chatContentRepository.findFirstByChatRoomIdOrderByCreateAtDesc(
+                chatRoom.getChatRoomId());
+            if(firstContent == null || !StringUtils.hasText(firstContent.getContent())) continue;
+            User counter;
+            if(userPrincipal.getId() == chatRoom.getBuyer().getUserId()) {
+                counter = chatRoom.getProduct().getSeller();
+            } else {
+                counter = chatRoom.getBuyer();
+            }
+            ChatRoomDto dto = ChatRoomDto.builder()
+                .chatRoomId(chatRoom.getChatRoomId())
+                .productId(chatRoom.getProduct().getProductId())
+                .productImage(chatRoom.getProduct().getThumbnail())
+                .productStatus(chatRoom.getProduct().getStatus().getValue())
+                .personId(counter.getUserId())
+                .personNickname(counter.getNickname())
+                .personProfileImage(counter.getProfileImageUrl())
+                .lastMessage(firstContent.getContent())
+                .lastChattedAt(firstContent.getCreateAt().toString())
+                .build();
+            result.add(dto);
+        }
 
-        return myChatRoomList.stream()
-            .map(ChatRoomDto::fromEntity)
-            .collect(Collectors.toList());
+        return result;
     }
 }
