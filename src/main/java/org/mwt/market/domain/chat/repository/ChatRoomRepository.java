@@ -25,15 +25,18 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
     List<ChatRoom> findByBuyer_UserIdOrProduct_Seller_UserId(PageRequest of, Long buyerId,
         Long sellerId);
 
-    @Query(value = "SELECT a.chatRoomId, a.userId as userId1, a.nickName as nickName1, "
-        + "b.userId as userId2, b.nickName as nickName2 "
-        + "FROM (   SELECT c.chatRoomId, u.userId , u.nickName, c.product_productId "
-        + "         FROM ChatRoom c"
-        + "         JOIN users u ON c.buyer_userId = u.userId ) as a "
-        + ", (  SELECT p.productId, u.userId, u.nickName "
-        + "         FROM Product p "
-        + "         JOIN users u ON p.sellerId = u.userId ) as b "
-        + "WHERE a.product_productId = b.productid "
-        + "AND chatroomid = :chatRoomId ", nativeQuery = true)
+    @Query(value =
+        "SELECT a.chatRoomId, a.userId as userId1, a.nickName as nickName1, a.url as url1, "
+            + "b.userId as userId2, b.nickName as nickName2, b.url as url2 "
+            + "FROM (   SELECT c.chatRoomId, u.userId , u.nickName, c.product_productId, pi.url "
+            + "         FROM ChatRoom c "
+            + "         JOIN users u ON c.buyer_userId = u.userId "
+            + "         JOIN ProfileImage pi ON u.profile_img = pi.profileid) as a "
+            + ", (  SELECT p.productId, u.userId, u.nickName, pi.url "
+            + "         FROM Product p "
+            + "         JOIN users u ON p.sellerId = u.userId "
+            + "         JOIN ProfileImage pi ON u.profile_img = pi.profileid) as b "
+            + "WHERE a.product_productId = b.productid "
+            + "AND chatroomid = :chatRoomId ", nativeQuery = true)
     ChatUserVo findChatroomUsers(@Param("chatRoomId") Long chatRoomId);
 }
