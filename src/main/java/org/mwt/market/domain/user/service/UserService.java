@@ -166,6 +166,7 @@ public class UserService {
         for (ChatRoom chatRoom : myChatRoomList) {
             ChatContent firstContent = chatContentRepository.findFirstByChatRoomIdOrderByCreateAtDesc(
                 chatRoom.getChatRoomId());
+            if(firstContent == null) continue;
             boolean isBuyer = userPrincipal.getId() == chatRoom.getBuyer().getUserId();
             ChatRoomDto dto = ChatRoomDto.builder()
                 .chatRoomId(chatRoom.getChatRoomId())
