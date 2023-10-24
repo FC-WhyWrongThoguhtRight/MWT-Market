@@ -11,7 +11,6 @@ import org.mwt.market.domain.chat.entity.ChatContent;
 import org.mwt.market.domain.chat.entity.ChatUserVo;
 import org.mwt.market.domain.chat.repository.ChatContentRepository;
 import org.mwt.market.domain.chat.repository.ChatRoomRepository;
-import org.mwt.market.domain.product.repository.ProductRepository;
 import org.mwt.market.domain.user.entity.User;
 import org.mwt.market.domain.user.exception.NoSuchUserException;
 import org.mwt.market.domain.user.repository.UserRepository;
@@ -25,15 +24,13 @@ public class ChatService {
 
     private final ChatRoomRepository chatRoomRepository;
     private final UserRepository userRepository;
-    private final ProductRepository productRepository;
 
     private final ChatContentRepository chatContentRepository;
 
     public ChatService(ChatRoomRepository chatRoomRepository, UserRepository userRepository,
-        ProductRepository productRepository, ChatContentRepository chatContentRepository) {
+        ChatContentRepository chatContentRepository) {
         this.chatRoomRepository = chatRoomRepository;
         this.userRepository = userRepository;
-        this.productRepository = productRepository;
         this.chatContentRepository = chatContentRepository;
     }
 
