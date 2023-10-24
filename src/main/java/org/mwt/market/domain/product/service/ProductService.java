@@ -4,6 +4,7 @@ import io.awspring.cloud.s3.ObjectMetadata;
 import io.awspring.cloud.s3.S3Resource;
 import io.awspring.cloud.s3.S3Template;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -19,7 +20,6 @@ import org.mwt.market.domain.chat.entity.ChatContent;
 import org.mwt.market.domain.chat.entity.ChatRoom;
 import org.mwt.market.domain.chat.repository.ChatContentRepository;
 import org.mwt.market.domain.chat.repository.ChatRoomRepository;
-import org.mwt.market.domain.product.dto.ProductChatResponseDto;
 import org.mwt.market.domain.product.dto.ProductInfoDto;
 import org.mwt.market.domain.product.dto.ProductRequestDto;
 import org.mwt.market.domain.product.dto.ProductResponseDto;
@@ -167,12 +167,12 @@ public class ProductService {
         return ProductResponseDto.fromEntity(product);
     }
 
-    public List<ProductChatResponseDto> findChats(UserPrincipal userPrincipal, Long productId) {
+    public List<ChatRoomDto> findChats(UserPrincipal userPrincipal, Long productId) {
         Product product = validateIsDeleted(productRepository.findById(productId)
             .orElseThrow(NoSuchProductException::new));
 
         List<ChatRoom> chatRooms = chatRoomRepository.findAllByProduct(product);
-        List<ProductChatResponseDto> dtos = new ArrayList<>();
+        List<ChatRoomDto> dtos = new ArrayList<>();
         for (ChatRoom chatRoom : chatRooms) {
             User buyer = chatRoom.getBuyer();
             User you;
@@ -185,21 +185,17 @@ public class ProductService {
             ChatContent lastChatContent = chatContentRepository.findFirstByChatRoomIdOrderByCreateAtDesc(
                 chatRoom.getChatRoomId());
             String lastMessage = "";
-            String lastChattedAt = "";
+            LocalDateTime lastCreatedAt = null;
             if (lastChatContent != null) {
                 lastMessage = lastChatContent.getContent();
-                lastChattedAt = String.valueOf(lastChatContent.getCreateAt());
+                lastCreatedAt = lastChatContent.getCreateAt();
             }
-            ProductChatResponseDto dto = ProductChatResponseDto.builder()
+            ChatRoomDto dto = ChatRoomDto.builder()
                 .chatRoomId(chatRoom.getChatRoomId())
-                .productId(productId)
-                .productImage(product.getThumbnail())
-                .productStatus(String.valueOf(product.getStatus()))
-                .personId(you.getUserId())
-                .personNickname(you.getNickname())
-                .personProfileImage(you.getProfileImageUrl())
-                .lastChatMessage(lastMessage)
-                .lastCattedAt(lastChattedAt)
+                .nickName(you.getNickname())
+                .buyerProfileImg(you.getProfileImageUrl())
+                .lastMessage(lastMessage)
+                .lastCreatedAt(lastCreatedAt)
                 .build();
             dtos.add(dto);
         }
