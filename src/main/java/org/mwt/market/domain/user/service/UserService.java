@@ -166,13 +166,13 @@ public class UserService {
         for (ChatRoom chatRoom : myChatRoomList) {
             ChatContent firstContent = chatContentRepository.findFirstByChatRoomIdOrderByCreateAtDesc(
                 chatRoom.getChatRoomId());
-            if (firstContent == null) {
-                continue;
+            if(firstContent == null) continue;
+            User counter;
+            if(userPrincipal.getId() == chatRoom.getBuyer().getUserId()) {
+                counter = chatRoom.getProduct().getSeller();
+            } else {
+                counter = chatRoom.getBuyer();
             }
-            User counter =
-                userPrincipal.getId() == chatRoom.getBuyer().getUserId() ?
-                    chatRoom.getProduct().getSeller() : chatRoom.getBuyer();
-
             ChatRoomDto dto = ChatRoomDto.builder()
                 .chatRoomId(chatRoom.getChatRoomId())
                 .productId(chatRoom.getProduct().getProductId())
@@ -190,8 +190,6 @@ public class UserService {
             result.add(dto);
         }
 
-        return myChatRoomList.stream()
-            .map(ChatRoomDto::fromEntity)
-            .collect(Collectors.toList());
+        return result;
     }
 }
