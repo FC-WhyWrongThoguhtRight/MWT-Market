@@ -3,21 +3,14 @@ package org.mwt.market.domain.chat.service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
-import org.mwt.market.config.security.token.UserPrincipal;
 import org.mwt.market.domain.chat.dto.ChatContentDto;
-import org.mwt.market.domain.chat.dto.ChatRoomDto;
 import org.mwt.market.domain.chat.dto.ChatWsDto.MessageRequest;
 import org.mwt.market.domain.chat.dto.ChatWsDto.MessageResponse;
 import org.mwt.market.domain.chat.entity.ChatContent;
-import org.mwt.market.domain.chat.entity.ChatRoom;
 import org.mwt.market.domain.chat.entity.ChatUserVo;
 import org.mwt.market.domain.chat.repository.ChatContentRepository;
 import org.mwt.market.domain.chat.repository.ChatRoomRepository;
-import org.mwt.market.domain.product.entity.Product;
-import org.mwt.market.domain.product.exception.NoSuchProductException;
-import org.mwt.market.domain.product.repository.ProductRepository;
 import org.mwt.market.domain.user.entity.User;
 import org.mwt.market.domain.user.exception.NoSuchUserException;
 import org.mwt.market.domain.user.repository.UserRepository;
@@ -31,15 +24,13 @@ public class ChatService {
 
     private final ChatRoomRepository chatRoomRepository;
     private final UserRepository userRepository;
-    private final ProductRepository productRepository;
 
     private final ChatContentRepository chatContentRepository;
 
     public ChatService(ChatRoomRepository chatRoomRepository, UserRepository userRepository,
-        ProductRepository productRepository, ChatContentRepository chatContentRepository) {
+        ChatContentRepository chatContentRepository) {
         this.chatRoomRepository = chatRoomRepository;
         this.userRepository = userRepository;
-        this.productRepository = productRepository;
         this.chatContentRepository = chatContentRepository;
     }
 
@@ -53,9 +44,13 @@ public class ChatService {
             .build();
 
         ChatContent result = chatContentRepository.save(chatContent);
+        User user = userRepository.findById(messageRequest.getUserId()).orElseThrow(
+            NoSuchUserException::new);
 
         return MessageResponse.builder()
             .userId(result.getUserId())
+            .nickName(user.getNickname())
+            .profileImage(user.getProfileImageUrl())
             .content(result.getContent())
             .dateTime(result.getCreateAt())
             .build();
@@ -81,6 +76,7 @@ public class ChatService {
                 .roomId(cc.getChatRoomId())
                 .userId(cc.getUserId())
                 .nickName(chatUserVo.getNickName(cc.getUserId()))
+                .profileImage(chatUserVo.getUrl(cc.getUserId()))
                 .content(cc.getContent())
                 .createAt(cc.getCreateAt())
                 .build()
