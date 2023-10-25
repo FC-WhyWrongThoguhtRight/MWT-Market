@@ -56,11 +56,16 @@ public class UserControllerAdvisor {
     @ExceptionHandler(UserUpdateException.class)
     public ResponseEntity<ErrorResponseBody> handleUserUpdateException(UserUpdateException ex) {
         Throwable cause = ex.getCause();
-        if (cause instanceof IOException || cause instanceof DuplicateNicknameException) {
+        if (cause instanceof IOException) {
             logger.warn(ex.getMessage(), ex);
             return ResponseEntity
                 .badRequest()
                 .body(ErrorResponseBody.unsuccessful(ex.getMessage()));
+        } else if(cause instanceof DuplicateNicknameException) {
+            Integer statusCode = 403;
+            return ResponseEntity
+                .badRequest()
+                .body(ErrorResponseBody.unsuccessful(statusCode, ex.getMessage()));
         }
         logger.error(ex.getMessage(), ex);
         return ResponseEntity
