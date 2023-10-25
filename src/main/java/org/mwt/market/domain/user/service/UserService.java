@@ -120,9 +120,11 @@ public class UserService {
                 new NoSuchUserException()));
         if (!StringUtils.hasText(newNickname)) {
             throw new UserUpdateException("닉네임을 입력하세요");
+        } else if (newNickname.trim().length()<1 || newNickname.trim().length()>10) {
+            throw new UserUpdateException("닉네임은 1~10글자입니다.");
         }
         Optional<User> byNickname = userRepository.findByNickname(newNickname);
-        if (byNickname.isPresent()) {
+        if (byNickname.isPresent() && !byNickname.get().equals(currUser)) {
             throw new UserUpdateException("닉네임 중복", new DuplicateNicknameException());
         }
         currUser.updateNickname(newNickname);
@@ -134,15 +136,21 @@ public class UserService {
         User currUser = userRepository.findById(userPrincipal.getId())
             .orElseThrow(() -> new UserUpdateException("수정하고자 하는 유저가 존재하지 않습니다.",
                 new NoSuchUserException()));
-        String extension = StringUtils.getFilenameExtension(newProfileImage.getOriginalFilename());
-        try {
-            S3Resource resource = s3Template.upload("mwtmarketbucket",
-                "user" + "/" + userPrincipal.getId(),
-                newProfileImage.getInputStream(),
-                ObjectMetadata.builder().contentType(extension).build());
-            currUser.getProfileImage().update(resource.getURL().toString());
-        } catch (IOException ex) {
-            throw new UserUpdateException("파일 에러 발생", ex);
+        if (newProfileImage.isEmpty()) {
+            currUser.getProfileImage()
+                .update("https://mwtmarketbucket.s3.ap-northeast-2.amazonaws.com/user/default.png");
+        } else {
+            String extension = StringUtils.getFilenameExtension(
+                newProfileImage.getOriginalFilename());
+            try {
+                S3Resource resource = s3Template.upload("mwtmarketbucket",
+                    "user" + "/" + userPrincipal.getId(),
+                    newProfileImage.getInputStream(),
+                    ObjectMetadata.builder().contentType(extension).build());
+                currUser.getProfileImage().update(resource.getURL().toString());
+            } catch (IOException ex) {
+                throw new UserUpdateException("파일 에러 발생", ex);
+            }
         }
         return currUser;
     }
@@ -166,9 +174,11 @@ public class UserService {
         for (ChatRoom chatRoom : myChatRoomList) {
             ChatContent firstContent = chatContentRepository.findFirstByChatRoomIdOrderByCreateAtDesc(
                 chatRoom.getChatRoomId());
-            if(firstContent == null || !StringUtils.hasText(firstContent.getContent())) continue;
+            if (firstContent == null || !StringUtils.hasText(firstContent.getContent())) {
+                continue;
+            }
             User counter;
-            if(userPrincipal.getId() == chatRoom.getBuyer().getUserId()) {
+            if (userPrincipal.getId() == chatRoom.getBuyer().getUserId()) {
                 counter = chatRoom.getProduct().getSeller();
             } else {
                 counter = chatRoom.getBuyer();

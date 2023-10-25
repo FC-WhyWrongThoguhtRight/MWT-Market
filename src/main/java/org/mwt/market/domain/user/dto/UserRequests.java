@@ -48,7 +48,6 @@ public class UserRequests {
     @AllArgsConstructor
     public static class ProfileUpdateRequestDto {
 
-        @Size(min = 1, max = 10)
         @Schema(description = "사용자 닉네임", example = "donghar")
         private String nickname;
         @Schema(description = "이미지 바이너리 데이터")

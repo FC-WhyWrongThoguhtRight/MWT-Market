@@ -17,8 +17,8 @@ import org.mwt.market.common.response.BaseResponseBody;
 import org.mwt.market.common.response.DataResponseBody;
 import org.mwt.market.common.response.ErrorResponseBody;
 import org.mwt.market.config.security.token.UserPrincipal;
-import org.mwt.market.domain.user.dto.UserResponses.UserChatRoomDto;
 import org.mwt.market.domain.user.dto.UserResponses.ProductDto;
+import org.mwt.market.domain.user.dto.UserResponses.UserChatRoomDto;
 import org.mwt.market.domain.user.dto.UserResponses.UserInfoResponseDto;
 import org.mwt.market.domain.user.entity.User;
 import org.mwt.market.domain.user.exception.UserRegisterException;
@@ -26,7 +26,6 @@ import org.mwt.market.domain.user.exception.UserUpdateException;
 import org.mwt.market.domain.user.service.UserService;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -102,16 +101,16 @@ public class UserController {
             content = {@Content(schema = @Schema(implementation = ErrorResponseBody.class))})
     })
     public DataResponseBody<ProfileUpdateResponseDto> updateProfile(
-        @Validated @ModelAttribute ProfileUpdateRequestDto profileUpdateRequestDto,
+        @ModelAttribute ProfileUpdateRequestDto profileUpdateRequestDto,
         @AuthenticationPrincipal UserPrincipal userPrincipal) {
         User updatedUser;
-        if (StringUtils.hasText(profileUpdateRequestDto.getNickname())
-            && !profileUpdateRequestDto.getProfileImg().isEmpty()) {
+        if (profileUpdateRequestDto.getNickname() != null
+            && profileUpdateRequestDto.getProfileImg() != null) {
             updatedUser = userService.updateUser(userPrincipal, profileUpdateRequestDto);
-        } else if (StringUtils.hasText(profileUpdateRequestDto.getNickname())) {
+        } else if (profileUpdateRequestDto.getNickname() != null) {
             updatedUser = userService.updateNickname(userPrincipal,
                 profileUpdateRequestDto.getNickname());
-        } else if (!profileUpdateRequestDto.getProfileImg().isEmpty()) {
+        } else if (profileUpdateRequestDto.getProfileImg() != null) {
             updatedUser = userService.updateProfileImg(userPrincipal,
                 profileUpdateRequestDto.getProfileImg());
         } else {
