@@ -15,6 +15,7 @@ import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 import org.mwt.market.domain.user.dto.UserRequests;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -43,6 +44,7 @@ public class User {
     private ProfileImage profileImage;
 
     @CreatedDate
+    @CreationTimestamp
     private LocalDateTime createdAt;
 
     public User(String email, String password, String tel, String nickname,
