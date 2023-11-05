@@ -24,6 +24,7 @@ public class CookieUtil {
                                  int maxAge) {
         Cookie cookie = new Cookie(name, value);
         cookie.setPath("/");
+        cookie.setDomain("mwt-market.store");
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
         cookie.setAttribute("Samesite", "None");
