@@ -27,7 +27,7 @@ public class CookieUtil {
         cookie.setDomain("mwt-market.store");
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
-        cookie.setAttribute("Samesite", "Lax");
+        cookie.setAttribute("SameSite", "None");
         cookie.setMaxAge(maxAge);
         response.addCookie(cookie);
     }
